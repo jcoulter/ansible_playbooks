@@ -1,0 +1,36 @@
+---
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Create a network
+      docker_network:
+        name: nextcloud_network
+
+#    - name: Remove all but selected list of containers
+#      docker_network:
+#        name: nextcloud_network
+#        connected:
+#          - container_a
+#          - container_b
+#          - container_c
+
+    - name: Tear down existing services
+      community.docker.docker_compose:
+        project_src: nextcloud
+        state: absent
+
+    - name: Create and start services
+      community.docker.docker_compose:
+        project_src: nextcloud
+      register: output
+
+    - ansible.builtin.debug:
+        var: output
+
+    - name: Run `docker-compose up` again
+      community.docker.docker_compose:
+        project_src: nextcloud
+        build: no
+      register: output
+
