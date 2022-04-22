@@ -3,9 +3,23 @@
   become: true
 
   tasks:
+    - name: Find out playbook's path
+      shell: pwd
+      register: playbook_path_output
+    - debug: var=playbook_path_output.stdout
+
+    - name: Copy content of directory 'files'
+      copy:
+        src: nextcloud/ #/    # note the '/' <-- !!!
+        dest: nextcloud # "{{ playbook_dir }}/" #/tmp/files/
+ 
     - name: Create a network
       docker_network:
         name: nextcloud_network
+ 
+    - name: Create a volume
+      docker_volume:
+        name: nextcloud
 
 #    - name: Remove all but selected list of containers
 #      docker_network:
@@ -15,10 +29,12 @@
 #          - container_b
 #          - container_c
 
+# I tried sudo chmod 777 /usr/local/bin/docker-compose so `whcih docker-compose` finds it without sudo but it is still failing
     - name: Tear down existing services
       community.docker.docker_compose:
         project_src: nextcloud
         state: absent
+      become: yes
 
     - name: Create and start services
       community.docker.docker_compose:
