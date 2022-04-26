@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: true
+
+  roles:
+    - role: user_setup
+      tags:
+        - user_setup
+  
+    - role: docker
+      tags:
+        - docker
+
+    - role: nextcloud
+      tags:
+        - nextcloud

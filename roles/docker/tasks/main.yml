@@ -1,0 +1,93 @@
+---
+- name: Install aptitude
+  apt:
+    name: aptitude
+    state: latest
+    update_cache: true
+
+- name: Install required system packages
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+    state: latest
+    update_cache: true
+
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Update apt and install docker-ce
+  apt:
+    name: docker-ce
+    state: latest
+    update_cache: true
+
+- name: Install Docker Module for Python
+  pip:
+    name: docker
+
+- name: Install Docker-Compose Module for Python
+  pip:
+    name: docker-compose
+
+- name: Add remote user to "docker" group
+  remote_user: "{{ ansible_user }}"
+  user:
+    name: "{{ ansible_user }}"
+    group: "docker"
+    append: yes
+  tags:
+    - docker
+
+# docker-compose is installed for root and root group. Should be docker?
+- name: Install docker-compose
+  remote_user: "{{ ansible_user }}"
+  get_url: 
+    url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    group: docker
+    #mode: 'u+x,g+x'
+    mode: 755
+
+#    - name: Check current docker-compose version
+#      command: docker-compose --version
+#      register: docker_compose_vsn
+#      changed_when: false
+#     # failed_when: false
+#      check_mode: no
+#
+#    - set_fact:
+#        docker_compose_current_version: "{{ docker_compose_vsn.stdout | regex_search('(\\d+(\\.\\d+)+)') }}"
+#      when:
+#        - docker_compose_vsn.stdout is defined
+#
+#    - name: Tear down existing services
+#      community.docker.docker_compose:
+#        project_src: nextcloud
+#        state: absent
+#      become: yes
+
+- name: Pull default Docker image
+  community.docker.docker_image:
+    name: "{{ default_container_image }}"
+    source: pull
+
+- name: Create default containers
+  community.docker.docker_container:
+    name: "{{ default_container_name }}{{ item }}"
+    image: "{{ default_container_image }}"
+    command: "{{ default_container_command }}"
+    state: present
+  with_sequence: count={{ container_count }}
