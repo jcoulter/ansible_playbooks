@@ -1,0 +1,15 @@
+mysql_db: "nextcloud_db"
+
+mysql_user: "nextcloud"
+mysql_root_password: "nextcloud_root"
+mysql_password: "nextcloud"
+
+container_name: nextcloud
+docker_dir: /opt/docker/data
+
+url: "{{ subdomains['nextcloud'] }}.{{ host }}"
+
+homer_category: services
+
+guid: "1000"
+timezone: "America/New_York"

@@ -11,6 +11,14 @@
       tags:
         - docker
 
+    - role: nfs
+      tags:
+        - nfs
+
     - role: nextcloud
       tags:
         - nextcloud
+
+    # - role: nextcloud_2
+    #   tags:
+    #     - nextcloud_2

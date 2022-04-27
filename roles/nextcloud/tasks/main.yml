@@ -9,7 +9,7 @@
     src:  ../files/ #docker-compose.yml
     dest: nextcloud # "{{ playbook_dir }}/" #/tmp/files/
 
-- name: Create a network
+- name: Create a nextcloud network
   docker_network:
     name: nextcloud_network
 
