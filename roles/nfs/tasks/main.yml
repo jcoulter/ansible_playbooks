@@ -13,7 +13,7 @@
     state: directory
     mode: "{{ permission }}"
     owner: root
-    group: root
+    group: docker
 
 - name: mount network share
   ansible.posix.mount:

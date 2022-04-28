@@ -1,4 +1,4 @@
 mynfs: "192.168.1.54:/volume1/nextcloud"
-mountpoint: "/nextcloud"
+mountpoint: "/mnt/nextcloud"
 permission: '0777'
 myopts: 'rw,sync'

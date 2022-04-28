@@ -13,9 +13,65 @@
   docker_network:
     name: nextcloud_network
 
-- name: Create a volume
-  docker_volume:
-    name: nextcloud
+- name: Create a nextcloud_html if it does not exist
+  ansible.builtin.file:
+    path: "/mnt/nextcloud/html"
+    state: directory
+    mode: '0755'
+    group: docker
+
+# - name: Create nextcloud_html volume
+#   docker_volume:
+#     name: "nextcloud_html"
+#     driver_options:
+#       type: local
+#       device: "/mnt/nextcloud/html"
+      
+
+- name: Create a nextcloud_db if it does not exist
+  ansible.builtin.file:
+    path: "/mnt/nextcloud/db"
+    state: directory
+    mode: '0755'
+    group: docker
+
+# - name: Create db volume
+#   docker_volume:
+#     name: "nextcloud_db"
+#     driver_options:
+#       type: local
+#       device: "/mnt/nextcloud/db"
+
+# - name: Create html volume
+#   docker_volume:
+#     name: "nextcloud_html"
+#     driver_options:
+#       type: nfs
+#       o: "addr=192.168.1.54,rw"
+#       device: "/volume1/nextcloud"
+
+# - name: Create db volume
+#   docker_volume:
+#     name: "nextcloud_db"
+#     driver_options:
+#       type: nfs
+#       o: "addr=192.168.1.54,rw"
+#       device: "/volume1/nextcloud/db"
+
+# $ docker service create \
+#     --mount 'type=volume,src=<VOLUME-NAME>,dst=<CONTAINER-PATH>,volume-driver=local,volume-opt=type=nfs,volume-opt=device=<nfs-server>:<nfs-path>,"volume-opt=o=addr=<nfs-address>,vers=4,soft,timeo=180,bg,tcp,rw"'
+#     --name myservice \
+#     <IMAGE>
+
+
+# docker volume create --driver local \
+#   --opt type=nfs \
+#   --opt o=addr=[ip-address],rw \
+#   --opt device=:[path-to-directory] \
+#   [volume-name]
+
+# docker volume create --driver local --opt type=nfs --opt o=addr=192.168.1.54,rw --opt device=:/volume1/nextcloud \
+#   [volume-name]
 
 #    - name: Remove all but selected list of containers
 #      docker_network:
