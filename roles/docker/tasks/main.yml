@@ -30,7 +30,7 @@
 
 - name: Update apt and install docker-ce
   apt:
-    name: docker-ce
+    name: "docker-ce"
     state: latest
     update_cache: true
 

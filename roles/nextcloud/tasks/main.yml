@@ -88,17 +88,83 @@
     state: absent
   become: yes
 
-- name: Create and start services
-  community.docker.docker_compose:
-    project_src: nextcloud
-  register: output
+# - name: Create and start services
+#   community.docker.docker_compose:
+#     project_src: nextcloud
+#   register: output
 
-- ansible.builtin.debug:
-    var: output
+# - ansible.builtin.debug:
+#     var: output
 
-- name: Run `docker-compose up` again
-  community.docker.docker_compose:
-    project_src: nextcloud
-    build: no
-  register: output
+# - name: Run `docker-compose up` again
+#   community.docker.docker_compose:
+#     project_src: nextcloud
+#     build: no
+#   register: output
 
+
+# Lets try to start without docker compose
+- name: Make sure - NextCloud container is created and running
+  docker_container:
+    container_default_behavior: compatibility
+    networks_cli_compatible: yes
+    name: nextcloud
+    image: nextcloud:latest
+    published_ports:
+      - "80:80"
+  #   # image: "ghcr.io/linuxserver/nextcloud:php8"
+    pull: yes
+    state: 'started'
+    env:
+      "MYSQL_HOST": db
+      "MYSQL_DATABASE": nextcloud
+      "MYSQL_USER": nextcloud
+      "MYSQL_PASSWORD": nextcloud
+    networks: 
+      - name: nextcloud_network
+    volumes:
+      # - /mnt/nextcloud/html:/var/www/html
+      - nextcloud:/var/www/html
+    restart_policy: unless-stopped
+
+
+# - name: Make sure the Redis container is created and running
+#   docker_container:
+#     container_default_behavior: compatibility
+#     networks_cli_compatible: yes
+#     name: "nextcloud-redis"
+#     networks:
+#       - name: nextcloud_network
+#     image: "redis:alpine"
+#     pull: yes
+#     state: 'started'
+#     restart_policy: unless-stopped
+ 
+- name: Make sure - MariaDB container is created and running
+  docker_container:
+    container_default_behavior: compatibility
+    networks_cli_compatible: yes
+    name: "nextcloud-maria-db"
+    image: "mariadb:latest"
+    pull: yes
+    state: 'started'
+    networks:
+      - name: nextcloud_network
+    volumes:
+      - nextcloud_db:/var/lib/mysql
+      # - /mnt/nextcloud/db:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    env:
+      "MYSQL_DATABASE": nextcloud
+      "MYSQL_USER": nextcloud
+      "MYSQL_PASSWORD": nextcloud
+      "MYSQL_ROOT_PASSWORD": nextcloud
+    restart_policy: unless-stopped
+
+
+# - name: Schedule a Nextcloud library scan at midnight every day
+#   cron:
+#     name: Scan the Nextcloud library
+#     hour: "0"
+#     minute: "0"
+#     job: "docker exec nextcloud sudo -u abc php8 /config/www/nextcloud/occ files:scan --all"

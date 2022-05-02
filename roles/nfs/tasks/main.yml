@@ -7,6 +7,12 @@
     state: present
   when: ansible_os_family == 'Debian'
 
+- name: Ensure group "docker" exists with correct gid
+  ansible.builtin.group:
+    name: docker
+    state: present
+    gid: 1750
+
 - name: check mountpoint exist
   ansible.builtin.file:
     path: "{{ mountpoint }}"

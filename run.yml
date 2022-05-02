@@ -10,7 +10,7 @@
     - role: nfs
       tags:
         - nfs 
-        
+
     - role: docker
       tags:
         - docker
@@ -18,6 +18,10 @@
     - role: nextcloud
       tags:
         - nextcloud
+
+    - role: photoprism  
+      tags:
+        - photoprism
 
     # - role: nextcloud_2
     #   tags:
