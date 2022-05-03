@@ -72,6 +72,7 @@
     devices:
       - "/dev/dri/renderD128:/dev/dri/renderD128" # Intel GPU
     volumes:
+    # Would have to use real nextcloud path instead of mergefs
       - "{{ mergerfs_root }}/Nextcloud/{{ username }}/files/Photos:/photoprism/originals"
       - "{{ docker_dir }}/{{ container_name }}/storage:/photoprism/storage"
     restart_policy: unless-stopped

@@ -12,7 +12,7 @@
 - name: Create a nextcloud network
   docker_network:
     name: nextcloud_network
-      # enable_ipv6: yes
+      enable_ipv6: yes
 
 - name: Create a nextcloud_html if it does not exist
   ansible.builtin.file:
@@ -104,6 +104,7 @@
 #   register: output
 
 
+# Lets try to start without docker compose
 - name: Make sure - NextCloud container is created and running
   docker_container:
     container_default_behavior: compatibility

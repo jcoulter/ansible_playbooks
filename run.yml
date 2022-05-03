@@ -19,9 +19,9 @@
       tags:
         - nextcloud
 
-    - role: photoprism  
+    - role: jellyfin  
       tags:
-        - photoprism
+        - jellyfin
 
     # - role: nextcloud_2
     #   tags:

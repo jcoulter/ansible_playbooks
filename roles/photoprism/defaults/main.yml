@@ -1,4 +1,11 @@
 container_name: photoprism
+mysql_db: "nextcloud_db"
+
+mysql_user: "nextcloud"
+mysql_root_password: "nextcloud_root"
+mysql_password: "nextcloud"
+
+docker_dir: /opt/docker/data
 
 url: "photoprism.{{ host_local }}"
 
