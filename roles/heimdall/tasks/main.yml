@@ -1,12 +1,12 @@
 ---
----
-- name: Make sure the prowlarr container is created and running
+- name: Make sure the heimdall container is created and running
   become: yes
   docker_container:
-    image: "ghcr.io/linuxserver/prowlarr:develop"
-    name: "prowlarr"
+    image: "ghcr.io/linuxserver/heimdall"
+    name: "heimdall"
     ports:
-      - 9696:9696
+      - 49154:80
+      - 49155:443
     pull: yes
     state: 'started'
     # environment:
@@ -14,5 +14,5 @@
     #   - PGID=1000
     #   - TZ=Europe/Madrid
     volumes:
-      - ./prowlarr_config:/config
+      - ./heimdall_config:/config
     restart_policy: unless-stopped

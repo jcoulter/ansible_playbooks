@@ -23,7 +23,10 @@
       tags:
         - nextcloud
 
-    - role: jellyfin
+    - role: heimdall  
+      tags:
+        - heimdall
+
     - role: jellyfin  
       tags:
         - containers
@@ -38,6 +41,11 @@
       tags:
         - containers
         - radarr
+
+    - role: bazarr  
+      tags:
+        - containers
+        - bazarr
 
     - role: prowlarr  
       tags:

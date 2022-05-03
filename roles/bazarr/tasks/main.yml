@@ -1,0 +1,20 @@
+---
+- name: Make sure the bazarr container is created and running
+  become: yes
+  docker_container:
+    image: "ghcr.io/linuxserver/bazarr"
+    name: "bazarr"
+    ports:
+      - 6767:6767
+    pull: yes
+    state: 'started'
+    # environment:
+    #   - PUID=1000
+    #   - PGID=1000
+    #   - TZ=Europe/Madrid
+    volumes:
+      - ./bazarr_config:/config
+      - "{{ data_root }}/media/movies:/movies"
+      - "{{ data_root }}/media/anime:/anime"
+      - "{{ data_root }}/media/tvshows:/tvshows"
+    restart_policy: unless-stopped
