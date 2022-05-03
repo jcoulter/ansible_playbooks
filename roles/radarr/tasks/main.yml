@@ -1,0 +1,21 @@
+---
+- name: Make sure the radarr container is created and running
+  become: yes
+  docker_container:
+    image: "ghcr.io/linuxserver/radarr"
+    name: "radarr"
+    ports:
+      - 7878:7878
+    pull: yes
+    state: 'started'
+    # environment:
+    #   - PUID=1000
+    #   - PGID=1000
+    #   - TZ=Europe/Madrid
+    volumes:
+      - ./radarr_config:/config
+      - "{{ mergerfs_root }}/data/media/anime:/anime"
+      - "{{ mergerfs_root }}/data/media/tvshows:/tvshows"
+      - "{{ mergerfs_root }}/data/transmission/downloads/complete:/downloads/complete"
+    restart_policy: unless-stopped
+

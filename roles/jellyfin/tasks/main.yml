@@ -16,11 +16,11 @@
       - intel-media-va-driver-non-free
     state: present
 
-- name: Make sure the {{ container_name }} container is created and running
+- name: Make sure the jellyfin container is created and running
   become: yes
   docker_container:
     image: "ghcr.io/linuxserver/jellyfin"
-    name: "{{ container_name }}"
+    name: "jellyfin"
     # network_mode: "host"
     ports:
       - 8096:8096
@@ -50,3 +50,4 @@
       # - "{{ mergerfs_root }}/Media/Movies:/data/Movies"
       # - "/etc/localtime:/etc/localtime:ro"
     restart_policy: unless-stopped
+

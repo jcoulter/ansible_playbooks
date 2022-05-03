@@ -1,0 +1,20 @@
+---
+- name: Make sure the sonarr container is created and running
+  become: yes
+  docker_container:
+    image: "ghcr.io/linuxserver/sonarr"
+    name: "sonarr"
+    ports:
+      - 8989:8989
+    pull: yes
+    state: 'started'
+    # environment:
+    #   - PUID=1000
+    #   - PGID=1000
+    #   - TZ=Europe/Madrid
+    volumes:
+      - ./sonarr_config:/config
+      - "{{ mergerfs_root }}/data/media/anime:/anime"
+      - "{{ mergerfs_root }}/data/media/tvshows:/tvshows"
+      - "{{ mergerfs_root }}/data/transmission/downloads/complete:/downloads/complete"
+    restart_policy: unless-stopped

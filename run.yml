@@ -23,6 +23,15 @@
       tags:
         - jellyfin
 
-    # - role: nextcloud_2
-    #   tags:
-    #     - nextcloud_2
+    - role: sonarr  
+      tags:
+        - sonarr
+
+    - role: radarr  
+      tags:
+        - radarr
+
+        # TODO: wrap up the media suite and verify that it can be served
+        # Store it on nfs mount to  nas
+        
+        # https://www.fuzzygrim.com/posts/selfhosted-setup
