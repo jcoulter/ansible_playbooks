@@ -1,0 +1,19 @@
+---
+- name: Make sure the prowlarr container is created and running
+  become: yes
+  docker_container:
+    image: "ghcr.io/linuxserver/prowlarr:develop"
+    name: "prowlarr"
+    ports:
+      - 9696:9696
+    pull: yes
+    state: 'started'
+    # environment:
+    #   - PUID=1000
+    #   - PGID=1000
+    #   - TZ=Europe/Madrid
+    volumes:
+      - ./prowlarr_config:/config
+    restart_policy: unless-stopped
+
+    # image: linuxserver/prowlarr:develop

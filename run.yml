@@ -6,6 +6,10 @@
     - role: user_setup
       tags:
         - user_setup
+  
+    - role: vpn
+      tags:
+        - vpn 
 
     - role: nfs
       tags:
@@ -19,17 +23,39 @@
       tags:
         - nextcloud
 
+    - role: jellyfin
     - role: jellyfin  
       tags:
+        - containers
         - jellyfin
 
     - role: sonarr  
       tags:
+        - containers
         - sonarr
 
     - role: radarr  
       tags:
+        - containers
         - radarr
+
+    - role: prowlarr  
+      tags:
+        - prowlarr
+
+    - role: transmission  
+      tags:
+        - transmission
+
+# sonarr if for tv
+# radarr is for movies
+# filebot renames so jellyfin can serve appropriately (not free)
+# utorrent 
+
+#deluge
+
+
+# indexer 
 
         # TODO: wrap up the media suite and verify that it can be served
         # Store it on nfs mount to  nas

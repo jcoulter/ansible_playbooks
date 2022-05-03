@@ -1,0 +1,20 @@
+---
+- name: Make sure the sonarr container is created and running
+  become: yes
+  docker_container:
+    image: "ghcr.io/linuxserver/transmission"
+    name: "transmission"
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    pull: yes
+    state: 'started'
+    # environment:
+    #   - PUID=1000
+    #   - PGID=1000
+    #   - TZ=Europe/Madrid
+    volumes:
+      - ./transmission:/config
+      - "{{ data_root }}/transmission/downloads:/downloads"
+    restart_policy: unless-stopped

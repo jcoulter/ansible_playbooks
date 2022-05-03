@@ -28,3 +28,19 @@
     fstype: nfs
     opts: "{{ myopts }}"
     state: mounted
+
+- name: check data_mountpoint exist
+  ansible.builtin.file:
+    path: "{{ data_mountpoint }}"
+    state: directory
+    mode: "{{ data_permission }}"
+    owner: root
+    group: docker
+
+- name: mount data network share
+  ansible.posix.mount:
+    src: "{{ data_nfs }}"
+    path: "{{ data_mountpoint }}"
+    fstype: nfs
+    opts: "{{ data_opts }}"
+    state: mounted
