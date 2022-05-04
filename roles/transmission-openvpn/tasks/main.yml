@@ -1,0 +1,45 @@
+---
+# version: '3.3'
+# services:
+#     transmission-openvpn:
+#         cap_add:
+#             - NET_ADMIN
+#         volumes:
+#         environment:
+#             - OPENVPN_PROVIDER=SURFSHARK
+#             - OPENVPN_CONFIG=us
+#             - OPENVPN_USERNAME=user
+#             - OPENVPN_PASSWORD=pass
+#             - LOCAL_NETWORK=192.168.0.0/16
+#         logging:
+#             driver: json-file
+#             options:
+#                 max-size: 10m
+#         ports:
+#             - '9091:9091'
+#         image: 
+
+- name: Make sure the transmission vpn container is created and running
+  become: yes
+  docker_container:
+    image: "haugene/transmission-openvpn"
+    name: "transmission-openvpn"
+    capabilities:
+      - NET_ADMIN
+    ports:
+      - '9091:9091'
+    pull: yes
+    state: 'started'
+    env:
+      OPENVPN_PROVIDER: SURFSHARK
+      OPENVPN_CONFIG: us-atl_udp
+      OPENVPN_USERNAME: "{{ vpn_username }}"
+      OPENVPN_PASSWORD: "{{ vpn_password }}"
+      LOCAL_NETWORK: 192.168.0.0/16
+    # environment:
+      # - PUID=1000
+      # - PGID=1000
+    #   - TZ=Europe/Madrid
+    volumes:
+      - "{{ data_root }}:/data"
+    restart_policy: unless-stopped

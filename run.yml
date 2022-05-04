@@ -7,9 +7,13 @@
       tags:
         - user_setup
   
-    - role: vpn
-      tags:
-        - vpn 
+    # - role: vpn
+    #   tags:
+    #     - vpn
+
+    # - role: deluge
+    #   tags:
+    #     - deluge 
 
     - role: nfs
       tags:
@@ -42,26 +46,37 @@
         - containers
         - radarr
 
-    - role: bazarr  
+    - role: portainer  
       tags:
         - containers
-        - bazarr
+        - portainer
+
+    # - role: bazarr  
+    #   tags:
+    #     - containers
+    #     - bazarr
 
     - role: prowlarr  
       tags:
         - prowlarr
 
-    - role: transmission  
+    # - role: transmission  
+    #   tags:
+    #     - transmission
+
+    - role: transmission-openvpn 
       tags:
-        - transmission
+        - transmission-openvpn
 
 # sonarr if for tv
 # radarr is for movies
 # filebot renames so jellyfin can serve appropriately (not free)
 # utorrent 
 
-#deluge
+#deluge ?
 
+# TODO: add portainer
+# TODO: add gleutun vpn for transmission and prowlarr
 
 # indexer 
 

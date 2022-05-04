@@ -1,5 +1,4 @@
 ---
----
 - name: Make sure the prowlarr container is created and running
   become: yes
   docker_container:

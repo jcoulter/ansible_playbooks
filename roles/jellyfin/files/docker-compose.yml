@@ -4,7 +4,7 @@ services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin
     container_name: jellyfin
-    # environment:
+    nv:
       # - PUID=1000
       # - PGID=1000
       # - TZ=Europe/London

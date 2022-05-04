@@ -32,22 +32,22 @@
     # devices:
     #   - "/dev/dri/renderD128:/dev/dri/renderD128"
     state: 'started'
-    # env:
-      # "DOCKER_MODS": "linuxserver/mods:jellyfin-opencl-intel"
+    env:
+      "DOCKER_MODS": "linuxserver/mods:jellyfin-opencl-intel"
       # "PUID": "{{ guid }}"
       # "PGID": "{{ guid }}"
       # "TZ": "{{ timezone }}"
-      # "VERSION": "latest"
+      "VERSION": "latest"
     volumes:
-      - "{{ mergerfs_root }}/config:/config"
-      - "{{ mergerfs_root }}/tvshows:/data/tvshows"
-      - "{{ mergerfs_root }}/movies:/data/movies"
+      - ./jellyfin_config:/config
+      - "{{ data_root }}/tvshows:/data/tvshows"
+      - "{{ data_root }}/movies:/data/movies"
       # - "{{ docker_dir }}/{{ container_name }}:/config"
-      # - "{{ mergerfs_root }}/Media/TV:/data/TV"
-      # - "{{ mergerfs_root }}_slow/Media/Transcodes:/config/data/transcodes"
-      # - "{{ mergerfs_root }}/Media/Metadata:/metadata"
-      # - "{{ mergerfs_root }}/Media/Cache:/data/Cache"
+      # - "{{ data_root }}/Media/TV:/data/TV"
+      - "{{ data_root }}_slow/Media/Transcodes:/config/data/transcodes"
+      - "{{ data_root }}/metadata:/metadata"
+      - "{{ data_root }}/cache:/data/Cache"
       # - "{{ mergerfs_root }}/Media/Movies:/data/Movies"
-      # - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/localtime:/etc/localtime:ro"
     restart_policy: unless-stopped
 

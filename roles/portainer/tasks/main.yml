@@ -1,0 +1,23 @@
+---
+- name: Make sure the portainer container is created and running
+  become: yes
+  docker_container:
+    image: portainer/portainer-ce
+    name: portainer
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    pull: yes
+    state: 'started'
+    # environment:
+    #   - PUID=1000
+    #   - PGID=1000
+    #   - TZ=Europe/Madrid
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "{{ data_root }}/portainer_data:/data"
+    restart_policy: unless-stopped
+
+    # recreate: yes
+
+

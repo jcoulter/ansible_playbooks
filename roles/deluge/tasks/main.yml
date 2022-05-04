@@ -1,0 +1,21 @@
+---
+- name: Make sure the deluge container is created and running
+  become: yes
+  docker_container:
+    image: "ghcr.io/linuxserver/deluge"
+    name: "deluge"
+    ports:
+      - 8112:8112
+      - 6881:6881
+      - 6881:6881/udp
+    pull: yes
+    state: 'started'
+    # env:
+    #   - PUID=1000
+    #   - PGID=1000
+    #   - TZ=Europe/Madrid
+      # - DELUGE_LOGLEVEL=error #optional
+    volumes:
+      - ./deluge_config:/config
+      - "{{ data_root }}/downloads:/downloads"
+    restart_policy: unless-stopped
