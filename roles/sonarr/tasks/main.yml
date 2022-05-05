@@ -4,14 +4,17 @@
   docker_container:
     image: "ghcr.io/linuxserver/sonarr"
     name: "sonarr"
+    networks:
+      - name: media_network
+        ipv4_address: "{{ sonarr_ip }}"
     ports:
       - 8989:8989
     pull: yes
     state: 'started'
-    # environment:
-    #   - PUID=1000
-    #   - PGID=1000
-    #   - TZ=Europe/Madrid
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
     volumes:
       - ./sonarr_config:/config
       - "{{ data_root }}/media/anime:/anime"

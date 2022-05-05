@@ -4,10 +4,6 @@
     src:  ../files/ #docker-compose.yml
     dest: jellyfin # "{{ playbook_dir }}/" #/tmp/files/
 
-- name: Create a docker network
-  docker_network:
-    name: dockernet
-
 - name: Make sure that QuickSync packages are installed
   become: yes
   package:
@@ -24,6 +20,9 @@
     # network_mode: "host"
     ports:
       - 8096:8096
+    networks:
+      - name: media_network
+        ipv4_address: "{{ jellyfin_ip }}"
     # networks:
     #   - name: swag_internal_macvlan
     #     ipv4_address: "{{ ip_address }}"
@@ -34,13 +33,14 @@
     state: 'started'
     env:
       "DOCKER_MODS": "linuxserver/mods:jellyfin-opencl-intel"
-      # "PUID": "{{ guid }}"
-      # "PGID": "{{ guid }}"
-      # "TZ": "{{ timezone }}"
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
       "VERSION": "latest"
     volumes:
       - ./jellyfin_config:/config
       - "{{ data_root }}/tvshows:/data/tvshows"
+      - "{{ data_root }}/media/anime:/data/anime"
       - "{{ data_root }}/movies:/data/movies"
       # - "{{ docker_dir }}/{{ container_name }}:/config"
       # - "{{ data_root }}/Media/TV:/data/TV"

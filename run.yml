@@ -28,9 +28,9 @@
       tags:
         - docker
 
-    - role: gluetun  
-      tags:
-        - gluetun
+    # - role: gluetun  
+    #   tags:
+    #     - gluetun
 
     - role: nextcloud
       tags:
@@ -60,10 +60,10 @@
         - containers
         - portainer
 
-    # - role: bazarr  
-    #   tags:
-    #     - containers
-    #     - bazarr
+    - role: bazarr  
+      tags:
+        - containers
+        - bazarr
 
     - role: prowlarr  
       tags:
@@ -72,6 +72,10 @@
     - role: transmission  
       tags:
         - transmission
+
+    - role: plex  
+      tags:
+        - plex
 
     # - role: transmission-openvpn 
     #   tags:

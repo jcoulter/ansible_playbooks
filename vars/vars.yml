@@ -3,6 +3,20 @@ data_root: /mnt/data
 docker_dir: /opt/docker/data
 
 docker_dir: /opt/docker/data
+
+puid: '1000'
+pgid: '1000'
 timezone: "America/New_York"
 created_username: jcoulter
 data_root: "/mnt/data"
+
+media_subnet: 172.18.0.0/24
+heimdall_ip: 172.18.0.2
+jellyfin_ip: 172.18.0.3
+sonarr_ip: 172.18.0.4
+radarr_ip: 172.18.0.5
+prowlarr_ip: 172.18.0.6
+portainer_ip: 172.18.0.7
+transmission_ip: 172.18.0.8
+bazarr_ip: 172.18.0.9
+plex_ip: 172.18.0.10

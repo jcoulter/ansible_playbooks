@@ -4,16 +4,20 @@
   docker_container:
     image: "ghcr.io/linuxserver/transmission"
     name: "transmission"
-    ports:
+    networks:
+      - name: media_network
+        ipv4_address: "{{ transmission_ip }}"
+    ports: # handled by gluetun?
       - 9091:9091
       - 51413:51413
       - 51413:51413/udp
     pull: yes
+    # network_mode: "container:gluetun"
     state: 'started'
-    # environment:
-    #   - PUID=1000
-    #   - PGID=1000
-    #   - TZ=Europe/Madrid
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
     volumes:
       - ./transmission:/config
       - "{{ data_root }}/transmission/downloads:/downloads"

@@ -4,14 +4,17 @@
   docker_container:
     image: "ghcr.io/linuxserver/bazarr"
     name: "bazarr"
+    networks:
+      - name: media_network
+        ipv4_address: "{{ bazarr_ip }}"
     ports:
       - 6767:6767
     pull: yes
     state: 'started'
-    # environment:
-    #   - PUID=1000
-    #   - PGID=1000
-    #   - TZ=Europe/Madrid
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
     volumes:
       - ./bazarr_config:/config
       - "{{ data_root }}/media/movies:/movies"

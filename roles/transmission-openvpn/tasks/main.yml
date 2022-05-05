@@ -36,10 +36,9 @@
       OPENVPN_USERNAME: "{{ vpn_username }}"
       OPENVPN_PASSWORD: "{{ vpn_password }}"
       LOCAL_NETWORK: 192.168.0.0/16
-    # environment:
-      # - PUID=1000
-      # - PGID=1000
-    #   - TZ=Europe/Madrid
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
     volumes:
       - "{{ data_root }}:/data"
     restart_policy: unless-stopped

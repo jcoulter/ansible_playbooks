@@ -4,15 +4,18 @@
   docker_container:
     image: "ghcr.io/linuxserver/heimdall"
     name: "heimdall"
+    networks:
+      - name: media_network
+        ipv4_address: "{{ heimdall_ip }}"
     ports:
       - 49154:80
       - 49155:443
     pull: yes
     state: 'started'
-    # environment:
-    #   - PUID=1000
-    #   - PGID=1000
-    #   - TZ=Europe/Madrid
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
     volumes:
       - ./heimdall_config:/config
     restart_policy: unless-stopped

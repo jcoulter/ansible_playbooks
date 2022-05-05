@@ -4,14 +4,18 @@
   docker_container:
     image: "ghcr.io/linuxserver/prowlarr:develop"
     name: "prowlarr"
-    ports:
+    networks:
+      - name: media_network
+        ipv4_address: "{{ prowlarr_ip }}"
+    ports: # handled by gluetun?
       - 9696:9696
+    # network_mode: "container:gluetun"
     pull: yes
     state: 'started'
-    # environment:
-    #   - PUID=1000
-    #   - PGID=1000
-    #   - TZ=Europe/Madrid
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
     volumes:
       - ./prowlarr_config:/config
     restart_policy: unless-stopped

@@ -4,15 +4,18 @@
   docker_container:
     image: portainer/portainer-ce
     name: portainer
+    networks:
+      - name: media_network
+        ipv4_address: "{{ portainer_ip }}"
     ports:
       - "8000:8000"
       - "9000:9000"
     pull: yes
     state: 'started'
-    # environment:
-    #   - PUID=1000
-    #   - PGID=1000
-    #   - TZ=Europe/Madrid
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - "{{ data_root }}/portainer_data:/data"

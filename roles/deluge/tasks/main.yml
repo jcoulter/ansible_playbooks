@@ -10,10 +10,10 @@
       - 6881:6881/udp
     pull: yes
     state: 'started'
-    # env:
-    #   - PUID=1000
-    #   - PGID=1000
-    #   - TZ=Europe/Madrid
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
       # - DELUGE_LOGLEVEL=error #optional
     volumes:
       - ./deluge_config:/config

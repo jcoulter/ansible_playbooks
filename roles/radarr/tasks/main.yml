@@ -4,14 +4,17 @@
   docker_container:
     image: "ghcr.io/linuxserver/radarr"
     name: "radarr"
+    networks:
+      - name: media_network
+        ipv4_address: "{{ radarr_ip }}"
     ports:
       - 7878:7878
     pull: yes
     state: 'started'
-    # environment:
-    #   - PUID=1000
-    #   - PGID=1000
-    #   - TZ=Europe/Madrid
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
     volumes:
       - ./radarr_config:/config
       - "{{ data_root }}/media/anime:/anime"

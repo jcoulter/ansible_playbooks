@@ -66,6 +66,12 @@
     #mode: 'u+x,g+x'
     mode: 755
 
+- name: Create a media network
+  docker_network:
+    name: media_network
+    ipam_options:
+      subnet: "{{ media_subnet }}"
+
 #    - name: Check current docker-compose version
 #      command: docker-compose --version
 #      register: docker_compose_vsn

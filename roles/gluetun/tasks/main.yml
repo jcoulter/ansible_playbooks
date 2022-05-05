@@ -1,5 +1,5 @@
 ---
-- name: Make sure the gluetun "{{ vpn_password }}" container is created and running
+- name: Make sure the gluetun "{{ vpn_username }}" container is created and running
   # become: yes
   docker_container:
     image: "qmcgaw/gluetun"
@@ -9,9 +9,13 @@
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
-      - 8888:8888/tcp # HTTP proxy
-      - 8388:8388/tcp # Shadowsocks
-      - 8388:8388/udp # Shadowsocks
+      - 8888:8888/tcp   # HTTP proxy
+      - 8388:8388/tcp   # Shadowsocks
+      - 8388:8388/udp   # Shadowsocks
+      # - 9091:9091/tcp   # transmission
+      # - 51413:51413/tcp # transmission
+      # - 51413:51413/udp # transmission
+      - 9696:9696   # prowlarr
     pull: yes
     volumes:
       - ./gluetun:/gluetun
@@ -22,7 +26,7 @@
       # OPENVPN_PASSWORD: "{{ vpn_password }}"
       # LOCAL_NETWORK: 192.168.0.0/16
       # See https://github.com/qdm12/gluetun/wiki
-      VPN_SERVICE_PROVIDER: SURFSHARK
+      VPN_SERVICE_PROVIDER: surfshark
       SERVER_REGIONS: US Atlanta
       # VPN_SERVICE_PROVIDER: ivpn
       VPN_TYPE: openvpn
@@ -33,4 +37,6 @@
       # - WIREGUARD_PRIVATE_KEY=wOEI9rqqbDwnN8/Bpp22sVz48T71vJ4fYmFWujulwUU=
       # - WIREGUARD_ADDRESSES=10.64.222.21/32
       # Timezone for accurate log times
-      #- TZ=
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
