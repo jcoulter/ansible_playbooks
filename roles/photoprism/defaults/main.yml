@@ -5,7 +5,6 @@ mysql_user: "nextcloud"
 mysql_root_password: "nextcloud_root"
 mysql_password: "nextcloud"
 
-docker_dir: /opt/docker/data
 
 url: "photoprism.{{ host_local }}"
 
@@ -16,4 +15,4 @@ dashboard_name: "PhotoPrism"
 ip_address: "{{ swag_base }}.4"
 
 
-timezone: "America/New_York"
+

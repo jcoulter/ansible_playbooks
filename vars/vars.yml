@@ -1,0 +1,8 @@
+---
+data_root: /mnt/data
+docker_dir: /opt/docker/data
+
+docker_dir: /opt/docker/data
+timezone: "America/New_York"
+created_username: jcoulter
+data_root: "/mnt/data"
