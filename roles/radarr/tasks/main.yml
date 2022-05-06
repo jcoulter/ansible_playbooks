@@ -17,6 +17,7 @@
       TZ: "{{ timezone }}"
     volumes:
       - ./radarr_config:/config
+      - "{{ data_root }}/media/movies:/movies"
       - "{{ data_root }}/media/anime:/anime"
       - "{{ data_root }}/media/tvshows:/tvshows"
       - "{{ data_root }}/transmission/downloads/complete:/downloads/complete"

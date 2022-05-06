@@ -4,6 +4,9 @@
   docker_container:
     image: "ghcr.io/linuxserver/deluge"
     name: "deluge"
+    networks:
+      - name: media_network
+        ipv4_address: "{{ deluge_ip }}"
     ports:
       - 8112:8112
       - 6881:6881
@@ -17,5 +20,5 @@
       # - DELUGE_LOGLEVEL=error #optional
     volumes:
       - ./deluge_config:/config
-      - "{{ data_root }}/downloads:/downloads"
+      - "{{ data_root }}/deluge/downloads:/downloads"
     restart_policy: unless-stopped

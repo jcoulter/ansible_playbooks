@@ -1,11 +1,55 @@
 ---
+# - name: Make sure the plex container is created and running
+#   become: yes
+#   docker_container:
+#     image: "ghcr.io/linuxserver/plex:latest"
+#     name: "plex"
+#     ports:
+#       - 32400:32400
+#     networks:
+#       - name: media_network
+#         ipv4_address: "{{ plex_ip }}"
+#     # networks:
+#     #   - name: swag_internal_macvlan
+#     #     ipv4_address: "{{ ip_address }}"
+#     pull: yes
+#     # privileged: yes
+#     devices:
+#       /dev/dri:/dev/dri
+#     #   - "/dev/dri/renderD128:/dev/dri/renderD128"
+#     state: 'started'
+#     env:
+#       PUID: "{{ puid }}"
+#       PGID: "{{ pgid }}"
+#       TZ: "{{ timezone }}"
+#       "VERSION": docker
+#       # - PLEX_CLAIM= #optional
+#     volumes:
+#       - ./plex_config:/config
+#       # - "{{ data_root }}/tvshows:/data/tvshows"
+#       - "{{ data_root }}/media/anime:/data/anime"
+#       - "{{ data_root }}/media/tvshows:/data/tv"
+#       - "{{ data_root }}/media/movies:/movies"
+#       - "/etc/localtime:/etc/localtime:ro"
+#     restart_policy: unless-stopped
+
+
 - name: Make sure the plex container is created and running
   become: yes
   docker_container:
-    image: "ghcr.io/linuxserver/plex:latest"
+    image: "plexinc/pms-docker"
     name: "plex"
     ports:
-      - 32400:32400
+      # - 32400:32400
+      - 32400:32400/tcp
+      - 3005:3005/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
     networks:
       - name: media_network
         ipv4_address: "{{ plex_ip }}"
@@ -23,12 +67,11 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
       "VERSION": docker
+      ADVERTISE_IP: "http://{{ plex_ip }}:32400/"
       # - PLEX_CLAIM= #optional
     volumes:
       - ./plex_config:/config
-      # - "{{ data_root }}/tvshows:/data/tvshows"
-      - "{{ data_root }}/media/anime:/data/anime"
-      - "{{ data_root }}/media/tvshows:/data/tv"
-      - "{{ data_root }}/media/movies:/movies"
+      - "{{ data_root }}/transcode:/transcode"
+      - "{{ data_root }}/media:/data"
       - "/etc/localtime:/etc/localtime:ro"
     restart_policy: unless-stopped
