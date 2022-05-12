@@ -16,9 +16,9 @@
     #   tags:
     #     - vpn
 
-    - role: deluge
-      tags:
-        - deluge 
+    # - role: deluge
+    #   tags:
+    #     - deluge 
 
     - role: qbittorrent
       tags:

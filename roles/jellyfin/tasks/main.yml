@@ -39,9 +39,9 @@
       "VERSION": "latest"
     volumes:
       - ./jellyfin_config:/config
-      - "{{ data_root }}/tvshows:/data/tvshows"
+      - "{{ data_root }}/media/tvshows:/data/tvshows"
       - "{{ data_root }}/media/anime:/data/anime"
-      - "{{ data_root }}/movies:/data/movies"
+      - "{{ data_root }}/media/movies:/data/movies"
       # - "{{ docker_dir }}/{{ container_name }}:/config"
       # - "{{ data_root }}/Media/TV:/data/TV"
       - "{{ data_root }}_slow/Media/Transcodes:/config/data/transcodes"
