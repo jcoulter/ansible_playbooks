@@ -59,6 +59,16 @@
         - containers
         - radarr
 
+    - role: lidarr  
+      tags:
+        - containers
+        - lidarr
+
+    - role: readarr  
+      tags:
+        - containers
+        - readarr
+
     - role: portainer  
       tags:
         - containers

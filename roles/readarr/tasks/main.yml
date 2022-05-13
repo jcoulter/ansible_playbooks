@@ -1,0 +1,23 @@
+---
+- name: Make sure the readarr container is created and running
+  become: yes
+  docker_container:
+    image: "ghcr.io/linuxserver/readarr:develop"
+    name: "readarr"
+    networks:
+      - name: media_network
+        ipv4_address: "{{ readarr_ip }}"
+    ports:
+      - 8787:8787
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - /path/to/downloadclient-downloads:/downloads #optional
+      - ./readarr_config:/config
+      - "{{ data_root }}/media/books:/books"
+      - "{{ data_root }}/transmission/downloads/complete:/downloads/complete"
+    restart_policy: unless-stopped
