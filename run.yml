@@ -83,17 +83,18 @@
       tags:
         - prowlarr
 
-    - role: transmission  
-      tags:
-        - transmission
+    # - role: transmission  
+    #   tags:
+    #     - transmission
 
     - role: plex  
       tags:
         - plex
 
-    # - role: transmission-openvpn 
-    #   tags:
-    #     - transmission-openvpn
+    - role: transmission-openvpn 
+      tags:
+        - transmission-openvpn
+        - transmission
 
 # sonarr if for tv
 # radarr is for movies
