@@ -1,0 +1,21 @@
+---
+- name: Make sure the vaultwarden container is created and running
+  become: yes
+  docker_container:
+    image: "vaultwarden/server:latest"
+    name: "vaultwarden"
+    # networks:
+      # - name: media_network
+        # ipv4_address: "{{ sonarr_ip }}"
+    ports:
+      - 8086:80
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      WEBSOCKET_ENABLED: "true" # Enable WebSocket notifications.
+    volumes:
+      - "{{ data_root }}/vw_data:/data"
+      - ./vaultwarden_config:/config
+    restart_policy: unless-stopped

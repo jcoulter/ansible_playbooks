@@ -20,10 +20,6 @@
     #   tags:
     #     - deluge 
 
-    - role: qbittorrent
-      tags:
-        - qbittorrent 
-
     - role: nfs
       tags:
         - nfs 
@@ -87,9 +83,17 @@
       tags:
         - transmission
 
-    - role: plex  
+    - role: vaultwarden  
       tags:
-        - plex
+        - vaultwarden
+
+       # - role: qbittorrent
+    #   tags:
+    #     - qbittorrent 
+
+    # - role: plex  
+    #   tags:
+    #     - plex
 
     # - role: transmission-openvpn 
     #   tags:
