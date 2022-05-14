@@ -1,14 +1,23 @@
 ---
+# version: '3.3'
+# services:
+#     transmission-openvpn:
+#         cap_add:
+#             - NET_ADMIN
+#         volumes:
 #         environment:
 #             - OPENVPN_PROVIDER=SURFSHARK
 #             - OPENVPN_CONFIG=us
 #             - OPENVPN_USERNAME=user
 #             - OPENVPN_PASSWORD=pass
 #             - LOCAL_NETWORK=192.168.0.0/16
-
-# sjArCtNmc7B3AyGy95ZumT   -e OPENVPN_PASSWORD=SgzKP9xRLzzEj9f6knxHc4qU   -
-# e DISABLE_PORT_UPDATER=true   haugene/transmission-openvpn               
-
+#         logging:
+#             driver: json-file
+#             options:
+#                 max-size: 10m
+#         ports:
+#             - '9091:9091'
+#         image: 
 
 - name: Make sure the transmission vpn container is created and running
   become: yes
@@ -17,19 +26,13 @@
     name: "transmission-openvpn"
     capabilities:
       - NET_ADMIN
-    networks:
-      - name: media_network
-        ipv4_address: "{{ transmission_ip }}"
     ports:
-      - 9091:9091
-      - 51413:51413
-      - 51413:51413/udp
+      - '9091:9091'
     pull: yes
-    restart_policy: unless-stopped
     state: 'started'
     env:
       OPENVPN_PROVIDER: SURFSHARK
-      OPENVPN_CONFIG: us-dtw_udp
+      OPENVPN_CONFIG: us-atl_udp
       OPENVPN_USERNAME: "{{ vpn_username }}"
       OPENVPN_PASSWORD: "{{ vpn_password }}"
       LOCAL_NETWORK: 192.168.0.0/16
@@ -37,9 +40,5 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     volumes:
-      - ./transmission:/config
-      - "{{ data_root }}/transmission/downloads:/downloads"
-      # - /etc/openvpn:/etc/openvpn
-      # - "{{ data_root }}:/data"
-      # - /etc/openvpn/us-dtw.prod.surfshark.com_udp.ovpn:/etc/openvpn/custom/default.ovpn
-
+      - "{{ data_root }}:/data"
+    restart_policy: unless-stopped
