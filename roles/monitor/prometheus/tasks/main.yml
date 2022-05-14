@@ -1,0 +1,22 @@
+---
+- name: Make sure the prometheus container is created and running
+  become: yes
+  docker_container:
+    image: "prom/prometheus"
+    name: "prometheus"
+    # user: "1000"
+    networks:
+      - name: media_network
+        ipv4_address: "{{ prometheus_ip }}"
+    ports:
+      - '9080:9090'
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ data_root }}/prometheus:/etc/prometheus"
+    command: -config.file=/etc/promtail/promtail-config.yml
+    restart_policy: unless-stopped

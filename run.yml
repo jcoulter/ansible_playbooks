@@ -92,6 +92,26 @@
         - services
         - vaultwarden
 
+    - role:  monitor/loki  
+      tags:
+        - monitor
+        - loki
+        
+    - role:  monitor/prometheus  
+      tags:
+        - monitor
+        - prometheus
+
+    - role:  monitor/promtail  
+      tags:
+        - monitor
+        - promtail
+
+    - role:  monitor/grafana  
+      tags:
+        - monitor
+        - grafana
+
 
     # - role: media/plex  
     #   tags:

@@ -1,0 +1,30 @@
+---
+
+# find a better netdata install mechanism
+# - name: install netdata.io
+#   ansible.builtin.command:
+#     cmd: bash <(curl -Ss https://my-netdata.io/kickstart.sh)
+    # creates: us-atl.prod.surfshark.com_tcp.ovpn
+
+# bash <(curl -Ss https://my-netdata.io/kickstart.sh)
+- name: Make sure the grafana container is created and running
+  become: yes
+  docker_container:
+    image: "grafana/promtail:2.4.0"
+    name: "promtail"
+    # user: "1000"
+    networks:
+      - name: media_network
+        ipv4_address: "{{ grafana_ip }}"
+    ports:
+      - "3000:3000"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ data_root }}/grafana:/var/lin/grafana"
+    command: -config.file=/etc/promtail/promtail-config.yml
+    restart_policy: unless-stopped

@@ -1,0 +1,21 @@
+---
+- name: Make sure the loki container is created and running
+  become: yes
+  docker_container:
+    image: "grafana/loki:2.4.0"
+    name: "loki"
+    networks:
+      - name: media_network
+        ipv4_address: "{{ loki_ip }}"
+    ports:
+      - "3100:3100"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ data_root }}/loki:/etc/loki"
+    command: -config.file=/etc/loki/loki-config.yml
+    restart_policy: unless-stopped

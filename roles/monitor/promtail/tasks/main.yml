@@ -1,0 +1,23 @@
+---
+- name: Make sure the promtail container is created and running
+  become: yes
+  docker_container:
+    image: "grafana/promtail:2.4.0"
+    name: "promtail"
+    # user: "1000"
+    networks:
+      - name: media_network
+        ipv4_address: "{{ promtail_ip }}"
+    ports:
+      - "3100:3100"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - /var/log:/var/log
+      - "{{ data_root }}/promtail:/etc/promtail"
+    command: -config.file=/etc/promtail/promtail-config.yml
+    restart_policy: unless-stopped
