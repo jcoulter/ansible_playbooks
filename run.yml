@@ -8,102 +8,99 @@
   become: true
 
   roles:
-    - role: user_setup
+    - role: setup/user_setup
       tags:
+        - setup
         - user_setup
   
-    # - role: vpn
-    #   tags:
-    #     - vpn
-
-    # - role: deluge
-    #   tags:
-    #     - deluge 
-
-    - role: nfs
+    - role: setup/nfs
       tags:
+        - setup
         - nfs 
 
-    - role: docker
+    - role: setup/docker
       tags:
+        - setup
         - docker
 
-    # - role: gluetun  
-    #   tags:
-    #     - gluetun
-
-    - role: nextcloud
+    - role: services/nextcloud
       tags:
+        - services
         - nextcloud
 
     - role: heimdall  
       tags:
+        - services
         - heimdall
 
-    - role: jellyfin  
+    - role: media/jellyfin  
       tags:
+        - media
         - containers
         - jellyfin
 
-    - role: sonarr  
+    - role: arr/sonarr  
       tags:
+        - arr
         - containers
         - sonarr
 
-    - role: radarr  
+    - role: arr/radarr  
       tags:
+        - arr
         - containers
         - radarr
 
-    - role: lidarr  
+    - role: arr/lidarr  
       tags:
+        - arr
         - containers
         - lidarr
 
-    - role: readarr  
+    - role: arr/readarr  
       tags:
+        - arr
         - containers
         - readarr
 
-    - role: portainer  
+    - role: services/portainer  
       tags:
+        - arr
         - containers
         - portainer
 
-    - role: bazarr  
+    - role: arr/bazarr  
       tags:
+        - arr
         - containers
         - bazarr
 
-    - role: prowlarr  
+    - role: arr/prowlarr  
       tags:
+        - arr
+        - containers
         - prowlarr
 
-    - role: transmission  
+    - role: arr/transmission  
       tags:
+        - arr
+        - containers
         - transmission
 
-    - role: vaultwarden  
+    - role: services/vaultwarden  
       tags:
+        - services
         - vaultwarden
 
-       # - role: qbittorrent
-    #   tags:
-    #     - qbittorrent 
 
-    # - role: plex  
+    # - role: media/plex  
     #   tags:
+    #     - media
     #     - plex
 
     # - role: transmission-openvpn 
     #   tags:
     #     - transmission-openvpn
-
-# sonarr if for tv
-# radarr is for movies
-# filebot renames so jellyfin can serve appropriately (not free)
-# utorrent 
-
 
 # TODO: wire containers through gluetun 
 
