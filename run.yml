@@ -112,6 +112,10 @@
         - monitor
         - grafana
 
+    - role:  homeassistant  
+      tags:
+        - homeassistant
+
 
     # - role: media/plex  
     #   tags:
