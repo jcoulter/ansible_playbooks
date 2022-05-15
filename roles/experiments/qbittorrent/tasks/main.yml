@@ -19,6 +19,6 @@
       TZ: "{{ timezone }}"
       WEBUI_PORT: "8080"
     volumes:
-      - ./qbittorrent_config:/config
+      - "{{ config_root }}/qbittorrent_config:/config"
       - "{{ data_root }}/qbittorrent/downloads:/downloads"
     restart_policy: unless-stopped

@@ -19,6 +19,6 @@
       TZ: "{{ timezone }}"
       # - DELUGE_LOGLEVEL=error #optional
     volumes:
-      - ./deluge_config:/config
+      - "{{ config_root }}/deluge_config:/config"
       - "{{ data_root }}/deluge/downloads:/downloads"
     restart_policy: unless-stopped

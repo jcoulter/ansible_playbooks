@@ -9,6 +9,7 @@ pgid: '1000'
 timezone: "America/New_York"
 created_username: jcoulter
 data_root: "/mnt/data"
+config_root: "/mnt/data/config"
 
 media_subnet: 172.18.0.0/24
 heimdall_ip: 172.18.0.2

@@ -16,7 +16,8 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     volumes:
-      - ./bazarr_config:/config
+      - "{{ config_root }}/bazarr_config:/config"
+      
       - "{{ data_root }}/media/movies:/movies"
       - "{{ data_root }}/media/anime:/anime"
       - "{{ data_root }}/media/tvshows:/tvshows"

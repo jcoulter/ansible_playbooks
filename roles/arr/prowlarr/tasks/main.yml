@@ -17,5 +17,5 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     volumes:
-      - ./prowlarr_config:/config
+      - "{{ config_root }}/prowlarr_config:/config"
     restart_policy: unless-stopped

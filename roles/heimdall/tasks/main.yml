@@ -17,5 +17,5 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     volumes:
-      - ./heimdall_config:/config
+      - "{{ config_root }}/heimdall_config:/config"
     restart_policy: unless-stopped

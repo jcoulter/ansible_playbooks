@@ -23,6 +23,6 @@
       TRANSMISSION_RATIO_LIMIT_ENABLED: "true"
       TRANSMISSION_DOWNLOAD_QUEUE_SIZE: "10"
     volumes:
-      - ./transmission:/config
+      - "{{ config_root }}/transmission:/config"
       - "{{ data_root }}/transmission/downloads:/downloads"
     restart_policy: unless-stopped

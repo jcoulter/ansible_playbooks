@@ -17,7 +17,7 @@
       TZ: "{{ timezone }}"
     volumes:
       - /path/to/downloadclient-downloads:/downloads #optional
-      - ./readarr_config:/config
+      - "{{ config_root }}/readarr_config:/config"
       - "{{ data_root }}/media/books:/books"
       - "{{ data_root }}/transmission/downloads/complete:/downloads/complete"
     restart_policy: unless-stopped

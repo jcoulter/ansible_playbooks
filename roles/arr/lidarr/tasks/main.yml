@@ -16,7 +16,7 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     volumes:
-      - ./lidarr_config:/config
+      - "{{ config_root }}/lidarr_config:/config"
       - "{{ data_root }}/media/music:/music"
       - "{{ data_root }}/transmission/downloads:/downloads"
     restart_policy: unless-stopped

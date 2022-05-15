@@ -17,5 +17,5 @@
       WEBSOCKET_ENABLED: "true" # Enable WebSocket notifications.
     volumes:
       - "{{ data_root }}/vw_data:/data"
-      - ./vaultwarden_config:/config
+      - "{{ config_root }}/vaultwarden_config:/config"
     restart_policy: unless-stopped
