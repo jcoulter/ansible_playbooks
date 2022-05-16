@@ -13,15 +13,20 @@
         - setup
         - user_setup
   
-    - role: setup/nfs
-      tags:
-        - setup
-        - nfs 
-
     - role: setup/docker
       tags:
         - setup
         - docker
+
+    - role: setup/nfs
+      tags:
+        - setup
+        - nfs 
+  
+    - role: setup/samba
+      tags:
+        - setup
+        - samba 
 
     - role: services/nextcloud
       tags:
@@ -117,10 +122,10 @@
         - homeassistant
 
 
-    # - role: media/plex  
-    #   tags:
-    #     - media
-    #     - plex
+    - role: media/plex  
+      tags:
+        - media
+        - plex
 
     # - role: transmission-openvpn 
     #   tags:

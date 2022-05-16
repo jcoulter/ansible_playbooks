@@ -1,18 +1,7 @@
 ---
-# - name: Find out playbook's path
-#   shell: pwd
-#   register: playbook_path_output
-# - debug: var=playbook_path_output.stdout
-
-- name: Copy content of directory 'files'
-  copy:
-    src:  ../files/ #docker-compose.yml
-    dest: nextcloud # "{{ playbook_dir }}/" #/tmp/files/
-
 - name: Create a nextcloud network
   docker_network:
     name: nextcloud_network
-      # enable_ipv6: yes
 
 - name: Create a nextcloud_html if it does not exist
   ansible.builtin.file:
@@ -21,88 +10,12 @@
     mode: '0755'
     group: docker
 
-# - name: Create nextcloud_html volume
-#   docker_volume:
-#     name: "nextcloud_html"
-#     driver_options:
-#       type: local
-#       device: "/mnt/nextcloud/html"
-      
-
 - name: Create a nextcloud_db if it does not exist
   ansible.builtin.file:
     path: "/mnt/nextcloud/db"
     state: directory
     mode: '0755'
     group: docker
-
-# - name: Create db volume
-#   docker_volume:
-#     name: "nextcloud_db"
-#     driver_options:
-#       type: local
-#       device: "/mnt/nextcloud/db"
-
-# - name: Create html volume
-#   docker_volume:
-#     name: "nextcloud_html"
-#     driver_options:
-#       type: nfs
-#       o: "addr=192.168.1.54,rw"
-#       device: "/volume1/nextcloud"
-
-# - name: Create db volume
-#   docker_volume:
-#     name: "nextcloud_db"
-#     driver_options:
-#       type: nfs
-#       o: "addr=192.168.1.54,rw"
-#       device: "/volume1/nextcloud/db"
-
-# $ docker service create \
-#     --mount 'type=volume,src=<VOLUME-NAME>,dst=<CONTAINER-PATH>,volume-driver=local,volume-opt=type=nfs,volume-opt=device=<nfs-server>:<nfs-path>,"volume-opt=o=addr=<nfs-address>,vers=4,soft,timeo=180,bg,tcp,rw"'
-#     --name myservice \
-#     <IMAGE>
-
-
-# docker volume create --driver local \
-#   --opt type=nfs \
-#   --opt o=addr=[ip-address],rw \
-#   --opt device=:[path-to-directory] \
-#   [volume-name]
-
-# docker volume create --driver local --opt type=nfs --opt o=addr=192.168.1.54,rw --opt device=:/volume1/nextcloud \
-#   [volume-name]
-
-#    - name: Remove all but selected list of containers
-#      docker_network:
-#        name: nextcloud_network
-#        connected:
-#          - container_a
-#          - container_b
-#          - container_c
-
-# I tried sudo chmod 777 /usr/local/bin/docker-compose so `whcih docker-compose` finds it without sudo but it is still failing
-- name: Tear down existing services
-  community.docker.docker_compose:
-    project_src: nextcloud
-    state: absent
-  become: yes
-
-# - name: Create and start services
-#   community.docker.docker_compose:
-#     project_src: nextcloud
-#   register: output
-
-# - ansible.builtin.debug:
-#     var: output
-
-# - name: Run `docker-compose up` again
-#   community.docker.docker_compose:
-#     project_src: nextcloud
-#     build: no
-#   register: output
-
 
 - name: Make sure - NextCloud container is created and running
   docker_container:
@@ -123,8 +36,7 @@
     networks: 
       - name: nextcloud_network
     volumes:
-      # - /mnt/nextcloud/html:/var/www/html
-      - nextcloud:/var/www/html
+      - "{{ nc_html_path }}:/var/www/html"
     restart_policy: unless-stopped
 
 
@@ -151,8 +63,7 @@
     networks:
       - name: nextcloud_network
     volumes:
-      - nextcloud_db:/var/lib/mysql
-      # - /mnt/nextcloud/db:/var/lib/mysql
+      - "{{ nc_db_path }}:/var/lib/mysql"
       - /etc/localtime:/etc/localtime:ro
     env:
       "MYSQL_DATABASE": nextcloud

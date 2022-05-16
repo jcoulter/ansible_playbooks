@@ -1,1 +1,3 @@
 mountpoint: "nextcloud"
+nc_db_path: /mnt/nextcloud/db
+nc_html_path: /mnt/nextcloud/html

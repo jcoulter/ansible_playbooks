@@ -31,4 +31,5 @@ promtail_ip: 172.18.0.16
 prometheus_ip: 172.18.0.17
 grafana_ip: 172.18.0.18
 
-homeassistant_ip: 172.18.0.19
+# homeassistant_ip: 172.18.0.19
+homeassistant_ip: 192.168.2.42

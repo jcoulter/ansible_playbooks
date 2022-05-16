@@ -2,8 +2,8 @@
 - name: utility present debian-like
   ansible.builtin.apt:
     name:
-      - nfs-common
-      - nfs4-acl-tools
+      - samba
+      - cifs-utils
     state: present
   when: ansible_os_family == 'Debian'
 
@@ -13,18 +13,18 @@
     state: present
     gid: 1750
 
-- name: check data_mountpoint exist
+- name: check nextcloud mountpoint exist
   ansible.builtin.file:
-    path: "{{ data_mountpoint }}"
+    path: "{{ nc_mountpoint }}"
     state: directory
-    mode: "{{ data_permission }}"
+    mode: "{{ permission }}"
     owner: root
     group: docker
 
-- name: mount data network share
+- name: mount network share
   ansible.posix.mount:
-    src: "{{ data_nfs }}"
-    path: "{{ data_mountpoint }}"
-    fstype: nfs
-    opts: "{{ data_opts }}"
+    src: "{{ uri }}"
+    path: "{{ nc_mountpoint }}"
+    fstype: cifs
+    opts: "username={{ samba_username }},password={{ samba_password }},vers=1.0"
     state: mounted
