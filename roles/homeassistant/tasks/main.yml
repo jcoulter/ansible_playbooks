@@ -2,26 +2,27 @@
 # - name: Create a homeassistant network
 #   docker_network:
 #     name: homeassistant_network
-#       # enable_ipv6: yes
+#     ipam_options:
+#       subnet: "{{ homeassistant_subnet }}"
 
-# - name: Make sure the {{ container_name }} container is created and running
-#   docker_container:
-#     name: "{{ container_name }}"
-#     image: "lscr.io/linuxserver/homeassistant:latest"
-#     # image: "homeassistant/home-assistant:stable"
-#     networks:
-#       - name: homeassistant_network
-#         ipv4_address: "{{ homeassistant_ip }}"
-#     pull: yes
-#     state: 'started'
-#     ports:
-#       - "8123:8123"
-#     env:
-#       PUID: "{{ puid }}"
-#       PGID: "{{ pgid }}"
-#       TZ: "{{ timezone }}"
-#     volumes:
-#       - "{{ data_root }}/homeassistant/config:/config"
-#     state: 'started'
-#     restart_policy: unless-stopped
+- name: Make sure the {{ container_name }} container is created and running
+  docker_container:
+    name: "{{ container_name }}"
+    image: "lscr.io/linuxserver/homeassistant:latest"
+    # image: "homeassistant/home-assistant:stable"
+    # networks:
+      # - name: homeassistant_network
+        # ipv4_address: "{{ homeassistant_ip }}"
+    pull: yes
+    state: 'started'
+    ports:
+      - "8123:8123"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ data_root }}/homeassistant/config:/config"
+    state: 'started'
+    restart_policy: unless-stopped
 

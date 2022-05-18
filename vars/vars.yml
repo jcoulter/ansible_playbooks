@@ -11,7 +11,8 @@ created_username: jcoulter
 data_root: "/mnt/data"
 config_root: "/mnt/data/config"
 
-media_subnet: 172.18.0.0/24
+# 172.18.0.1 - 172.18.0.62
+media_subnet: 172.18.0.0/26
 heimdall_ip: 172.18.0.2
 jellyfin_ip: 172.18.0.3
 sonarr_ip: 172.18.0.4
@@ -31,5 +32,12 @@ promtail_ip: 172.18.0.16
 prometheus_ip: 172.18.0.17
 grafana_ip: 172.18.0.18
 
-# homeassistant_ip: 172.18.0.19
-homeassistant_ip: 192.168.2.42
+
+# 172.18.0.65 - 172.18.0.70
+seafile_subnet: 172.18.0.70/29
+seafile_db_ip: 172.18.0.66
+seafile_cache_ip: 172.18.0.67
+seafile_ip: 172.18.0.68
+
+# homeassistant_subnet: 192.168.2.42/28
+# homeassistant_ip: 192.168.2.42

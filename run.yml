@@ -28,10 +28,15 @@
         - setup
         - samba 
 
-    - role: services/nextcloud
-      tags:
-        - services
-        - nextcloud
+    # - role: services/nextcloud
+    #   tags:
+    #     - services
+    #     - nextcloud
+
+    # - role: services/seafile
+    #   tags:
+    #     - services
+    #     - seafile
 
     - role: heimdall  
       tags:
@@ -43,6 +48,12 @@
         - media
         - containers
         - jellyfin
+  
+    - role: media/plex  
+      tags:
+        - media
+        - containers
+        - plex
 
     - role: arr/sonarr  
       tags:
@@ -62,11 +73,11 @@
         - containers
         - lidarr
 
-    - role: arr/readarr  
-      tags:
-        - arr
-        - containers
-        - readarr
+    # - role: arr/readarr  
+    #   tags:
+    #     - arr
+    #     - containers
+    #     - readarr
 
     - role: services/portainer  
       tags:
@@ -74,11 +85,11 @@
         - containers
         - portainer
 
-    - role: arr/bazarr  
-      tags:
-        - arr
-        - containers
-        - bazarr
+    # - role: arr/bazarr  
+    #   tags:
+    #     - arr
+    #     - containers
+    #     - bazarr
 
     - role: arr/prowlarr  
       tags:
@@ -97,35 +108,29 @@
         - services
         - vaultwarden
 
-    - role:  monitor/loki  
-      tags:
-        - monitor
-        - loki
+    # - role:  monitor/loki  
+    #   tags:
+    #     - monitor
+    #     - loki
         
-    - role:  monitor/prometheus  
-      tags:
-        - monitor
-        - prometheus
+    # - role:  monitor/prometheus  
+    #   tags:
+    #     - monitor
+    #     - prometheus
 
-    - role:  monitor/promtail  
-      tags:
-        - monitor
-        - promtail
+    # - role:  monitor/promtail  
+    #   tags:
+    #     - monitor
+    #     - promtail
 
-    - role:  monitor/grafana  
-      tags:
-        - monitor
-        - grafana
+    # - role:  monitor/grafana  
+    #   tags:
+    #     - monitor
+    #     - grafana
 
     - role:  homeassistant  
       tags:
         - homeassistant
-
-
-    - role: media/plex  
-      tags:
-        - media
-        - plex
 
     # - role: transmission-openvpn 
     #   tags:

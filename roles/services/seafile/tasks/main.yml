@@ -1,0 +1,85 @@
+---
+- name: Create a seafile network
+  docker_network:
+    name: seafile_network
+    ipam_options:
+      subnet: "{{ seafile_subnet }}"
+
+- name: Make sure - Seafile MariaDB "'root'@'{{ seafile_ip }}'" container is created and running
+  become: yes
+  docker_container:
+    container_default_behavior: compatibility
+    networks_cli_compatible: yes
+    image: "mariadb:10.5"
+    name: "seafile-mysql"
+    pull: yes
+    state: 'started'
+    # capabilities:
+    #   - SYS_ADMIN
+    #   - DAC_READ_SEARCH
+    networks:
+      - name: seafile_network
+        ipv4_address: "{{ seafile_db_ip }}"
+    volumes:
+      # - /opt/seafile-mysql/db:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
+      - "{{ data_root }}/seafile/db:/var/lib/mysql"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      MYSQL_ROOT_PASSWORD: "db_dev"  # Requested, set the root's password of MySQL service.
+      # MYSQL_ROOT_PASSWORD: "{{ mariadb_password }}"  # Requested, set the root's password of MySQL service.
+      MYSQL_USER: "'root'@'{{ seafile_ip }}'"
+      MYSQL_PWD: "db_dev"
+      MYSQL_LOG_CONSOLE: "true"
+    restart_policy: unless-stopped
+
+- name: Make sure - Seafile Memecache container is created and running
+  docker_container:
+    container_default_behavior: compatibility
+    networks_cli_compatible: yes
+    image: memcached:1.6
+    name: seafile-memcached
+    entrypoint: memcached -m 256
+    networks:
+      - name: seafile_network
+        ipv4_address: "{{ seafile_cache_ip }}"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    state: 'started'
+    restart_policy: unless-stopped
+
+- name: Make sure - Seafile container is created and running
+  docker_container:
+    container_default_behavior: compatibility
+    networks_cli_compatible: yes
+    name: seafile
+    image: seafileltd/seafile-mc:latest
+    pull: yes
+    state: 'started'
+    published_ports:
+      - "80:80"
+  #     - "443:443"  # If https is enabled, cancel the comment.
+    volumes:
+      - "{{ data_root }}/seafile/data:/var/lib/mysql" # Requested, specifies the path to Seafile data persistent store.
+    networks:
+      - name: seafile_network
+        ipv4_address: "{{ seafile_ip }}"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      DB_HOST: db
+      # DB_HOST: "{{ seafile_db_ip }}"
+      #      "MYSQL_USER": nextcloud
+      # "MYSQL_PASSWORD": nextcloud
+      # MYSQL_HOST: db
+      DB_ROOT_PASSWD: "db_dev"  # Requested, the value shuold be root's password of MySQL service.
+      # DB_ROOT_PASSWD: "{{ mariadb_password }}"  # Requested, the value shuold be root's password of MySQL service.
+      SEAFILE_ADMIN_EMAIL: "{{ seafile_admin_email }}" # Specifies Seafile admin user, default is 'me@example.com'.
+      SEAFILE_ADMIN_PASSWORD: "{{ seafile_admin_password }}"     # Specifies Seafile admin password, default is 'asecret'.
+      SEAFILE_SERVER_LETSENCRYPT: "false"   # Whether to use https or not.
+      SEAFILE_SERVER_HOSTNAME: docs.seafile.com # Specifies your host name if https is enabled.
+    restart_policy: unless-stopped
