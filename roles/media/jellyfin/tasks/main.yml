@@ -1,8 +1,8 @@
 ---
-- name: Copy content of directory 'files'
-  copy:
-    src:  ../files/ #docker-compose.yml
-    dest: jellyfin # "{{ playbook_dir }}/" #/tmp/files/
+# - name: Copy content of directory 'files'
+#   copy:
+#     src:  ../files/ #docker-compose.yml
+#     dest: jellyfin # "{{ playbook_dir }}/" #/tmp/files/
 
 - name: Make sure that QuickSync packages are installed
   become: yes

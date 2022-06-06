@@ -5,7 +5,6 @@
     - ./vars/vault.yml
     - ./vars/vars.yml
   
-  become: true
 
   roles:
     - role: setup/user_setup
@@ -14,6 +13,7 @@
         - user_setup
   
     - role: setup/docker
+      become: yes
       tags:
         - setup
         - docker
@@ -28,10 +28,10 @@
         - setup
         - samba 
 
-    # - role: services/nextcloud
-    #   tags:
-    #     - services
-    #     - nextcloud
+    - role: services/nextcloud
+      tags:
+        - services
+        - nextcloud
 
     # - role: services/seafile
     #   tags:
@@ -97,11 +97,11 @@
         - containers
         - prowlarr
 
-    - role: arr/transmission  
-      tags:
-        - arr
-        - containers
-        - transmission
+    # - role: arr/transmission  
+    #   tags:
+    #     - arr
+    #     - containers
+    #     - transmission
 
     - role: services/vaultwarden  
       tags:
@@ -132,9 +132,9 @@
       tags:
         - homeassistant
 
-    # - role: transmission-openvpn 
-    #   tags:
-    #     - transmission-openvpn
+    - role: experiments/transmission-openvpn 
+      tags:
+        - transmission-openvpn
 
 # TODO: wire containers through gluetun 
 

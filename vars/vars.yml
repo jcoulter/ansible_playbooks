@@ -1,5 +1,5 @@
 ---
-data_root: /mnt/data
+data_root: /export/data
 docker_dir: /opt/docker/data
 
 docker_dir: /opt/docker/data
@@ -8,8 +8,7 @@ puid: '1000'
 pgid: '1000'
 timezone: "America/New_York"
 created_username: jcoulter
-data_root: "/mnt/data"
-config_root: "/mnt/data/config"
+config_root: "/export/data/config"
 
 # 172.18.0.1 - 172.18.0.62
 media_subnet: 172.18.0.0/26

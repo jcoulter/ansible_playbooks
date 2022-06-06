@@ -4,9 +4,6 @@
   docker_container:
     image: "vaultwarden/server:latest"
     name: "vaultwarden"
-    # networks:
-      # - name: media_network
-        # ipv4_address: "{{ sonarr_ip }}"
     ports:
       - 8086:80
     state: 'started'

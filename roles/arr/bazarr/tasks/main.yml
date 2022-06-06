@@ -18,7 +18,8 @@
     volumes:
       - "{{ config_root }}/bazarr_config:/config"
       
-      - "{{ data_root }}/media/movies:/movies"
-      - "{{ data_root }}/media/anime:/anime"
-      - "{{ data_root }}/media/tvshows:/tvshows"
+      - "{{ data_root }}/media:/media"
+      # - "{{ data_root }}/media/movies:/movies"
+      # - "{{ data_root }}/media/anime:/anime"
+      # - "{{ data_root }}/media/tvshows:/tvshows"
     restart_policy: unless-stopped

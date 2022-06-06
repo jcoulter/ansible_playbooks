@@ -18,5 +18,5 @@
     volumes:
       - "{{ config_root }}/lidarr_config:/config"
       - "{{ data_root }}/media/music:/music"
-      - "{{ data_root }}/transmission/downloads:/downloads"
+      - "{{ data_root }}/transmission/data/completed:/data/completed"
     restart_policy: unless-stopped

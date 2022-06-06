@@ -16,8 +16,8 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     volumes:
-      - /path/to/downloadclient-downloads:/downloads #optional
+      # - /path/to/downloadclient-downloads:/downloads #optional
       - "{{ config_root }}/readarr_config:/config"
       - "{{ data_root }}/media/books:/books"
-      - "{{ data_root }}/transmission/downloads/complete:/downloads/complete"
+      - "{{ data_root }}/transmission/data/completed:/data/completed"
     restart_policy: unless-stopped

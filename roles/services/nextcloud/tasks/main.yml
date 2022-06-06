@@ -5,17 +5,17 @@
 
 # - name: Create a nextcloud_html if it does not exist
 #   ansible.builtin.file:
-#     path: "/mnt/nextcloud/html"
+#     path: "{{ nc_html_path }}"
 #     state: directory
 #     mode: '0755'
-#     group: docker
+#     group: users
 
 # - name: Create a nextcloud_db if it does not exist
 #   ansible.builtin.file:
-#     path: "/mnt/nextcloud/db"
+#     path: "{{ nc_db_path }}"
 #     state: directory
 #     mode: '0755'
-#     group: docker
+#     group: users
 
 # - name: Create a nextcloud db volume
 #   become: yes
@@ -42,6 +42,7 @@
     container_default_behavior: compatibility
     networks_cli_compatible: yes
     name: nextcloud
+    # user: nextcloud
     image: nextcloud:latest
     published_ports:
       - "80:80"
@@ -72,14 +73,17 @@
 #     state: 'started'
 #     restart_policy: unless-stopped
  
-- name: Make sure - MariaDB container is created and running
-  become: yes
+- name: "Make sure - {{ nc_db_path }} MariaDB container is created and running"
+  # become: yes
   docker_container:
     container_default_behavior: compatibility
     networks_cli_compatible: yes
     name: "nextcloud-maria-db"
-    image: "mariadb:latest"
+    # user: nextcloud
+    image: "centos/mariadb-102-centos7:latest"
     pull: yes
+    published_ports:
+      - "3306:3306"
     state: 'started'
     capabilities:
       - SYS_ADMIN
@@ -87,7 +91,7 @@
     networks:
       - name: nextcloud_network
     volumes:
-      - "./nextcloud_db:/var/lib/mysql"
+      - "{{ nc_db_path }}:/var/lib/mysql"
       - /etc/localtime:/etc/localtime:ro
     env:
       "MYSQL_DATABASE": nextcloud

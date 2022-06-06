@@ -17,11 +17,11 @@
       TZ: "{{ timezone }}"
     volumes:
       - "{{ config_root }}/radarr_config:/config"
-      - "{{ data_root }}/media/movies:/movies"
-      - "{{ data_root }}/media/anime:/anime"
-      - "{{ data_root }}/media/tvshows:/tvshows"
+      # - "{{ data_root }}/media/movies:/movies"
+      # - "{{ data_root }}/media/anime:/anime"
+      # - "{{ data_root }}/media/tvshows:/tvshows"
       - "{{ data_root }}/media:/media"
       # - "{{ data_root }}/qbittorrent/downloads:/downloads"
-      - "{{ data_root }}/transmission/downloads/complete:/downloads/complete"
+      - "{{ data_root }}/transmission/data/completed:/data/completed"
     restart_policy: unless-stopped
 

@@ -2,8 +2,8 @@
 - name: Create a seafile network
   docker_network:
     name: seafile_network
-    ipam_options:
-      subnet: "{{ seafile_subnet }}"
+    # ipam_options:
+      # subnet: "{{ seafile_subnet }}"
 
 - name: Make sure - Seafile MariaDB "'root'@'{{ seafile_ip }}'" container is created and running
   become: yes
@@ -14,23 +14,21 @@
     name: "seafile-mysql"
     pull: yes
     state: 'started'
-    # capabilities:
-    #   - SYS_ADMIN
-    #   - DAC_READ_SEARCH
     networks:
       - name: seafile_network
-        ipv4_address: "{{ seafile_db_ip }}"
+        # ipv4_address: "{{ seafile_db_ip }}"
     volumes:
       # - /opt/seafile-mysql/db:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
-      - "{{ data_root }}/seafile/db:/var/lib/mysql"
+      - "~/seafile/db:/var/lib/mysql"
+      # - "{{ data_root }}/seafile/db:/var/lib/mysql"
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
       MYSQL_ROOT_PASSWORD: "db_dev"  # Requested, set the root's password of MySQL service.
       # MYSQL_ROOT_PASSWORD: "{{ mariadb_password }}"  # Requested, set the root's password of MySQL service.
-      MYSQL_USER: "'root'@'{{ seafile_ip }}'"
-      MYSQL_PWD: "db_dev"
+      # MYSQL_USER: "'root'@'{{ seafile_ip }}'"
+      # MYSQL_PWD: "db_dev"
       MYSQL_LOG_CONSOLE: "true"
     restart_policy: unless-stopped
 
@@ -43,7 +41,6 @@
     entrypoint: memcached -m 256
     networks:
       - name: seafile_network
-        ipv4_address: "{{ seafile_cache_ip }}"
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
@@ -63,14 +60,15 @@
       - "80:80"
   #     - "443:443"  # If https is enabled, cancel the comment.
     volumes:
-      - "{{ data_root }}/seafile/data:/var/lib/mysql" # Requested, specifies the path to Seafile data persistent store.
+      - "~/seafile/data:/shared" # Requested, specifies the path to Seafile data persistent store.
+      # - "{{ data_root }}/seafile/data:/shared" # Requested, specifies the path to Seafile data persistent store.
     networks:
       - name: seafile_network
-        ipv4_address: "{{ seafile_ip }}"
+        # ipv4_address: "{{ seafile_ip }}"
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
-      TZ: "{{ timezone }}"
+      TIME_ZONE: "{{ timezone }}"
       DB_HOST: db
       # DB_HOST: "{{ seafile_db_ip }}"
       #      "MYSQL_USER": nextcloud
