@@ -1,22 +1,26 @@
 ---
 # - name: Create a homeassistant network
 #   docker_network:
-#     name: homeassistant_network
-#     ipam_options:
-#       subnet: "{{ homeassistant_subnet }}"
+#     name: host
+#     type: host
+    # ipam_options:
+      # subnet: "{{ h?omeassistant_subnet }}"
 
 - name: Make sure the {{ container_name }} container is created and running
   docker_container:
     name: "{{ container_name }}"
     image: "lscr.io/linuxserver/homeassistant:latest"
+    network_mode: host
+    # networks:
+    # - name: host
     # image: "homeassistant/home-assistant:stable"
     # networks:
       # - name: homeassistant_network
         # ipv4_address: "{{ homeassistant_ip }}"
     pull: yes
     state: 'started'
-    ports:
-      - "8123:8123"
+    # ports:
+    #   - "8123:8123"
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
