@@ -24,12 +24,14 @@ plex_ip: 172.18.0.10
 deluge_ip: 172.18.0.11
 qbittorrent_ip: 172.18.0.12
 readarr_ip: 172.18.0.13
+readarr_audio_ip: 172.18.0.19
 lidarr_ip: 172.18.0.14
 
 loki_ip: 172.18.0.15
 promtail_ip: 172.18.0.16
 prometheus_ip: 172.18.0.17
 grafana_ip: 172.18.0.18
+
 
 
 # 172.18.0.65 - 172.18.0.70

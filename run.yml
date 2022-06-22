@@ -73,11 +73,11 @@
         - containers
         - lidarr
 
-    # - role: arr/readarr  
-    #   tags:
-    #     - arr
-    #     - containers
-    #     - readarr
+    - role: arr/readarr  
+      tags:
+        - arr
+        - containers
+        - readarr
 
     - role: services/portainer  
       tags:
@@ -85,11 +85,11 @@
         - containers
         - portainer
 
-    # - role: arr/bazarr  
-    #   tags:
-    #     - arr
-    #     - containers
-    #     - bazarr
+    - role: arr/bazarr  
+      tags:
+        - arr
+        - containers
+        - bazarr
 
     - role: arr/prowlarr  
       tags:
@@ -131,6 +131,10 @@
     - role:  homeassistant  
       tags:
         - homeassistant
+
+    - role:  minecraft  
+      tags:
+        - minecraft
 
     - role: experiments/transmission-openvpn 
       tags:

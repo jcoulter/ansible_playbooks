@@ -1,0 +1,22 @@
+---
+
+- name: Make sure the minecraft server is created and running
+  become: yes
+  docker_container:
+    image: "itzg/minecraft-server"
+    # stdin_open: true
+    name: "minecraft"
+    ports:
+      - 25565:25565
+    pull: yes
+    tty: true
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      "VERSION": "latest"
+      "EULA": "TRUE"
+    volumes:
+      - "{{ config_root }}/minecraft-data:/data"
+    restart_policy: unless-stopped

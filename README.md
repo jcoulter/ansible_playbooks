@@ -20,4 +20,5 @@ Variables are not adequately extracted.
 `ansible-playbook run.yml`
 (may require `-kK` options for first run to prompt for passwords)
 
+`ansible-playbook run.yml -t minecraft -kK --ask-vault-password -i inventory`
 hoping to someday be something like https://github.com/notthebee/infra
