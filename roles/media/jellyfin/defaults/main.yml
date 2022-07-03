@@ -4,6 +4,7 @@ container_name: jellyfin
 url: "jellyfin.{{ host_local }}"
 
 homer_category: media
+data_root: /mnt/data
 
 ip_address: "{{ swag_base }}.5"
 

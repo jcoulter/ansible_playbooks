@@ -8,6 +8,7 @@
 
   roles:
     - role: setup/user_setup
+      become: yes
       tags:
         - setup
         - user_setup
@@ -18,15 +19,15 @@
         - setup
         - docker
 
-    - role: setup/nfs
-      tags:
-        - setup
-        - nfs 
+    # - role: setup/nfs
+    #   tags:
+    #     - setup
+    #     - nfs 
   
-    - role: setup/samba
-      tags:
-        - setup
-        - samba 
+    # - role: setup/samba
+    #   tags:
+    #     - setup
+    #     - samba 
 
     - role: services/nextcloud
       tags:

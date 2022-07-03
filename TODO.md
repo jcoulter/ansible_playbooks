@@ -7,3 +7,6 @@ There is a bug preventing nextcloud from working over nfs share because of locki
 Consider removing the server's gateway altogether so that it can only access the internet through vpn
 
 https://www.linuxjournal.com/content/my-love-affair-synology
+
+
+syncthing on nas can share roms and save files accross multiple retro pies
