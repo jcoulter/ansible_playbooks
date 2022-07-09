@@ -42,12 +42,13 @@
     state: present
     key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 
-- name: Disable password authentication for root
-  lineinfile:
-    path: /etc/ssh/sshd_config
-    state: present
-    regexp: '^#?PermitRootLogin'
-    line: 'PermitRootLogin prohibit-password'
+# This is what kills my omv login
+# - name: Disable password authentication for root
+#   lineinfile:
+#     path: /etc/ssh/sshd_config
+#     state: present
+#     regexp: '^#?PermitRootLogin'
+#     line: 'PermitRootLogin prohibit-password'
 
 - name: Update apt and install required system packages
   apt:
@@ -55,16 +56,17 @@
       - curl
       - vim
       - git
-      - ufw
+      # - ufw
     state: latest
     update_cache: true
 
-- name: UFW - Allow SSH connections
-  community.general.ufw:
-    rule: allow
-    name: OpenSSH
+#  Firewall should not be controlled by ansible for omv
+# - name: UFW - Allow SSH connections
+#   community.general.ufw:
+#     rule: allow
+#     name: OpenSSH
 
-- name: UFW - Enable and deny by default
-  community.general.ufw:
-    state: enabled
-    default: deny
+# - name: UFW - Enable and deny by default
+#   community.general.ufw:
+#     state: enabled
+#     default: deny
