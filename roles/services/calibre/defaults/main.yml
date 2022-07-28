@@ -1,0 +1,10 @@
+---
+container_name: calibre
+
+url: "calibre.{{ host_local }}"
+
+homer_category: media
+
+ip_address: "{{ swag_base }}.5"
+
+

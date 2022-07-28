@@ -40,7 +40,7 @@
     volumes:
       - "{{ config_root }}/jellyfin/config:/config"
       # - "{{ data_root }}/media/tvshows:/data/tvshows"
-      - "{{ data_root }}/data-backup/media:/media"
+      - "{{ data_root }}/media:/media"
       # - "{{ data_root }}/media/movies:/data/movies"
       # - "{{ docker_dir }}/{{ container_name }}:/config"
       # - "{{ data_root }}/Media/TV:/data/TV"

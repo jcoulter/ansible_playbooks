@@ -137,6 +137,14 @@
       tags:
         - minecraft
 
+    - role: services/calibre  
+      tags:
+        - calibre
+
+    - role: services/trilium  
+      tags:
+        - trilium
+
     - role: experiments/transmission-openvpn 
       tags:
         - transmission-openvpn
