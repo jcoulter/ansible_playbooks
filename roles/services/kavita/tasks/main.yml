@@ -1,0 +1,21 @@
+---
+- name: Make sure the kavita container is created and running
+  become: yes
+  docker_container:
+    image: kizaing/kavita:latest
+    name: kavita
+    networks:
+      - name: media_network
+        ipv4_address: "{{ kavita_ip }}"
+    ports:
+      - "5000:5000"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ config_root }}/kavita_config:/kavita/config"
+      - "{{ data_root }}/media:/media"
+    restart_policy: unless-stopped

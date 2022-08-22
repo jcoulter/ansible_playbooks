@@ -7,9 +7,10 @@
       # subnet: "{{ h?omeassistant_subnet }}"
 
 - name: Make sure the {{ container_name }} container is created and running
+  become: yes
   docker_container:
     name: "{{ container_name }}"
-    image: "lscr.io/linuxserver/homeassistant:latest"
+    image: "homeassistant/home-assistant:stable"
     network_mode: host
     # networks:
     # - name: host
@@ -27,6 +28,12 @@
       TZ: "{{ timezone }}"
     volumes:
       - "{{ data_root }}/homeassistant/config:/config"
+      - "/etc/localtime:/etc/localtime:ro"
     state: 'started'
     restart_policy: unless-stopped
 
+# version: '3'
+# services:
+#   homeassistant:
+#     volumes:
+#     privileged: true

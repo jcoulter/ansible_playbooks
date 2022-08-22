@@ -132,6 +132,10 @@
     - role:  homeassistant  
       tags:
         - homeassistant
+  
+    - role:  mqtt  
+      tags:
+        - mqtt
 
     - role:  minecraft  
       tags:
@@ -144,6 +148,18 @@
     - role: services/trilium  
       tags:
         - trilium
+
+    - role: services/ubooquity  
+      tags:
+        - ubooquity
+
+    - role: services/kavita  
+      tags:
+        - kavita
+
+    - role: services/photoprism  
+      tags:
+        - photoprism
 
     - role: experiments/transmission-openvpn 
       tags:

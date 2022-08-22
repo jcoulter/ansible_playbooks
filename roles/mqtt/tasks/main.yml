@@ -1,0 +1,22 @@
+---
+# https://techoverflow.net/2021/11/25/how-to-setup-standalone-mosquitto-mqtt-broker-using-docker-compose/
+
+- name: Make sure the {{ container_name }} container is created and running
+  docker_container:
+    name: "{{ container_name }}"
+    image: "eclipse-mosquitto"
+    network_mode: host
+    pull: yes
+    state: 'started'
+    # ports:
+    #   - "1883:1883"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ config_root }}/mosquitto/conf:/mosquitto/conf"
+      - "{{ config_root }}/mosquitto/data:/mosquitto/data"
+      - "{{ config_root }}/mosquitto/log:/mosquitto/log"
+    state: 'started'
+    restart_policy: unless-stopped

@@ -35,7 +35,9 @@ readarr_audio_ip: 172.18.0.19
 
 calibre_ip: 172.18.0.20
 trilium_ip: 172.18.0.21
-
+ubooquity_ip: 172.18.0.22
+kavita_ip: 172.18.0.23
+photoprism_ip: 172.18.0.24
 
 # 172.18.0.65 - 172.18.0.70
 seafile_subnet: 172.18.0.70/29

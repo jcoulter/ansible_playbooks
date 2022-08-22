@@ -1,0 +1,29 @@
+---
+- name: Make sure the ubooquity container is created and running
+  become: yes
+  docker_container:
+    image: lscr.io/linuxserver/ubooquity:latest
+    name: ubooquity
+    networks:
+      - name: media_network
+        ipv4_address: "{{ ubooquity_ip }}"
+    ports:
+      - "2202:2202"
+      - "2203:2203"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      # - MAXMEM=<maxmem>
+    volumes:
+      - "{{ config_root }}/ubooquity_config:/config"
+      - "{{ data_root }}/media:/media"
+    restart_policy: unless-stopped
+      # - <path to data>:/config
+      # - <path to books>:/books
+      # - <path to comics>:/comics
+      # - <path to raw files>:/files
+
+

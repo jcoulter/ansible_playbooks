@@ -1,0 +1,28 @@
+---
+- name: Make sure the photoprism container is created and running
+  become: yes
+  docker_container:
+    image: lscr.io/linuxserver/ubooquity:latest
+    name: photoprism
+    networks:
+      - name: media_network
+        ipv4_address: "{{ photoprism_ip }}"
+    ports:
+      - "2342:2342"
+    pull: yes
+    state: 'started'
+    # security_opts:
+      # - seccomp: unconfined
+      # - apparmor: unconfined
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      PHOTOPRISM_UPLOAD_NSFW: "true"
+      PHOTOPRISM_ADMIN_PASSWORD: "insecure"
+    volumes:
+      - "{{ config_root }}/photoprism_config:/photoprism/storage"
+      # TODO: multiple users?
+      - "/mnt/data/nextcloud/data/barbar0ssa/files/InstantUpload:/photoprism/originals"
+    restart_policy: unless-stopped
+
