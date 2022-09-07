@@ -133,6 +133,11 @@
       tags:
         - homeassistant
   
+
+    - role:  esphome  
+      tags:
+        - esphome
+  
     - role:  mqtt  
       tags:
         - mqtt
