@@ -1,0 +1,61 @@
+---
+
+- name: Touch the config file (equivalent to 0644)
+  become: true
+  ansible.builtin.file:
+    path: "{{ config_root }}/frigate_config/config.yml"
+    state: touch
+    mode: 755
+
+- name: Make sure the {{ container_name }} container is created and running
+  become: true
+  docker_container:
+    name: "{{ container_name }}"
+    image: "blakeblackshear/frigate:stable-amd64"
+    shm_size: "64MB" # update for your cameras based on calculation above
+    devices:
+    #   - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
+    #   - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
+      - /dev/dri/renderD128 # for intel hwaccel, needs to be updated for your hardware
+    pull: yes
+    state: 'started'
+    ports:
+      - "5000:5000"
+      - "1935:1935" # RTMP feeds
+    # environment:
+    # ports:
+    #   - "1935:1935"
+    #   - "5000:5000"
+    #   - "5001:5001"
+    #   - "8080:8080"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      FRIGATE_RTSP_PASSWORD: "{{ frigate_password }}"
+    volumes:
+      - "{{ config_root }}/frigate_config:/config"
+      - /etc/localtime:/etc/localtime:ro
+      - "{{ data_root }}/media/frigate:/media/frigate"
+      - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    state: 'started'
+    restart_policy: unless-stopped
+
+    # version: "3"
+    # # shm_size: "256mb"
+    # build:
+    #   context: .
+    #   dockerfile: docker/Dockerfile.dev
+    # volumes:
+    #   - /etc/localtime:/etc/localtime:ro
+    #   - .:/lab/frigate:cached
+    #   - ./config/config.yml:/config/config.yml:ro
+    #   - ./debug:/media/frigate
+    #   - /dev/bus/usb:/dev/bus/usb
+    #   - /dev/dri:/dev/dri # for intel hwaccel, needs to be updated for your hardware
+    # ports:
+
+

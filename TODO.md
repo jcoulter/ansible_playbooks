@@ -13,6 +13,18 @@ https://www.linuxjournal.com/content/my-love-affair-synology
 
 syncthing on nas can share roms and save files accross multiple retro pies
 
+
+duplicati to make encrypted remote backups?
+
+# intel graphics drivers
+
+https://www.reddit.com/r/jellyfin/comments/wodeaj/celeron_n5105_hardware_transcoding/
+https://gist.github.com/Brainiarc7/aa43570f512906e882ad6cdd835efe57
+https://blogs.igalia.com/vjaquez/2017/12/07/enabling-huc-for-sklkbl-in-debiantesting/
+
+sudo apt-get install xserver-xorg-video-intel
+
+
 Make docker tasks add the ExecStartPre line to 
  /lib/systemd/system/docker.service
  

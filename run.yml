@@ -136,6 +136,10 @@
     - role:  mqtt  
       tags:
         - mqtt
+        
+    - role:  frigate  
+      tags:
+        - frigate
 
     - role:  minecraft  
       tags:
