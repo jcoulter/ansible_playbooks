@@ -1,7 +1,7 @@
 ---
-container_name: portainer
+container_name: watchtower
 
-url: "portainer.{{ host_local }}"
+url: "watchtower.{{ host_local }}"
 
 homer_category: services
 

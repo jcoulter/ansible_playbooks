@@ -1,0 +1,10 @@
+---
+container_name: zigbee2mqtt
+
+url: "zigbee2mqtt.{{ host_local }}"
+
+ip_address: "{{ iot_base }}.168"
+
+homer_category: smarthome
+
+dashboard_name: "Zigbee 2 Mqtt"

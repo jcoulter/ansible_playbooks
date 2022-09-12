@@ -1,0 +1,28 @@
+---
+
+- name: Make sure the {{ container_name }} container is created and running
+  docker_container:
+    name: "{{ container_name }}"
+    image: "koenkk/zigbee2mqtt"
+    # network_mode: host
+    pull: yes
+    state: 'started'
+    ports:
+      - "8081:8080"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ config_root }}/zigbee2mqtt_data:/app/data"
+      - "/run/udev:/run/udev:ro"
+    devices:
+      - "/dev/zigbee:/dev/ttyACM0"
+      # - "/dev/zwave:/dev/zwave"
+    state: 'started'
+    restart_policy: unless-stopped
+
+
+    # devices:
+    #   # Make sure this matched your adapter location
+    #   - /dev/serial/by-id/usb-Texas_Instruments_TI_CC2531_USB_CDC___0X00124B0018ED3DDF-if00:/dev/ttyACM0

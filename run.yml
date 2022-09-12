@@ -129,22 +129,37 @@
     #     - monitor
     #     - grafana
 
-    - role:  homeassistant  
+    - role:  home-automation/homeassistant  
       tags:
         - homeassistant
+        - home-automation
   
 
-    - role:  esphome  
+    - role:  home-automation/esphome  
       tags:
         - esphome
+        - home-automation
   
-    - role:  mqtt  
+    - role:  home-automation/mqtt  
       tags:
         - mqtt
+        - home-automation
+
+    - role:  home-automation/zigbee2mqtt  
+      tags:
+        - zigbee2mqtt
+        - home-automation
         
-    - role:  frigate  
+    - role:  home-automation/frigate  
       tags:
         - frigate
+        - home-automation
+        
+    - role:  home-automation/nodered  
+      tags:
+        - nodered
+        - node-red
+        - home-automation
 
     - role:  minecraft  
       tags:
@@ -169,6 +184,10 @@
     - role: services/photoprism  
       tags:
         - photoprism
+
+    - role: services/watchtower  
+      tags:
+        - watchtower
 
     - role: experiments/transmission-openvpn 
       tags:

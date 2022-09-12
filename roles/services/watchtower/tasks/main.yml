@@ -1,0 +1,20 @@
+---
+- name: Make sure the "{{ container_name }}" container is created and running
+  become: yes
+  docker_container:
+    image: containrrr/watchtower
+    name: "{{ container_name }}"
+    ports:
+      - "3443:3443"
+      - "3080:3080"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      # WATCHTOWER_RUN_ONCE: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "{{ config_root }}/watchtower_config/config.json:/config.json"
+    restart_policy: unless-stopped

@@ -12,6 +12,9 @@
     name: "{{ container_name }}"
     image: "homeassistant/home-assistant:stable"
     network_mode: host
+    devices:
+      - "/dev/zigbee:/dev/zigbee"
+      - "/dev/zwave:/dev/zwave"
     # networks:
     # - name: host
     # image: "homeassistant/home-assistant:stable"

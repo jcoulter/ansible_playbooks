@@ -1,0 +1,10 @@
+---
+container_name: node-red
+
+url: "node-red.{{ host_local }}"
+
+ip_address: "{{ iot_base }}.168"
+
+homer_category: smarthome
+
+dashboard_name: "Node RED"
