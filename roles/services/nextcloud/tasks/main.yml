@@ -17,26 +17,6 @@
 #     mode: '0755'
 #     group: users
 
-# - name: Create a nextcloud db volume
-#   become: yes
-#   docker_volume:
-#     name: nextcloud
-#     driver_options:
-#       type: cifs
-#       device: "//192.168.1.54/nextcloud/data"
-#       # fstype: cifs
-#       o: "username={{ samba_username }},password={{ samba_password }},noserverino,file_mode=0777,dir_mode=0777,vers=1.0"
-
-  # ansible.posix.mount:
-    # src: "{{ uri }}"
-    # path: "{{ nc_mountpoint }}"
-    #  state: mounted
-  # --driver local \
-  # --opt type=cifs \
-  # --opt device=//uxxxxx.your-server.de/backup \
-  # --opt o=addr=uxxxxx.your-server.de,username=uxxxxxxx,password=*****,file_mode=0777,dir_mode=0777 \
-  # --name cif-volume
-
 - name: Make sure - "NextCloud container is created and running {{ nc_html_path }}"
   docker_container:
     container_default_behavior: compatibility
@@ -44,23 +24,20 @@
     name: nextcloud
     image: nextcloud:latest
     restart_policy: unless-stopped
-    # user: nextcloud
     published_ports:
       - "8080:80"
-  #   # image: "ghcr.io/linuxserver/nextcloud:php8"
     pull: yes
     state: 'started'
     env:
       "MYSQL_HOST": nextcloud-maria-db
       "MYSQL_DATABASE": nextcloud
       "MYSQL_USER": nextcloud
-      "MYSQL_PASSWORD": nextcloud
+      "MYSQL_PASSWORD": "{{ mariadb_password }}"
       "REDIS_HOST": nextcloud-redis
     networks: 
       - name: nextcloud_network
     volumes:
       - "{{ nc_html_path }}:/var/www/html"
-      # - nextcloud:/var/www/html
 
 - name: Make sure the Redis container is created and running
   docker_container:
@@ -73,27 +50,17 @@
     pull: yes
     state: 'started'
     restart_policy: unless-stopped
-- name: "Make sure - {{ nc_db_path }} MariaDB container is created and running"
-  # become: yes
+
+- name: "Make sure - {{ mariadb_password }} MariaDB container is created and running"
   docker_container:
-    # container_default_behavior: compatibility
-    # networks_cli_compatible: yes
     name: "nextcloud-maria-db"
-    # user: nextcloud
     image: mariadb:latest
-    # image: "centos/mariadb-102-centos7:latest"
     pull: yes
-    published_ports:
-      - "3306:3306"
     state: 'started'
-    # capabilities:
-    #   - SYS_ADMIN
-    #   - DAC_READ_SEARCH
     networks:
       - name: nextcloud_network
     volumes:
       # - /docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
-      # - nextcloud_db:/var/lib/mysql
       - "{{ nc_db_path }}:/var/lib/mysql"
       - /etc/localtime:/etc/localtime:ro
     env:
