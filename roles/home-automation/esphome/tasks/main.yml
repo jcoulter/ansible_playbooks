@@ -5,7 +5,6 @@
   docker_container:
     name: "{{ container_name }}"
     image: "esphome/esphome"
-    # network_mode: host
     pull: yes
     ports:
       - "6052:6052"
