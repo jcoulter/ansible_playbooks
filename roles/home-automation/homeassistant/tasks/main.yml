@@ -6,12 +6,18 @@
     # ipam_options:
       # subnet: "{{ h?omeassistant_subnet }}"
 
+#  Recorder connection string is defined in configuration.yml
 - name: Make sure the {{ container_name }} container is created and running
   become: yes
   docker_container:
     name: "{{ container_name }}"
     image: "homeassistant/home-assistant:stable"
     network_mode: host
+    labels:
+       traefik.enable: "true"
+       traefik.http.routers.hass.tls: "true"
+       traefik.http.routers.hass.rule: Host("hass.docker.localhost")
+       traefik.http.services.hass.loadbalancer.server.port: "8123"
     devices:
       - "/dev/zigbee:/dev/zigbee"
       - "/dev/zwave:/dev/zwave"
@@ -31,8 +37,39 @@
       TZ: "{{ timezone }}"
     volumes:
       - "{{ data_root }}/homeassistant/config:/config"
+      # - "{{ config_root }}/hass_config:/config"
       - "/etc/localtime:/etc/localtime:ro"
+      - "/run/dbus:/run/dbus:ro"
     state: 'started'
+    restart_policy: unless-stopped
+
+- name: "Make sure - MariaDB container is created and running"
+  # become: yes
+  docker_container:
+    # container_default_behavior: compatibility
+    # networks_cli_compatible: yes
+    name: "nextcloud-maria-db"
+    # user: nextcloud
+    image: mariadb:latest
+    # image: "centos/mariadb-102-centos7:latest"
+    pull: yes
+    published_ports:
+      - "3306:3306"
+    state: 'started'
+    # capabilities:
+    #   - SYS_ADMIN
+    #   - DAC_READ_SEARCH
+    network_mode: host
+    volumes:
+      # - /docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
+      # - nextcloud_db:/var/lib/mysql
+      - "{{ nc_db_path }}:/var/lib/mysql"
+      - /etc/localtime:/etc/localtime:ro
+    env:
+      "MYSQL_DATABASE": hass
+      "MYSQL_USER": hass
+      "MYSQL_PASSWORD": "{{ mariadb_password }}"
+      "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
     restart_policy: unless-stopped
 
 # version: '3'

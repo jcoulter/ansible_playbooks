@@ -37,73 +37,76 @@
   # --opt o=addr=uxxxxx.your-server.de,username=uxxxxxxx,password=*****,file_mode=0777,dir_mode=0777 \
   # --name cif-volume
 
-- name: Make sure - NextCloud container is created and running
+- name: Make sure - "NextCloud container is created and running {{ nc_html_path }}"
   docker_container:
     container_default_behavior: compatibility
     networks_cli_compatible: yes
     name: nextcloud
-    # user: nextcloud
     image: nextcloud:latest
+    restart_policy: unless-stopped
+    # user: nextcloud
     published_ports:
-      - "80:80"
+      - "8080:80"
   #   # image: "ghcr.io/linuxserver/nextcloud:php8"
     pull: yes
     state: 'started'
     env:
-      "MYSQL_HOST": db
+      "MYSQL_HOST": nextcloud-maria-db
       "MYSQL_DATABASE": nextcloud
       "MYSQL_USER": nextcloud
       "MYSQL_PASSWORD": nextcloud
+      "REDIS_HOST": nextcloud-redis
     networks: 
       - name: nextcloud_network
     volumes:
       - "{{ nc_html_path }}:/var/www/html"
-    restart_policy: unless-stopped
+      # - nextcloud:/var/www/html
 
-
-# - name: Make sure the Redis container is created and running
-#   docker_container:
-#     container_default_behavior: compatibility
-#     networks_cli_compatible: yes
-#     name: "nextcloud-redis"
-#     networks:
-#       - name: nextcloud_network
-#     image: "redis:alpine"
-#     pull: yes
-#     state: 'started'
-#     restart_policy: unless-stopped
- 
-- name: "Make sure - {{ nc_db_path }} MariaDB container is created and running"
-  # become: yes
+- name: Make sure the Redis container is created and running
   docker_container:
     container_default_behavior: compatibility
     networks_cli_compatible: yes
+    name: "nextcloud-redis"
+    networks:
+      - name: nextcloud_network
+    image: "redis:alpine"
+    pull: yes
+    state: 'started'
+    restart_policy: unless-stopped
+- name: "Make sure - {{ nc_db_path }} MariaDB container is created and running"
+  # become: yes
+  docker_container:
+    # container_default_behavior: compatibility
+    # networks_cli_compatible: yes
     name: "nextcloud-maria-db"
     # user: nextcloud
-    image: "centos/mariadb-102-centos7:latest"
+    image: mariadb:latest
+    # image: "centos/mariadb-102-centos7:latest"
     pull: yes
     published_ports:
       - "3306:3306"
     state: 'started'
-    capabilities:
-      - SYS_ADMIN
-      - DAC_READ_SEARCH
+    # capabilities:
+    #   - SYS_ADMIN
+    #   - DAC_READ_SEARCH
     networks:
       - name: nextcloud_network
     volumes:
+      # - /docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
+      # - nextcloud_db:/var/lib/mysql
       - "{{ nc_db_path }}:/var/lib/mysql"
       - /etc/localtime:/etc/localtime:ro
     env:
       "MYSQL_DATABASE": nextcloud
       "MYSQL_USER": nextcloud
-      "MYSQL_PASSWORD": nextcloud
-      "MYSQL_ROOT_PASSWORD": nextcloud
+      "MYSQL_PASSWORD": "{{ mariadb_password }}"
+      "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
     restart_policy: unless-stopped
 
 
-# - name: Schedule a Nextcloud library scan at midnight every day
-#   cron:
-#     name: Scan the Nextcloud library
-#     hour: "0"
-#     minute: "0"
-#     job: "docker exec nextcloud sudo -u abc php8 /config/www/nextcloud/occ files:scan --all"
+- name: Schedule a Nextcloud library scan at midnight every day
+  cron:
+    name: Scan the Nextcloud library
+    hour: "0"
+    minute: "0"
+    job: "docker exec nextcloud sudo -u abc php8 /config/www/nextcloud/occ files:scan --all"

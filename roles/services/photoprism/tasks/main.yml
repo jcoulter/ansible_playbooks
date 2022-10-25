@@ -23,6 +23,6 @@
     volumes:
       - "{{ config_root }}/photoprism_config:/photoprism/storage"
       # TODO: multiple users?
-      - "/mnt/data/nextcloud/data/barbar0ssa/files/InstantUpload:/photoprism/originals"
+      - "{{ data_root }}//nextcloud/data/barbar0ssa/files/InstantUpload:/photoprism/originals"
     restart_policy: unless-stopped
 

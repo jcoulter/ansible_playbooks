@@ -18,7 +18,7 @@
       TZ: "{{ timezone }}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - "{{ data_root }}/portainer_data:/data"
+      - "{{ config_root }}/portainer_data:/data"
     restart_policy: unless-stopped
     # recreate: yes
 
