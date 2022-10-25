@@ -1,23 +1,4 @@
 ---
-# version: '3.3'
-# services:
-#     transmission-openvpn:
-#         cap_add:
-#             - NET_ADMIN
-#         volumes:
-#         environment:
-#             - OPENVPN_PROVIDER=SURFSHARK
-#             - OPENVPN_CONFIG=us
-#             - OPENVPN_USERNAME=user
-#             - OPENVPN_PASSWORD=pass
-#             - LOCAL_NETWORK=192.168.0.0/16
-#         logging:
-#             driver: json-file
-#             options:
-#                 max-size: 10m
-#         ports:
-#             - '9091:9091'
-#         image: 
 
 - name: Make sure the transmission vpn container is created and running
   become: yes
@@ -34,9 +15,9 @@
         ipv4_address: "{{ transmission_ip }}"
     state: 'started'
     env:
-      OPENVPN_PROVIDER: SURFSHARK
       # OPENVPN_CONFIG: us-dtw_udp
       OPENVPN_CONFIG: us-dtw.prod.surfshark.com_udp
+      OPENVPN_PROVIDER: SURFSHARK
       OPENVPN_USERNAME: "{{ vpn_username }}"
       OPENVPN_PASSWORD: "{{ vpn_password }}"
       LOCAL_NETWORK: "192.168.0.0/16,{{ media_subnet }}"
