@@ -1,7 +1,0 @@
-container_name: deluge
-
-url: "deluge.{{ host_local }}"
-
-homer_category: media
-# data_root: /mnt/data
-ip_address: "{{ swag_base }}.10"
