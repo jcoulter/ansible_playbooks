@@ -1,9 +1,9 @@
 ---
-container_name: radarr
+container_name: portainer
 
-url: "radarr.{{ host_local }}"
+url: "portainer.{{ host_local }}"
 
-homer_category: media
+homer_category: services
 
 ip_address: "{{ swag_base }}.5"
 

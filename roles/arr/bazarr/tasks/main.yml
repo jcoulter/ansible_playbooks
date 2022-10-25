@@ -7,6 +7,10 @@
     networks:
       - name: media_network
         ipv4_address: "{{ bazarr_ip }}"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.bazarr.tls: "true"
+      traefik.http.routers.bazarr.rule: Host("bazarr.docker.localhost")
     ports:
       - 6767:6767
     pull: yes

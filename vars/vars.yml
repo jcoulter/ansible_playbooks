@@ -1,6 +1,5 @@
 ---
-data_root: /export/data
-docker_dir: /opt/docker/data
+data_root: /mnt/data
 
 docker_dir: /opt/docker/data
 
@@ -8,7 +7,8 @@ puid: '1000'
 pgid: '1000'
 timezone: "America/New_York"
 created_username: jcoulter
-config_root: "/export/data/config"
+config_root: "/mnt/config"
+db_path: "{{ config_root }}/mariadb"
 
 # 172.18.0.1 - 172.18.0.62
 media_subnet: 172.18.0.0/26
@@ -24,7 +24,6 @@ plex_ip: 172.18.0.10
 deluge_ip: 172.18.0.11
 qbittorrent_ip: 172.18.0.12
 readarr_ip: 172.18.0.13
-readarr_audio_ip: 172.18.0.19
 lidarr_ip: 172.18.0.14
 
 loki_ip: 172.18.0.15
@@ -32,7 +31,13 @@ promtail_ip: 172.18.0.16
 prometheus_ip: 172.18.0.17
 grafana_ip: 172.18.0.18
 
+readarr_audio_ip: 172.18.0.19
 
+calibre_ip: 172.18.0.20
+trilium_ip: 172.18.0.21
+ubooquity_ip: 172.18.0.22
+kavita_ip: 172.18.0.23
+photoprism_ip: 172.18.0.24
 
 # 172.18.0.65 - 172.18.0.70
 seafile_subnet: 172.18.0.70/29
@@ -42,3 +47,4 @@ seafile_ip: 172.18.0.68
 
 # homeassistant_subnet: 192.168.2.42/28
 # homeassistant_ip: 192.168.2.42
+

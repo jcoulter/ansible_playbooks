@@ -18,7 +18,8 @@
     volumes:
       # - /path/to/downloadclient-downloads:/downloads #optional
       - "{{ config_root }}/readarr_config:/config"
-      - "{{ data_root }}/media/books:/books"
+      # - "{{ data_root }}/media/books:/books"
+      - "{{ data_root }}/media:/media"
       - "{{ data_root }}/transmission/data/completed:/data/completed"
     restart_policy: unless-stopped
 
@@ -41,7 +42,7 @@
     volumes:
       # - /path/to/downloadclient-downloads:/downloads #optional
       - "{{ config_root }}/readarr_audio_config:/config"
-      - "{{ data_root }}/media/audiobooks:/books"
+      # - "{{ data_root }}/media/audiobooks:/books"
       - "{{ data_root }}/media:/media"
       - "{{ data_root }}/transmission/data/completed:/data/completed"
     restart_policy: unless-stopped

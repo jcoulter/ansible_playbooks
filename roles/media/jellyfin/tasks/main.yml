@@ -4,25 +4,25 @@
 #     src:  ../files/ #docker-compose.yml
 #     dest: jellyfin # "{{ playbook_dir }}/" #/tmp/files/
 
-- name: Make sure that QuickSync packages are installed
-  become: yes
-  package:
-    name:
-      - vainfo
-      - intel-media-va-driver-non-free
-    state: present
+# - name: Make sure that QuickSync packages are installed
+#   become: yes
+#   package:
+#     name:
+#       - vainfo
+#       - intel-media-va-driver-non-free
+#     state: present
 
-- name: Make sure the jellyfin container is created and running
+- name: " {{ data_root }}/data-backup/media  sure the jellyfin container is created and running"
   become: yes
   docker_container:
     image: "ghcr.io/linuxserver/jellyfin"
     name: "jellyfin"
     # network_mode: "host"
     ports:
-      - 8096:8096
-    networks:
-      - name: media_network
-        ipv4_address: "{{ jellyfin_ip }}"
+      - 80:8096
+    # networks:
+    #   - name: media_network
+    #     ipv4_address: "{{ jellyfin_ip }}"
     # networks:
     #   - name: swag_internal_macvlan
     #     ipv4_address: "{{ ip_address }}"
@@ -31,6 +31,10 @@
     # devices:
     #   - "/dev/dri/renderD128:/dev/dri/renderD128"
     state: 'started'
+    devices:
+    # VAAPI Devices
+      - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/dri/card0:/dev/dri/card0
     env:
       "DOCKER_MODS": "linuxserver/mods:jellyfin-opencl-intel"
       PUID: "{{ puid }}"

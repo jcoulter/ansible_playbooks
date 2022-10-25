@@ -1,0 +1,34 @@
+---
+- name: Copy content of directory 'files'
+  copy:
+    src:  ../files/ 
+    dest: "{{ config_root }}/traefik_config/"
+
+- name: Make sure the traefik container is created and running
+  become: yes
+  docker_container:
+    image: "traefik:v2.4"
+    name: "traefik"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik: "true"
+    networks:
+      - name: media_network
+        ipv4_address: "{{ kavita_ip }}"
+    ports:
+      # HTTPS / SSL port
+      - "443:443"
+      # The Traefik Web UI port (enabled by api:insecure: true in traefik.yml)
+      - "8083:8080"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ config_root }}/traefik_config/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "{{ config_root }}/traefik_config/config.yml:/etc/traefik/config.yml:ro"
+      - "{{ config_root }}/traefik_config/certs:/etc/certs:ro"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart_policy: unless-stopped

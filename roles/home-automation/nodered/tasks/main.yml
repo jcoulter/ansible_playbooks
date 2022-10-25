@@ -1,0 +1,19 @@
+---
+
+- name: Make sure the {{ container_name }} container is created and running
+  docker_container:
+    name: "{{ container_name }}"
+    image: "nodered/node-red"
+    # network_mode: host
+    pull: yes
+    ports:
+      - "1880:1880"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - "{{ config_root }}/nodered_config:/data"
+    state: 'started'
+    restart_policy: unless-stopped

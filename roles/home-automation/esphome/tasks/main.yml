@@ -1,0 +1,20 @@
+---
+
+- name: Make sure the {{ container_name }} container is created and running
+  become: true
+  docker_container:
+    name: "{{ container_name }}"
+    image: "esphome/esphome"
+    # network_mode: host
+    pull: yes
+    ports:
+      - "6052:6052"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - "{{ config_root }}/esphome_config:/config"
+    state: 'started'
+    restart_policy: unless-stopped

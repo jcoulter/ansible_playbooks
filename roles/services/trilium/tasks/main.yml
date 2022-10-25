@@ -1,0 +1,20 @@
+---
+- name: Make sure the trilium container is created and running
+  become: yes
+  docker_container:
+    image: zadam/trilium:latest
+    name: trilium
+    networks:
+      - name: media_network
+        ipv4_address: "{{ trilium_ip }}"
+    ports:
+      - "8070:8080"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ config_root }}/trilium_data:/home/node/trilium-data"
+    restart_policy: unless-stopped

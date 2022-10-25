@@ -1,0 +1,51 @@
+---
+#  Recorder connection string is defined in configuration.yml
+# recorder:
+#   db_url: mysql://hass:<password>@192.168.1.36:3306/hass?charset=utf8
+
+- name: Make sure the {{ container_name }} container is created and running
+  become: yes
+  docker_container:
+    name: "{{ container_name }}"
+    image: "homeassistant/home-assistant:stable"
+    network_mode: host
+    labels:
+       traefik.enable: "true"
+       traefik.http.routers.hass.tls: "true"
+       traefik.http.routers.hass.rule: Host("hass.docker.localhost")
+       traefik.http.services.hass.loadbalancer.server.port: "8123"
+    devices:
+      - "/dev/zigbee:/dev/zigbee"
+      - "/dev/zwave:/dev/zwave"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ data_root }}/homeassistant/config:/config"
+      # - "{{ config_root }}/hass_config:/config"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/run/dbus:/run/dbus:ro"
+    state: 'started'
+    restart_policy: unless-stopped
+
+- name: "Make sure - Hass MariaDB container is created and running"
+  docker_container:
+    name: "hass-maria-db"
+    image: mariadb:latest
+    pull: yes
+    published_ports:
+      - "3306:3306"
+    state: 'started'
+    volumes:
+      # - /docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
+      - "{{ data_root }}/homeassistant/config/db:/var/lib/mysql"
+      - /etc/localtime:/etc/localtime:ro
+    env:
+      "MYSQL_DATABASE": hass
+      "MYSQL_USER": hass
+      "MYSQL_PASSWORD": "{{ mariadb_password }}"
+      "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
+    restart_policy: unless-stopped

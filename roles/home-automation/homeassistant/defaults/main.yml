@@ -8,3 +8,4 @@ ip_address: "{{ iot_base }}.168"
 homer_category: smarthome
 
 dashboard_name: "Home Assistant"
+hass_db_path: "{{ data_root }}/nextcloud/db"

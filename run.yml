@@ -8,6 +8,7 @@
 
   roles:
     - role: setup/user_setup
+      become: yes
       tags:
         - setup
         - user_setup
@@ -18,19 +19,20 @@
         - setup
         - docker
 
-    - role: setup/nfs
-      tags:
-        - setup
-        - nfs 
+    # - role: setup/nfs
+    #   tags:
+    #     - setup
+    #     - nfs 
   
-    - role: setup/samba
-      tags:
-        - setup
-        - samba 
+    # - role: setup/samba
+    #   tags:
+    #     - setup
+    #     - samba 
 
     - role: services/nextcloud
       tags:
         - services
+        # - containers
         - nextcloud
 
     # - role: services/seafile
@@ -41,6 +43,7 @@
     - role: heimdall  
       tags:
         - services
+        - containers
         - heimdall
 
     - role: media/jellyfin  
@@ -49,11 +52,11 @@
         - containers
         - jellyfin
   
-    - role: media/plex  
-      tags:
-        - media
-        - containers
-        - plex
+    # - role: media/plex  
+    #   tags:
+    #     - media
+    #     - containers
+    #     - plex
 
     - role: arr/sonarr  
       tags:
@@ -106,6 +109,7 @@
     - role: services/vaultwarden  
       tags:
         - services
+        - containers
         - vaultwarden
 
     # - role:  monitor/loki  
@@ -128,16 +132,87 @@
     #     - monitor
     #     - grafana
 
-    - role:  homeassistant  
+    - role:  home-automation/homeassistant  
       tags:
         - homeassistant
+        - containers
+        - home-automation
+  
+
+    - role:  home-automation/esphome  
+      tags:
+        - esphome
+        - containers
+        - home-automation
+  
+    - role:  home-automation/mqtt  
+      tags:
+        - mqtt
+        - containers
+        - home-automation
+
+    - role:  home-automation/zigbee2mqtt  
+      tags:
+        - zigbee2mqtt
+        - containers
+        - home-automation
+        
+    # - role:  home-automation/frigate  
+    #   tags:
+    #     - frigate
+    #     - containers
+    #     - home-automation
+        
+    - role:  home-automation/nodered  
+      tags:
+        - nodered
+        - node-red
+        - containers
+        - home-automation
 
     - role:  minecraft  
       tags:
         - minecraft
 
+    - role: services/calibre  
+      tags:
+      - containers
+        - calibre
+
+    - role: services/trilium  
+      tags:
+        - containers
+        - trilium
+
+    - role: services/ubooquity  
+      tags:
+        - containers
+        - ubooquity
+
+    - role: services/kavita  
+      tags:
+        - containers
+        - kavita
+
+    - role: services/photoprism  
+      tags:
+        - containers
+        - photoprism
+
+    - role: services/watchtower  
+      tags:
+        - containers
+        - watchtower
+
+    # - role: services/traefik  
+    #   tags:
+    #     - containers
+    #     - traefik
+    #     - trafik
+
     - role: experiments/transmission-openvpn 
       tags:
+        - containers
         - transmission-openvpn
 
 # TODO: wire containers through gluetun 

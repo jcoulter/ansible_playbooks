@@ -1,2 +1,4 @@
-192.168.1.56 ansible_user=jcoulter 
+#192.168.1.56 ansible_user=jcoulter 
+vault.local ansible_user=jcoulter
 
+#jelly.local ansible_user=jelly
