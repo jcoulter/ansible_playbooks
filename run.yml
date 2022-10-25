@@ -210,7 +210,7 @@
     #     - traefik
     #     - trafik
 
-    - role: experiments/transmission-openvpn 
+    - role: arr/transmission-openvpn 
       tags:
         - containers
         - transmission-openvpn
