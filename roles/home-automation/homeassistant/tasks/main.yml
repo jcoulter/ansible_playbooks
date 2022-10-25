@@ -1,12 +1,8 @@
 ---
-# - name: Create a homeassistant network
-#   docker_network:
-#     name: host
-#     type: host
-    # ipam_options:
-      # subnet: "{{ h?omeassistant_subnet }}"
-
 #  Recorder connection string is defined in configuration.yml
+# recorder:
+#   db_url: mysql://hass:<password>@192.168.1.36:3306/hass?charset=utf8
+
 - name: Make sure the {{ container_name }} container is created and running
   become: yes
   docker_container:
@@ -21,16 +17,8 @@
     devices:
       - "/dev/zigbee:/dev/zigbee"
       - "/dev/zwave:/dev/zwave"
-    # networks:
-    # - name: host
-    # image: "homeassistant/home-assistant:stable"
-    # networks:
-      # - name: homeassistant_network
-        # ipv4_address: "{{ homeassistant_ip }}"
     pull: yes
     state: 'started'
-    # ports:
-    #   - "8123:8123"
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
@@ -43,27 +31,17 @@
     state: 'started'
     restart_policy: unless-stopped
 
-- name: "Make sure - MariaDB container is created and running"
-  # become: yes
+- name: "Make sure - Hass MariaDB container is created and running"
   docker_container:
-    # container_default_behavior: compatibility
-    # networks_cli_compatible: yes
-    name: "nextcloud-maria-db"
-    # user: nextcloud
+    name: "hass-maria-db"
     image: mariadb:latest
-    # image: "centos/mariadb-102-centos7:latest"
     pull: yes
     published_ports:
       - "3306:3306"
     state: 'started'
-    # capabilities:
-    #   - SYS_ADMIN
-    #   - DAC_READ_SEARCH
-    network_mode: host
     volumes:
       # - /docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
-      # - nextcloud_db:/var/lib/mysql
-      - "{{ nc_db_path }}:/var/lib/mysql"
+      - "{{ data_root }}/homeassistant/config/db:/var/lib/mysql"
       - /etc/localtime:/etc/localtime:ro
     env:
       "MYSQL_DATABASE": hass
@@ -71,9 +49,3 @@
       "MYSQL_PASSWORD": "{{ mariadb_password }}"
       "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
     restart_policy: unless-stopped
-
-# version: '3'
-# services:
-#   homeassistant:
-#     volumes:
-#     privileged: true

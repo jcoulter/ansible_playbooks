@@ -51,7 +51,7 @@
     state: 'started'
     restart_policy: unless-stopped
 
-- name: "Make sure - {{ mariadb_password }} MariaDB container is created and running"
+- name: "Make sure - Nextcloud MariaDB container is created and running"
   docker_container:
     name: "nextcloud-maria-db"
     image: mariadb:latest
