@@ -4,7 +4,7 @@
   become: yes
   docker_container:
     image: "haugene/transmission-openvpn"
-    name: "transmission-openvpn"
+    name: transmission-openvpn
     capabilities:
       - NET_ADMIN
     ports:
@@ -12,10 +12,8 @@
     pull: yes
     networks:
       - name: media_network
-        ipv4_address: "{{ transmission_ip }}"
-    state: 'started'
+    state: started
     env:
-      # OPENVPN_CONFIG: us-dtw_udp
       OPENVPN_CONFIG: us-dtw.prod.surfshark.com_udp
       OPENVPN_PROVIDER: SURFSHARK
       OPENVPN_USERNAME: "{{ vpn_username }}"
@@ -24,12 +22,9 @@
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
-      # No idea how to actually set these
       TRANSMISSION_WEB_UI: transmission-web-control
       TRANSMISSION_RATIO_LIMIT_ENABLED: "true"
       TRANSMISSION_DOWNLOAD_QUEUE_SIZE: "25"
     volumes:
       - "{{ data_root }}/transmission/data:/data"
-      # - "{{ config_root }}/transmission:/config"
-      # - "{{ data_root }}/transmission/downloads:/downloads"
     restart_policy: unless-stopped

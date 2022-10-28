@@ -1,12 +1,10 @@
 ---
 - name: Make sure the bazarr container is created and running
-  become: yes
   docker_container:
     image: "ghcr.io/linuxserver/bazarr"
-    name: "bazarr"
+    name: bazarr
     networks:
       - name: media_network
-        ipv4_address: "{{ bazarr_ip }}"
     labels:
       traefik.enable: "true"
       traefik.http.routers.bazarr.tls: "true"

@@ -1,12 +1,10 @@
 ---
-- name: Make sure the readarr container is created and running
-  become: yes
+- name: Make sure the readarr ebook container is created and running
   docker_container:
     image: "ghcr.io/linuxserver/readarr:develop"
     name: "readarr_ebooks"
     networks:
       - name: media_network
-        ipv4_address: "{{ readarr_ip }}"
     ports:
       - 8787:8787
     pull: yes
@@ -24,13 +22,11 @@
     restart_policy: unless-stopped
 
 - name: Make sure the readarr audio book container is created and running
-  become: yes
   docker_container:
     image: "ghcr.io/linuxserver/readarr:develop"
-    name: "readarr_audio"
+    name: readarr_audio
     networks:
       - name: media_network
-        ipv4_address: "{{ readarr_audio_ip }}"
     ports:
       - 8788:8787
     pull: yes

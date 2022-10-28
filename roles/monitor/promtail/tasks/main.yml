@@ -1,13 +1,11 @@
 ---
 - name: Make sure the promtail container is created and running
-  become: yes
   docker_container:
     image: "grafana/promtail:2.4.0"
     name: "promtail"
     # user: "1000"
     networks:
       - name: media_network
-        ipv4_address: "{{ promtail_ip }}"
     ports:
       - "3100:3100"
     pull: yes

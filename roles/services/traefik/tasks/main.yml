@@ -14,7 +14,6 @@
       traefik.http.routers.traefik: "true"
     networks:
       - name: media_network
-        ipv4_address: "{{ kavita_ip }}"
     ports:
       # HTTPS / SSL port
       - "443:443"

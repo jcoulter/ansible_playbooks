@@ -1,17 +1,14 @@
 ---
 - name: Make sure the prowlarr container is created and running
-  become: yes
   docker_container:
     image: "ghcr.io/linuxserver/prowlarr:develop"
-    name: "prowlarr"
+    name: prowlarr
     networks:
       - name: media_network
-        ipv4_address: "{{ prowlarr_ip }}"
-    ports: # handled by gluetun?
+    ports:
       - 9696:9696
-    # network_mode: "container:gluetun"
     pull: yes
-    state: 'started'
+    state: started
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

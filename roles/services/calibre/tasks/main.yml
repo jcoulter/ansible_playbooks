@@ -1,12 +1,10 @@
 ---
 - name: Make sure the calibre container is created and running
-  become: yes
   docker_container:
     image: lscr.io/linuxserver/calibre:latest
     name: calibre
     networks:
       - name: media_network
-        ipv4_address: "{{ calibre_ip }}"
     ports:
       - "8090:8080"
       - "8091:8081"

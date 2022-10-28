@@ -3,12 +3,11 @@
   become: yes
   docker_container:
     image: "ghcr.io/linuxserver/plex:latest"
-    name: "plex"
+    name: plex
     ports:
       - 32400:32400
     networks:
       - name: media_network
-        ipv4_address: "{{ plex_ip }}"
     # networks:
     #   - name: swag_internal_macvlan
     #     ipv4_address: "{{ ip_address }}"
@@ -48,9 +47,6 @@
 #       - 32413:32413/udp
 #       - 32414:32414/udp
 #     networks:
-#       - name: media_network
-#         ipv4_address: "{{ plex_ip }}"
-#     # networks:
 #     #   - name: swag_internal_macvlan
 #     #     ipv4_address: "{{ ip_address }}"
 #     pull: yes

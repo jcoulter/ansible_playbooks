@@ -7,7 +7,6 @@
     # user: "1000"
     networks:
       - name: media_network
-        ipv4_address: "{{ prometheus_ip }}"
     ports:
       - '9080:9090'
     pull: yes

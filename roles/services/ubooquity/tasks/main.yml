@@ -6,7 +6,6 @@
     name: ubooquity
     networks:
       - name: media_network
-        ipv4_address: "{{ ubooquity_ip }}"
     ports:
       - "2202:2202"
       - "2203:2203"

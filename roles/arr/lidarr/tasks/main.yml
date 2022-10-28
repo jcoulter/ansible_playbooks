@@ -1,16 +1,14 @@
 ---
 - name: Make sure the lidarr container is created and running
-  become: yes
   docker_container:
     image: "ghcr.io/linuxserver/lidarr:latest"
-    name: "lidarr"
+    name: lidarr
     networks:
       - name: media_network
-        ipv4_address: "{{ lidarr_ip }}"
     ports:
       - 8686:8686
     pull: yes
-    state: 'started'
+    state: started
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

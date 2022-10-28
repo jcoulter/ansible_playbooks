@@ -1,12 +1,10 @@
 ---
 - name: Make sure the heimdall container is created and running
-  become: yes
   docker_container:
     image: "ghcr.io/linuxserver/heimdall"
-    name: "heimdall"
+    name: heimdall
     networks:
       - name: media_network
-        ipv4_address: "{{ heimdall_ip }}"
     ports:
       - 49154:80
       - 49155:443

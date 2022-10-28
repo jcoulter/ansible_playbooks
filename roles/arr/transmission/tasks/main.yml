@@ -1,12 +1,10 @@
 ---
-- name: Make sure the sonarr container is created and running
-  become: yes
+- name: Make sure the transmission  container is created and running
   docker_container:
     image: "ghcr.io/linuxserver/transmission"
-    name: "transmission"
+    name: transmission
     networks:
       - name: media_network
-        ipv4_address: "{{ transmission_ip }}"
     ports: # handled by gluetun?
       - 9091:9091
       - 51413:51413
