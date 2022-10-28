@@ -21,9 +21,6 @@
     ports:
       - 80:8096
     # networks:
-    #   - name: media_network
-    #     ipv4_address: "{{ jellyfin_ip }}"
-    # networks:
     #   - name: swag_internal_macvlan
     #     ipv4_address: "{{ ip_address }}"
     pull: yes

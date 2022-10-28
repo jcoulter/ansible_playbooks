@@ -8,14 +8,12 @@
 
 # bash <(curl -Ss https://my-netdata.io/kickstart.sh)
 - name: Make sure the grafana container is created and running
-  become: yes
   docker_container:
     image: "grafana/promtail:2.4.0"
     name: "promtail"
     # user: "1000"
     networks:
       - name: media_network
-        ipv4_address: "{{ grafana_ip }}"
     ports:
       - "3000:3000"
     pull: yes

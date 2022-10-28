@@ -1,12 +1,10 @@
 ---
 - name: Make sure the radarr container is created and running
-  become: yes
   docker_container:
     image: "ghcr.io/linuxserver/radarr"
-    name: "radarr"
+    name: radarr
     networks:
       - name: media_network
-        ipv4_address: "{{ radarr_ip }}"
     ports:
       - 7878:7878
     pull: yes

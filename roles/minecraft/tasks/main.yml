@@ -1,7 +1,6 @@
 ---
 
 - name: Make sure the minecraft server is created and running
-  become: yes
   docker_container:
     image: "itzg/minecraft-server"
     # stdin_open: true
