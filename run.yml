@@ -177,7 +177,12 @@
     - role: services/calibre  
       tags:
       - containers
-        - calibre
+      - calibre
+
+    - role: services/audiobookshelf  
+      tags:
+      - containers
+      - audiobookshelf
 
     - role: services/trilium  
       tags:

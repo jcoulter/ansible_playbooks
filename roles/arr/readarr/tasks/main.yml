@@ -2,7 +2,7 @@
 - name: Make sure the readarr ebook container is created and running
   docker_container:
     image: "ghcr.io/linuxserver/readarr:develop"
-    name: "readarr_ebooks"
+    name: readarr_ebooks
     networks:
       - name: media_network
     ports:
