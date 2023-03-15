@@ -79,3 +79,11 @@ OOMScoreAdjust=-500
 WantedBy=multi-user.target
 
 ```
+
+
+Xinstall tdarr
+Xcalibre?
+
+update tdarr node
+update tvshows dir
+frigate wyze

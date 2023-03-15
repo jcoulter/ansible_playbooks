@@ -1,0 +1,10 @@
+---
+container_name: tdarr
+
+url: "tdarr.{{ host_local }}"
+
+homer_category: media
+
+ip_address: "{{ swag_base }}.5"
+
+

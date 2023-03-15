@@ -19,10 +19,11 @@
         - setup
         - docker
 
-    # - role: setup/nfs
-    #   tags:
-    #     - setup
-    #     - nfs 
+    - role: setup/nfs
+      become: yes
+      tags:
+        - setup
+        - nfs 
   
     # - role: setup/samba
     #   tags:
@@ -100,6 +101,12 @@
         - containers
         - prowlarr
 
+    - role: arr/tdarr  
+      tags:
+        - arr
+        - containers
+        - tdarr
+
     # - role: arr/transmission  
     #   tags:
     #     - arr
@@ -157,11 +164,13 @@
         - containers
         - home-automation
         
-    # - role:  home-automation/frigate  
-    #   tags:
-    #     - frigate
-    #     - containers
-    #     - home-automation
+    - role:  home-automation/frigate  
+      tags:
+        - frigate
+
+    - role:  home-automation/wyze_bridge  
+      tags:
+        - wyze
         
     - role:  home-automation/nodered  
       tags:
@@ -183,6 +192,11 @@
       tags:
       - containers
       - audiobookshelf
+
+    - role: services/openbooks  
+      tags:
+      - containers
+      - openbooks
 
     - role: services/trilium  
       tags:

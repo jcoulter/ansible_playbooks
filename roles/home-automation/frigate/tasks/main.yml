@@ -22,12 +22,6 @@
     ports:
       - "5000:5000"
       - "1935:1935" # RTMP feeds
-    # environment:
-    # ports:
-    #   - "1935:1935"
-    #   - "5000:5000"
-    #   - "5001:5001"
-    #   - "8080:8080"
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
@@ -41,21 +35,9 @@
         target: /tmp/cache
         tmpfs:
           size: 1000000000
+        # config is working on the network share, the db must be on the same server as the container
+      - ./db:/frigate/db
     state: 'started'
     restart_policy: unless-stopped
-
-    # version: "3"
-    # # shm_size: "256mb"
-    # build:
-    #   context: .
-    #   dockerfile: docker/Dockerfile.dev
-    # volumes:
-    #   - /etc/localtime:/etc/localtime:ro
-    #   - .:/lab/frigate:cached
-    #   - ./config/config.yml:/config/config.yml:ro
-    #   - ./debug:/media/frigate
-    #   - /dev/bus/usb:/dev/bus/usb
-    #   - /dev/dri:/dev/dri # for intel hwaccel, needs to be updated for your hardware
-    # ports:
 
 

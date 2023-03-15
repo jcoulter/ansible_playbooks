@@ -13,18 +13,35 @@
     state: present
     gid: 1750
 
-- name: check data_mountpoint exist
+- name: check config_mountpoint exist
   ansible.builtin.file:
-    path: "{{ data_mountpoint }}"
+    path: "{{ config_mountpoint }}"
     state: directory
-    mode: "{{ data_permission }}"
+    mode: "{{ config_permission }}"
     owner: root
     group: docker
 
-- name: mount data network share
+- name: mount config network share
   ansible.posix.mount:
-    src: "{{ data_nfs }}"
-    path: "{{ data_mountpoint }}"
+    src: "{{ config_nfs }}"
+    path: "{{ config_mountpoint }}"
     fstype: nfs
-    opts: "{{ data_opts }}"
+    opts: "{{ config_opts }}"
+    state: mounted
+
+- name: check media_mountpoint exist
+  ansible.builtin.file:
+    path: "{{ media_mountpoint }}"
+    state: directory
+    mode: "{{ media_permission }}"
+    owner: root
+    group: docker
+
+
+- name: mount media network share
+  ansible.posix.mount:
+    src: "{{ media_nfs }}"
+    path: "{{ media_mountpoint }}"
+    fstype: nfs
+    opts: "{{ media_opts }}"
     state: mounted

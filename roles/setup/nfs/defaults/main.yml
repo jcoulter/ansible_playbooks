@@ -1,4 +1,11 @@
-data_nfs: "192.168.1.54:/volume1/data"
+media_nfs: "192.168.1.36:/export/media"
+config_nfs: "192.168.1.36:/export/config"
 data_mountpoint: "/mnt/data"
+config_mountpoint: "/mnt/config"
+media_mountpoint: "/mnt/data/media"
 data_permission: '0777'
+config_permission: '0777'
+media_permission: '0777'
 data_opts: 'rw,sync'
+media_opts: 'rw,sync'
+config_opts: 'rw,sync'

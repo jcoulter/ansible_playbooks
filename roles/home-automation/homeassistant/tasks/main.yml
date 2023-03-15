@@ -49,3 +49,37 @@
       "MYSQL_PASSWORD": "{{ mariadb_password }}"
       "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
     restart_policy: unless-stopped
+
+# https://community.home-assistant.io/t/complete-guide-on-setting-up-grafana-influxdb-with-home-assistant-using-official-docker-images/42860
+# Deploy and then manually create db (step 2)
+
+# Find updated influxdb write-up. 4 years is too old.
+
+- name: "Make sure - Hass influxdb container is created and running"
+  docker_container:
+    name: "hass-influxdb"
+    image: influxdb:latest
+    pull: yes
+    published_ports:
+      - "8086:8086"
+      # - "8083:8083"
+    state: 'started'
+    env:
+      "DOCKER_INFLUXDB_INIT_MODE": setup 
+      "DOCKER_INFLUXDB_INIT_USERNAME": "{{ hass_influxdb_name }}" 
+      "DOCKER_INFLUXDB_INIT_PASSWORD": "{{ hass_influxdb_password }}"  
+      "DOCKER_INFLUXDB_INIT_ORG": "Home"  
+      "DOCKER_INFLUXDB_INIT_BUCKET": hass-bucket 
+    volumes:
+      - "{{ data_root }}/homeassistant/config/influxdb_data:/var/lib/influxdb2"
+      - "{{ data_root }}/homeassistant/config/influxdb_config:/etc/influxdb2 "
+      - /etc/localtime:/etc/localtime:ro
+    restart_policy: unless-stopped
+
+
+      # -v $PWD/config:/etc/influxdb2 \
+      # -e DOCKER_INFLUXDB_INIT_ORG=my-org \
+      # -e DOCKER_INFLUXDB_INIT_BUCKET=my-bucket \
+      # -e DOCKER_INFLUXDB_INIT_RETENTION=1w \
+      # -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token \
+      # influxdb:2.0

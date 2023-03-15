@@ -1,0 +1,30 @@
+---
+
+- name: Make sure the {{ container_name }} container is created and running
+  become: true
+  docker_container:
+    name: "{{ container_name }}"
+    image: "mrlt8/wyze-bridge:latest"
+    pull: yes
+    state: 'started'
+    ports:
+      - "5001:5000"
+      - "8888:8888"
+      - "8554:8554"
+      - "1936:1935" # RTMP feeds
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      WYZE_EMAIL: "{{ wyze_email }}"
+      WYZE_PASSWORD: "{{ wyze_password }}"
+    volumes:
+      - "{{ config_root }}/frigate_config:/config"
+      - /etc/localtime:/etc/localtime:ro
+      - "{{ data_root }}/media/frigate:/media/frigate"
+      - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    state: 'started'
+    restart_policy: unless-stopped

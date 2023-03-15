@@ -1,0 +1,27 @@
+---
+- name: Make sure the openbooks container is created and running
+  docker_container:
+    image: evanbuss/openbooks:latest
+    name: openbooks
+    networks:
+      - name: media_network
+    ports:
+      - "8180:80"
+    pull: yes
+    state: 'started'
+    command: "./openbooks server --dir /books --port 80 --name {{ irc_name }}"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      # BASE_PATH: "/openbooks/"
+      # PASSWORD: #optional
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "{{ data_root }}/media/import_books:/books"
+    restart_policy: unless-stopped
+
+    # openbooks:
+        # command: --persist
+
+

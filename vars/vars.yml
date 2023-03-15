@@ -4,7 +4,7 @@ data_root: /mnt/data
 docker_dir: /opt/docker/data
 
 puid: '1000'
-pgid: '1000'
+pgid: '100'
 timezone: "America/New_York"
 created_username: jcoulter
 config_root: "/mnt/config"

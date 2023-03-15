@@ -22,4 +22,28 @@
       - "{{ data_root }}/media:/media"
     restart_policy: unless-stopped
 
+- name: Make sure the {{ config_root }} calibre-web container is created and running
+  docker_container:
+    image: lscr.io/linuxserver/calibre-web:latest
+    name: calibre-web
+    networks:
+      - name: media_network
+    ports:
+      - "8093:8083"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      DOCKER_MODS: linuxserver/mods:universal-calibre #optional
+      #- OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      # - /path/to/calibre/library:/books
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "{{ config_root }}/calibre_web_config:/config"
+      - "{{ data_root }}/media:/media"
+    restart_policy: unless-stopped
+
+
 
