@@ -3,6 +3,8 @@ data_root: /mnt/data
 
 docker_dir: /opt/docker/data
 
+nc_uid: '33'
+nc_gid: '100'
 puid: '1000'
 pgid: '100'
 timezone: "America/New_York"

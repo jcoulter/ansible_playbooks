@@ -95,6 +95,12 @@
         - containers
         - bazarr
 
+    - role: arr/homarr  
+      tags:
+        - arr
+        - containers
+        - homarr
+
     - role: arr/prowlarr  
       tags:
         - arr
@@ -223,11 +229,22 @@
         - containers
         - watchtower
 
-    # - role: services/traefik  
-    #   tags:
-    #     - containers
-    #     - traefik
-    #     - trafik
+    - role: services/syncthing 
+      become: yes 
+      tags:
+        - containers
+        - syncthing
+
+    - role: dashy 
+      tags:
+        - containers
+        - dashy
+
+    - role: services/traefik  
+      tags:
+        - containers
+        - traefik
+        - trafik
 
     - role: arr/transmission-openvpn 
       tags:

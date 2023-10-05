@@ -31,10 +31,29 @@
     state: 'started'
     restart_policy: unless-stopped
 
-- name: "Make sure - Hass MariaDB container is created and running"
+# - name: "Make sure - Hass MariaDB container is created and running"
+#   docker_container:
+#     name: "hass-maria-db"
+#     image: mariadb:latest
+#     pull: yes
+#     published_ports:
+#       - "3306:3306"
+#     state: 'started'
+#     volumes:
+#       # - /docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
+#       - "{{ data_root }}/homeassistant/config/db:/var/lib/mysql"
+#       - /etc/localtime:/etc/localtime:ro
+#     env:
+#       "MYSQL_DATABASE": hass
+#       "MYSQL_USER": hass
+#       "MYSQL_PASSWORD": "{{ mariadb_password }}"
+#       "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
+#     restart_policy: unless-stopped
+
+- name: "Make sure - Hass msql container is created and running"
   docker_container:
-    name: "hass-maria-db"
-    image: mariadb:latest
+    name: "hass-msql-db"
+    image: mysql:latest
     pull: yes
     published_ports:
       - "3306:3306"

@@ -29,7 +29,7 @@
     pull: yes
     state: 'started'
     env:
-      "MYSQL_HOST": nextcloud-maria-db
+      "MYSQL_HOST": nextcloud-msql-db
       "MYSQL_DATABASE": nextcloud
       "MYSQL_USER": nextcloud
       "MYSQL_PASSWORD": "{{ mariadb_password }}"
@@ -38,6 +38,7 @@
       - name: nextcloud_network
     volumes:
       - "{{ nc_html_path }}:/var/www/html"
+      - "{{ data_root }}/sync:/sync"
 
 - name: Make sure the Redis container is created and running
   docker_container:
@@ -51,14 +52,33 @@
     state: 'started'
     restart_policy: unless-stopped
 
-- name: "Make sure - Nextcloud MariaDB container is created and running"
+# - name: "Make sure - Nextcloud MariaDB container is created and running"
+#   docker_container:
+#     name: "nextcloud-maria-db"
+#     image: mariadb:latest
+#     pull: yes
+#     state: 'started'
+#     networks:
+#       - name: nextcloud_network
+#     volumes:
+#       # - /docker/mariadb/nc/my.cnf:/etc/mysql/my.cnf:ro
+#       - "{{ nc_db_path }}:/var/lib/mysql"
+#       - /etc/localtime:/etc/localtime:ro
+#     env:
+#       "MYSQL_DATABASE": nextcloud
+#       "MYSQL_USER": nextcloud
+#       "MYSQL_PASSWORD": "{{ mariadb_password }}"
+#       "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
+#     restart_policy: unless-stopped
+
+- name: "Make sure - Nextcloud msql container is created and running"
   docker_container:
-    name: "nextcloud-maria-db"
-    image: mariadb:latest
+    name: "nextcloud-msql-db"
+    image: mysql:latest
     pull: yes
-    state: 'started'
     networks:
       - name: nextcloud_network
+    state: 'started'
     volumes:
       # - /docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
       - "{{ nc_db_path }}:/var/lib/mysql"

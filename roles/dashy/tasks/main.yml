@@ -1,0 +1,19 @@
+---
+- name: Make sure the dashy container is created and running
+  docker_container:
+    image: "lissy93/dashy:latest"
+    name: dashy
+    networks:
+      - name: media_network
+    ports:
+      - 88:80
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      # The conf.yml must exist for this volume syntax to succeed.
+      - "{{ config_root }}/dashy_config/conf.yml:/app/public/conf.yml"
+    restart_policy: unless-stopped

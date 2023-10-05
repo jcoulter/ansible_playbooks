@@ -1,0 +1,23 @@
+---
+- name: Make sure the syncthing container is created and running
+  docker_container:
+    image: linuxserver/syncthing:latest
+    name: syncthing
+    networks:
+      - name: media_network
+    ports:
+      - "8384:8384"
+      - "22000:22000/tcp"
+      - "22000:22000/udp"
+      - "21027:21027/udp"
+    pull: yes
+    state: 'started'
+    env:
+    # Must run as www-data user/group to work with nextcloud
+      PUID: "{{ nc_uid }}"
+      PGID: "{{ nc_gid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ config_root }}/syncthing_data:/config"
+      - "{{ data_root }}/sync:/data/sync"
+    restart_policy: unless-stopped
