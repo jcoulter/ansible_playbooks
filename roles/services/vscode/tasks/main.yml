@@ -1,0 +1,22 @@
+---
+- name: Make sure the vscode server container is created and running
+  docker_container:
+    image: "lscr.io/linuxserver/code-server:latest"
+    name: "code-server"
+    ports:
+      - 8443:8443
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      # - PASSWORD=password #optional
+      # - HASHED_PASSWORD= #optional
+      # - SUDO_PASSWORD=password #optional
+      # - SUDO_PASSWORD_HASH= #optional
+      # - PROXY_DOMAIN=code-server.my.domain #optional
+      # - DEFAULT_WORKSPACE=/config/workspace #optional
+    volumes:
+      # - "{{ data_root }}/vw_data:/data"
+      - "{{ config_root }}/vscode_config:/config"
+    restart_policy: unless-stopped

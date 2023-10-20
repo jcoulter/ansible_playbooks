@@ -3,6 +3,52 @@
 # recorder:
 #   db_url: mysql://hass:<password>@192.168.1.36:3306/hass?charset=utf8
 
+# https://community.home-assistant.io/t/complete-guide-on-setting-up-grafana-influxdb-with-home-assistant-using-official-docker-images/42860
+# Deploy and then manually create db (step 2)
+
+# Find updated influxdb write-up. 4 years is too old.
+
+- name: "Make sure - Hass influxdb container is created and running"
+  docker_container:
+    name: "hass-influxdb"
+    image: influxdb:latest
+    pull: yes
+    published_ports:
+      - "8086:8086"
+      # - "8083:8083"
+    state: 'started'
+    env:
+      "DOCKER_INFLUXDB_INIT_MODE": setup 
+      "DOCKER_INFLUXDB_INIT_USERNAME": "{{ hass_influxdb_name }}" 
+      "DOCKER_INFLUXDB_INIT_PASSWORD": "{{ hass_influxdb_password }}"  
+      "DOCKER_INFLUXDB_INIT_ORG": "Home"  
+      "DOCKER_INFLUXDB_INIT_BUCKET": hass-bucket 
+    volumes:
+      - "{{ data_root }}/homeassistant/config/influxdb_data:/var/lib/influxdb2"
+      - "{{ data_root }}/homeassistant/config/influxdb_config:/etc/influxdb2 "
+      - /etc/localtime:/etc/localtime:ro
+    restart_policy: unless-stopped
+
+
+- name: "Make sure - Hass msql container is created and running"
+  docker_container:
+    name: "hass-msql-db"
+    image: mysql:latest
+    pull: yes
+    published_ports:
+      - "3306:3306"
+    state: 'started'
+    volumes:
+      # - /docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
+      - "{{ data_root }}/homeassistant/config/db:/var/lib/mysql"
+      - /etc/localtime:/etc/localtime:ro
+    env:
+      "MYSQL_DATABASE": hass
+      "MYSQL_USER": hass
+      "MYSQL_PASSWORD": "{{ mariadb_password }}"
+      "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
+    restart_policy: unless-stopped
+
 - name: Make sure the {{ container_name }} container is created and running
   become: yes
   docker_container:
@@ -30,6 +76,10 @@
       - "/run/dbus:/run/dbus:ro"
     state: 'started'
     restart_policy: unless-stopped
+    # HOW CAN ANSIBLE LACK DOCKER depends_on ?!?!
+    # depends_on:
+    #   - hass-msql-db
+    #   - hass-influxdb
 
 # - name: "Make sure - Hass MariaDB container is created and running"
 #   docker_container:
@@ -50,50 +100,8 @@
 #       "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
 #     restart_policy: unless-stopped
 
-- name: "Make sure - Hass msql container is created and running"
-  docker_container:
-    name: "hass-msql-db"
-    image: mysql:latest
-    pull: yes
-    published_ports:
-      - "3306:3306"
-    state: 'started'
-    volumes:
-      # - /docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
-      - "{{ data_root }}/homeassistant/config/db:/var/lib/mysql"
-      - /etc/localtime:/etc/localtime:ro
-    env:
-      "MYSQL_DATABASE": hass
-      "MYSQL_USER": hass
-      "MYSQL_PASSWORD": "{{ mariadb_password }}"
-      "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
-    restart_policy: unless-stopped
 
-# https://community.home-assistant.io/t/complete-guide-on-setting-up-grafana-influxdb-with-home-assistant-using-official-docker-images/42860
-# Deploy and then manually create db (step 2)
 
-# Find updated influxdb write-up. 4 years is too old.
-
-- name: "Make sure - Hass influxdb container is created and running"
-  docker_container:
-    name: "hass-influxdb"
-    image: influxdb:latest
-    pull: yes
-    published_ports:
-      - "8086:8086"
-      # - "8083:8083"
-    state: 'started'
-    env:
-      "DOCKER_INFLUXDB_INIT_MODE": setup 
-      "DOCKER_INFLUXDB_INIT_USERNAME": "{{ hass_influxdb_name }}" 
-      "DOCKER_INFLUXDB_INIT_PASSWORD": "{{ hass_influxdb_password }}"  
-      "DOCKER_INFLUXDB_INIT_ORG": "Home"  
-      "DOCKER_INFLUXDB_INIT_BUCKET": hass-bucket 
-    volumes:
-      - "{{ data_root }}/homeassistant/config/influxdb_data:/var/lib/influxdb2"
-      - "{{ data_root }}/homeassistant/config/influxdb_config:/etc/influxdb2 "
-      - /etc/localtime:/etc/localtime:ro
-    restart_policy: unless-stopped
 
 
       # -v $PWD/config:/etc/influxdb2 \

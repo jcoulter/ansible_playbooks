@@ -1,0 +1,19 @@
+---
+- name: Make sure the OpenSpeedTest container is created and running
+  docker_container:
+    image: openspeedtest/latest
+    name: speed-test
+    ports:
+      - "3002:3000"
+      - "3001:3001"
+    pull: yes
+    state: 'started'
+    env:
+      # DB_ENGINE: sqlite # Optional: 'sqlite', 'postgres'
+      # ALLOW_SIGNUP: "false"
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    # volumes:
+    #   - "{{ data_root }}/mealie_data:/app/data/"
+    restart_policy: unless-stopped

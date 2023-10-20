@@ -145,47 +145,51 @@
     #     - monitor
     #     - grafana
 
-    - role:  home-automation/homeassistant  
+    - role: home-automation/homeassistant  
       tags:
         - homeassistant
         - containers
         - home-automation
   
 
-    - role:  home-automation/esphome  
+    - role: home-automation/esphome  
       tags:
         - esphome
         - containers
         - home-automation
   
-    - role:  home-automation/mqtt  
+    - role: home-automation/mqtt  
       tags:
         - mqtt
         - containers
         - home-automation
 
-    - role:  home-automation/zigbee2mqtt  
+    - role: home-automation/zigbee2mqtt  
       tags:
         - zigbee2mqtt
         - containers
         - home-automation
         
-    - role:  home-automation/frigate  
+    - role: home-automation/frigate  
       tags:
-        - frigate
+        - frigate       
+
+    - role: neolink
+      tags:
+        - neolink
 
     - role:  home-automation/wyze_bridge  
       tags:
         - wyze
         
-    - role:  home-automation/nodered  
+    - role: home-automation/nodered  
       tags:
         - nodered
         - node-red
         - containers
         - home-automation
 
-    - role:  minecraft  
+    - role: minecraft  
       tags:
         - minecraft
 
@@ -229,6 +233,16 @@
         - containers
         - watchtower
 
+    - role: services/mealie  
+      tags:
+        - containers
+        - mealie
+
+    - role: services/open-speed-test  
+      tags:
+        - containers
+        - speed-test
+
     - role: services/syncthing 
       become: yes 
       tags:
@@ -239,6 +253,11 @@
       tags:
         - containers
         - dashy
+
+    - role: services/vscode 
+      tags:
+        - containers
+        - vscode
 
     - role: services/traefik  
       tags:
