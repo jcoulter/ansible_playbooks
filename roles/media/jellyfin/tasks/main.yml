@@ -15,7 +15,8 @@
 - name: " {{ data_root }}/data-backup/media  sure the jellyfin container is created and running"
   become: yes
   docker_container:
-    image: "ghcr.io/linuxserver/jellyfin"
+    # image: "jellyfin/jellyfin:latest"
+    image: "ghcr.io/linuxserver/jellyfin:latest"
     name: "jellyfin"
     # network_mode: "host"
     ports:
