@@ -4,21 +4,20 @@ global:
 api:
   dashboard: true
   insecure: true
+  debug: true
 
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     watch: true
     exposedByDefault: false
-
   file:
-    filename: /etc/traefik/config.yml
+    filename: /config.yml
     watch: true
 
 log:
   level: INFO
   format: common
-
 entryPoints:
   http:
     address: ":80"
@@ -29,3 +28,18 @@ entryPoints:
           scheme: https
   https:
     address: ":443"
+serversTransport:
+  insecureSkipVerify: true
+
+certificatesResolvers:
+  cloudflare:
+    acme:
+    # TODO: substitutions from ansible_vault
+      email: jacob.coulter@gmail.com
+      storage: acme.json
+      dnsChallenge:
+        provider: cloudflare
+        disablePropagationCheck: true # uncomment this if you have issues pulling certificates through cloudflare, By setting this flag to true disables the need to wait for the propagation of the TXT record to all authoritative name servers.
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"

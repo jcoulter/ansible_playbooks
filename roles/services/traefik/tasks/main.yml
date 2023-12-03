@@ -1,33 +1,99 @@
 ---
+- name: Create a proxy network
+  docker_network:
+    name: proxy
+
 - name: Copy content of directory 'files'
   copy:
     src:  ../files/ 
     dest: "{{ config_root }}/traefik_config/"
 
-- name: Make sure the traefik container is created and running
-  become: yes
+# - name: make sure acme is 600
+#   ansible.builtin.file:
+#     path: "{{ config_root }}/traefik_config/acme.json"
+#     state: touch
+#     owner: "{{ puid }}"
+#     group: "{{ pgid }}"
+#     mode: '0600'
+
+- name: "Make sure the traefik container is created and running {{ traefik_password }} {{cloudflare_token}} {{cloudflare_email}}"
+  # become: yes
   docker_container:
-    image: "traefik:v2.4"
+    image: "traefik:latest"
     name: "traefik"
+    security_opts:
+      - "no-new-privileges:true"
     labels:
-      traefik.enable: "true"
-      traefik.http.routers.traefik: "true"
+      # traefik.enable: "true"
+      # traefik.http.routers.traefik: "true"
+
+      # Dynamic Configuration
+      traefik.http.routers.dashboard.rule: "Host(`traefik.coulter.rocks`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      traefik.http.routers.dashboard.service: "api@internal"
+      # traefik.http.routers.dashboard.middlewares: "auth"
+      # traefik.http.middlewares.auth.basicauth.users: "{{ traefik_password }}"
+
+      # traefik.http.routers.traefik.entrypoints: "http"
+      # traefik.http.routers.traefik.rule: "Host(`traefik.coulter.rocks`)"
+      # traefik.http.middlewares.traefik-auth.basicauth.users: "{{ traefik_password }}"
+      # traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme: "https"
+      # traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
+      # traefik.http.routers.traefik.middlewares: "traefik-https-redirect"
+      traefik.http.routers.traefik-secure.entrypoints: "https"
+      traefik.http.routers.traefik-secure.rule: "Host(`traefik.coulter.rocks`)"
+      # traefik.http.routers.traefik-secure.middlewares: "traefik-auth"
+      # traefik.http.routers.traefik-secure.tls: "true"
+      # traefik.http.routers.traefik-secure.tls.certresolver: "cloudflare"
+      # traefik.http.routers.traefik-secure.tls.domains[0].main: "coulter.rocks"
+      # traefik.http.routers.traefik-secure.tls.domains[0].sans: "*.coulter.rocks"
+      # # traefik.http.services.traefik.loadbalancer.server.port: "8083"
+      # traefik.http.routers.traefik-secure.service: "api@internal"
     networks:
-      - name: media_network
+      - name: proxy
     ports:
       # HTTPS / SSL port
       - "443:443"
       # The Traefik Web UI port (enabled by api:insecure: true in traefik.yml)
       - "8083:8080"
+      # - "8083:80"
     pull: yes
     state: 'started'
     env:
+      CLOUDFLARE_EMAIL: "{{ cloudflare_email }}"
+      CLOUDFLARE_API_KEY: "{{ cloudflare_token }}"
+      # CF_API_EMAIL:
+      # CF_API_KEY:
+
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     volumes:
-      - "{{ config_root }}/traefik_config/traefik.yml:/etc/traefik/traefik.yml:ro"
-      - "{{ config_root }}/traefik_config/config.yml:/etc/traefik/config.yml:ro"
-      - "{{ config_root }}/traefik_config/certs:/etc/certs:ro"
+      - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "{{ config_root }}/traefik_config/traefik.yml:/traefik.yml:ro"
+      # todo: figure out how to make acme a volume
+      # - "{{ config_root }}/traefik_config/acme.json:/acme.json:ro"
+      - "{{ config_root }}/traefik_config/config.yml:/config.yml:ro"
+      - "{{ config_root }}/traefik_config/logs:/var/log/traefik"
     restart_policy: unless-stopped
+
+
+# https://www.youtube.com/watch?v=XH9XgiVM_z4&t=105s
+# The configuration files don't currently live in this project so this is insufficient to deploy to a new server.
+#      traefik.enable: "true"
+      # traefik.http.routers.traefik.entrypoints: "http"
+      # traefik.http.routers.traefik.rule: "Host(`traefik.coulter.rocks`)"
+      # traefik.http.middlewares.traefik-auth.basicauth.users: "{{ traefik_password }}"
+      # traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme: "https"
+      # traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
+      # traefik.http.routers.traefik.middlewares: "traefik-https-redirect"
+      # traefik.http.routers.traefik-secure.entrypoints: "https"
+      # traefik.http.routers.traefik-secure.rule: "Host(`traefik.coulter.rocks`)"
+      # traefik.http.routers.traefik-secure.middlewares: "traefik-auth"
+      # traefik.http.routers.traefik-secure.tls: "true"
+      # traefik.http.routers.traefik-secure.tls.certresolver: "cloudflare"
+      # traefik.http.routers.traefik-secure.tls.domains[0].main: "coulter.rocks"
+      # traefik.http.routers.traefik-secure.tls.domains[0].sans: "*.coulter.rocks"
+      # traefik.http.routers.traefik-secure.service: "api@internal"
+
+      # https://www.youtube.com/watch?v=liV3c9m_OX8
