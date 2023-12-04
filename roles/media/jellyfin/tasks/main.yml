@@ -21,6 +21,19 @@
     # network_mode: "host"
     ports:
       - 80:8096
+    networks:
+      - name: proxy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.jellyfin.entrypoints: "http"
+      traefik.http.routers.jellyfin.rule: "Host(`flicks.coulter.rocks`)"
+      traefik.http.middlewares.jellyfin-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.jellyfin.middlewares: "jellyfin-https-redirect"
+      traefik.http.routers.jellyfin-secure.entrypoints: "https"
+      traefik.http.routers.jellyfin-secure.rule: "Host(`flicks.coulter.rocks`)"
+      traefik.http.routers.jellyfin-secure.tls: "true"
+      traefik.http.routers.jellyfin-secure.service: "jellyfin"
+      traefik.http.services.jellyfin.loadbalancer.server.url: "http://vault.local"
     # networks:
     #   - name: swag_internal_macvlan
     #     ipv4_address: "{{ ip_address }}"
@@ -34,13 +47,14 @@
       - /dev/dri/renderD128:/dev/dri/renderD128
       - /dev/dri/card0:/dev/dri/card0
     env:
-      "DOCKER_MODS": "linuxserver/mods:jellyfin-opencl-intel"
+      # New server is amd, not intel 
+      # "DOCKER_MODS": "linuxserver/mods:jellyfin-opencl-intel"
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
       "VERSION": "latest"
     volumes:
-      - "{{ config_root }}/jellyfin/config:/config"
+      - "{{ config_root }}/jellyfin_config/config:/config"
       # - "{{ data_root }}/media/tvshows:/data/tvshows"
       - "{{ data_root }}/media:/media"
       # - "{{ data_root }}/media/movies:/data/movies"
@@ -52,4 +66,68 @@
       # - "{{ mergerfs_root }}/Media/Movies:/data/Movies"
       - "/etc/localtime:/etc/localtime:ro"
     restart_policy: unless-stopped
+
+
+
+    # ---
+# - name: Copy content of directory 'files'
+#   copy:
+#     src:  ../files/ #docker-compose.yml
+#     dest: jellyfin # "{{ playbook_dir }}/" #/tmp/files/
+
+# - name: Make sure that QuickSync packages are installed
+#   become: yes
+#   package:
+#     name:
+#       - vainfo
+#       - intel-media-va-driver-non-free
+#     state: present
+
+# - name: " {{ data_root }}/data-backup/media  sure the jellyfin container is created and running"
+#   become: yes
+#   docker_container:
+#     # image: "jellyfin/jellyfin:latest"
+#     image: "ghcr.io/linuxserver/jellyfin:latest"
+#     name: "jellyfin"
+#     # network_mode: "host"
+#     ports:
+#       - 80:8096
+#     # networks:
+#     #   - name: swag_internal_macvlan
+#     #     ipv4_address: "{{ ip_address }}"
+#     pull: yes
+#     # privileged: yes
+#     # devices:
+#     #   - "/dev/dri/renderD128:/dev/dri/renderD128"
+#     state: 'started'
+#     devices:
+#     # VAAPI Devices
+#       - /dev/dri/renderD128:/dev/dri/renderD128
+#       - /dev/dri/card0:/dev/dri/card0
+#     env:
+#       # New server is amd, not intel 
+#       # "DOCKER_MODS": "linuxserver/mods:jellyfin-opencl-intel"
+#       PUID: "{{ puid }}"
+#       PGID: "{{ pgid }}"
+#       TZ: "{{ timezone }}"
+#       "VERSION": "latest"
+#       # JELLYFIN_DATA_DIR: /config/data/data
+#       # JELLYFIN_CONFIG_DIR: /config
+#       # JELLYFIN_LOG_DIR: /config/log
+#       # JELLYFIN_CACHE_DIR: /config/cache
+#     volumes:
+#       - "{{ config_root }}/jellyfin_config_source:/config"
+#       # - "{{ config_root }}/jellyfin/config:/config"
+#       - "{{ data_root }}/media:/media"
+#       # - "{{ data_root }}/media/movies:/data/movies"
+#       # - "{{ docker_dir }}/{{ container_name }}:/config"
+#       # - "{{ data_root }}/Media/TV:/data/TV"
+#       # - "{{ data_root }}_slow/Media/Transcodes:/config/data/transcodes"
+#       # - "{{ config_root }}/jellyfin/metadata:/metadata"
+#       # - "{{ config_root }}/jellyfin/data:/data"
+#       # - "{{ mergerfs_root }}/Media/Movies:/data/Movies"
+#       - "/etc/localtime:/etc/localtime:ro"
+#     restart_policy: unless-stopped
+
+
 

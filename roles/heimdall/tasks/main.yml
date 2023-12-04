@@ -6,7 +6,7 @@
     networks:
       - name: media_network
     ports:
-      - 9001:80
+      - 49154:80
       - 49155:443
     pull: yes
     state: 'started'

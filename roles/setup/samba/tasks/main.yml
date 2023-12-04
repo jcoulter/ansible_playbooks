@@ -13,18 +13,18 @@
     state: present
     gid: 1750
 
-- name: check nextcloud mountpoint exist
-  ansible.builtin.file:
-    path: "{{ nc_mountpoint }}"
-    state: directory
-    mode: "{{ permission }}"
-    owner: root
-    group: docker
+# - name: check nextcloud mountpoint exist
+#   ansible.builtin.file:
+#     path: "{{ nc_mountpoint }}"
+#     state: directory
+#     mode: "{{ permission }}"
+#     owner: root
+#     group: docker
 
-- name: mount network share
-  ansible.posix.mount:
-    src: "{{ uri }}"
-    path: "{{ nc_mountpoint }}"
-    fstype: cifs
-    opts: "username={{ samba_username }},password={{ samba_password }},vers=1.0"
-    state: mounted
+# - name: mount network share
+#   ansible.posix.mount:
+#     src: "{{ uri }}"
+#     path: "{{ nc_mountpoint }}"
+#     fstype: cifs
+#     opts: "username={{ samba_username }},password={{ samba_password }},vers=1.0"
+#     state: mounted

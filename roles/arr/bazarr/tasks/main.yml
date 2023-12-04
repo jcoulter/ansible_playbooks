@@ -5,10 +5,6 @@
     name: bazarr
     networks:
       - name: media_network
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.bazarr.tls: "true"
-      traefik.http.routers.bazarr.rule: Host("bazarr.docker.localhost")
     ports:
       - 6767:6767
     pull: yes
@@ -19,9 +15,5 @@
       TZ: "{{ timezone }}"
     volumes:
       - "{{ config_root }}/bazarr_config:/config"
-      
       - "{{ data_root }}/media:/media"
-      # - "{{ data_root }}/media/movies:/movies"
-      # - "{{ data_root }}/media/anime:/anime"
-      # - "{{ data_root }}/media/tvshows:/tvshows"
     restart_policy: unless-stopped

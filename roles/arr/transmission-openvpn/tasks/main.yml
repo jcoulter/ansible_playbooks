@@ -1,4 +1,8 @@
 ---
+# cd /etc/openvpn/custom
+
+#  TODO: set script to download current surfshark opvns to the dir at surfshark_custom
+# openvpn us-dtw.prod.surfshark.com_udp.ovpn 
 
 - name: Make sure the transmission vpn container is created and running
   become: yes
@@ -14,17 +18,122 @@
       - name: media_network
     state: started
     env:
-      OPENVPN_CONFIG: us-dtw.prod.surfshark.com_udp
-      OPENVPN_PROVIDER: SURFSHARK
+      OPENVPN_CONFIG: us-dtw.prod.surfshark.com_tcp
+      # OPENVPN_CONFIG: ca-tor.prod.surfshark.com_udp
+      OPENVPN_PROVIDER: CUSTOM
       OPENVPN_USERNAME: "{{ vpn_username }}"
       OPENVPN_PASSWORD: "{{ vpn_password }}"
-      LOCAL_NETWORK: "192.168.0.0/16,{{ media_subnet }}"
+      LOCAL_NETWORK: "192.168.0.0/16"
+      # LOCAL_NETWORK: "192.168.0.0/16,{{ media_subnet }}"
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
       TRANSMISSION_WEB_UI: transmission-web-control
-      TRANSMISSION_RATIO_LIMIT_ENABLED: "true"
-      TRANSMISSION_DOWNLOAD_QUEUE_SIZE: "25"
+      # TRANSMISSION_RATIO_LIMIT_ENABLED: "true"
+      TRANSMISSION_DOWNLOAD_QUEUE_SIZE: "50"
     volumes:
+      - "{{ config_root }}/surfshark:/etc/openvpn/custom"
       - "{{ data_root }}/transmission/data:/data"
+      - "{{ config_root }}/transmission_config:/config"
     restart_policy: unless-stopped
+
+       
+# sg-sng-st010.prod.surfshark.com_udp.ovpn
+# sg-sng.prod.surfshark.com_tcp.ovpn
+# sg-sng.prod.surfshark.com_udp.ovpn
+# si-lju.prod.surfshark.com_tcp.ovpn
+# si-lju.prod.surfshark.com_udp.ovpn
+# sk-bts.prod.surfshark.com_tcp.ovpn
+# sk-bts.prod.surfshark.com_udp.ovpn
+# th-bkk.prod.surfshark.com_tcp.ovpn
+# th-bkk.prod.surfshark.com_udp.ovpn
+# tr-ist.prod.surfshark.com_tcp.ovpn
+# tr-ist.prod.surfshark.com_udp.ovpn
+# tw-tai.prod.surfshark.com_tcp.ovpn
+# tw-tai.prod.surfshark.com_udp.ovpn
+# ua-iev.prod.surfshark.com_tcp.ovpn
+# ua-iev.prod.surfshark.com_udp.ovpn
+# uk-edi.prod.surfshark.com_tcp.ovpn
+# uk-edi.prod.surfshark.com_udp.ovpn
+# uk-gla.prod.surfshark.com_tcp.ovpn
+# uk-gla.prod.surfshark.com_udp.ovpn
+# uk-lon-mp001.prod.surfshark.com_tcp.ovpn
+# uk-lon-mp001.prod.surfshark.com_udp.ovpn
+# uk-lon-st001.prod.surfshark.com_tcp.ovpn
+# uk-lon-st001.prod.surfshark.com_udp.ovpn
+# uk-lon-st002.prod.surfshark.com_tcp.ovpn
+# uk-lon-st002.prod.surfshark.com_udp.ovpn
+# uk-lon-st003.prod.surfshark.com_tcp.ovpn
+# uk-lon-st003.prod.surfshark.com_udp.ovpn
+# uk-lon-st004.prod.surfshark.com_tcp.ovpn
+# uk-lon-st004.prod.surfshark.com_udp.ovpn
+# uk-lon-st005.prod.surfshark.com_tcp.ovpn
+# uk-lon-st005.prod.surfshark.com_udp.ovpn
+# uk-man.prod.surfshark.com_tcp.ovpn
+# uk-man.prod.surfshark.com_udp.ovpn
+# us-ash.prod.surfshark.com_tcp.ovpn
+# us-ash.prod.surfshark.com_udp.ovpn
+# us-atl.prod.surfshark.com_tcp.ovpn
+# us-atl.prod.surfshark.com_udp.ovpn
+# us-bdn.prod.surfshark.com_tcp.ovpn
+# us-bdn.prod.surfshark.com_udp.ovpn
+# us-bos.prod.surfshark.com_tcp.ovpn
+# us-bos.prod.surfshark.com_udp.ovpn
+# us-chi.prod.surfshark.com_tcp.ovpn
+# us-chi.prod.surfshark.com_udp.ovpn
+# us-dal.prod.surfshark.com_tcp.ovpn
+# us-dal.prod.surfshark.com_udp.ovpn
+# us-den.prod.surfshark.com_tcp.ovpn
+# us-den.prod.surfshark.com_udp.ovpn
+# us-dtw.prod.surfshark.com_tcp.ovpn
+# us-dtw.prod.surfshark.com_udp.ovpn
+# us-hou.prod.surfshark.com_tcp.ovpn
+# us-hou.prod.surfshark.com_udp.ovpn
+# us-kan.prod.surfshark.com_tcp.ovpn
+# us-kan.prod.surfshark.com_udp.ovpn
+# us-las.prod.surfshark.com_tcp.ovpn
+# us-las.prod.surfshark.com_udp.ovpn
+# us-lax.prod.surfshark.com_tcp.ovpn
+# us-lax.prod.surfshark.com_udp.ovpn
+# us-ltm.prod.surfshark.com_tcp.ovpn
+# us-ltm.prod.surfshark.com_udp.ovpn
+# us-mia.prod.surfshark.com_tcp.ovpn
+# us-mia.prod.surfshark.com_udp.ovpn
+# us-nyc-mp001.prod.surfshark.com_tcp.ovpn
+# us-nyc-mp001.prod.surfshark.com_udp.ovpn
+# us-nyc-st001.prod.surfshark.com_tcp.ovpn
+# us-nyc-st001.prod.surfshark.com_udp.ovpn
+# us-nyc-st002.prod.surfshark.com_tcp.ovpn
+# us-nyc-st002.prod.surfshark.com_udp.ovpn
+# us-nyc-st003.prod.surfshark.com_tcp.ovpn
+# us-nyc-st003.prod.surfshark.com_udp.ovpn
+# us-nyc-st004.prod.surfshark.com_tcp.ovpn
+# us-nyc-st004.prod.surfshark.com_udp.ovpn
+# us-nyc-st005.prod.surfshark.com_tcp.ovpn
+# us-nyc-st005.prod.surfshark.com_udp.ovpn
+# us-nyc.prod.surfshark.com_tcp.ovpn
+# us-nyc.prod.surfshark.com_udp.ovpn
+# us-phx.prod.surfshark.com_tcp.ovpn
+# us-phx.prod.surfshark.com_udp.ovpn
+# us-sea.prod.surfshark.com_tcp.ovpn
+# us-sea.prod.surfshark.com_udp.ovpn
+# us-sfo-mp001.prod.surfshark.com_tcp.ovpn
+# us-sfo-mp001.prod.surfshark.com_udp.ovpn
+# us-sfo.prod.surfshark.com_tcp.ovpn
+# us-sfo.prod.surfshark.com_udp.ovpn
+# us-sjc.prod.surfshark.com_tcp.ovpn
+# us-sjc.prod.surfshark.com_udp.ovpn
+# us-slc.prod.surfshark.com_tcp.ovpn
+# us-slc.prod.surfshark.com_udp.ovpn
+# us-tpa.prod.surfshark.com_tcp.ovpn
+# us-tpa.prod.surfshark.com_udp.ovpn
+# uy-mvd.prod.surfshark.com_tcp.ovpn
+# uy-mvd.prod.surfshark.com_udp.ovpn
+# uz-tas.prod.surfshark.com_tcp.ovpn
+# uz-tas.prod.surfshark.com_udp.ovpn
+# ve-car.prod.surfshark.com_tcp.ovpn
+# ve-car.prod.surfshark.com_udp.ovpn
+# vn-hcm.prod.surfshark.com_tcp.ovpn
+# vn-hcm.prod.surfshark.com_udp.ovpn
+# za-jnb.prod.surfshark.com_tcp.ovpn
+# za-jnb.prod.surfshark.com_udp.ovpn

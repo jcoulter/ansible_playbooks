@@ -17,7 +17,8 @@
       - "{{ config_root }}/zigbee2mqtt_data:/app/data"
       - "/run/udev:/run/udev:ro"
     devices:
-      - "/dev/zigbee:/dev/ttyACM0"
+      # zigbee device
+      - "/dev/ttyUSB1:/dev/ttyACM0"
       # - "/dev/zwave:/dev/zwave"
     state: 'started'
     restart_policy: unless-stopped

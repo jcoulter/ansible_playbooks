@@ -19,11 +19,11 @@
         - setup
         - docker
 
-    - role: setup/nfs
-      become: yes
-      tags:
-        - setup
-        - nfs 
+    # - role: setup/nfs
+    #   become: yes
+    #   tags:
+    #     - setup
+    #     - nfs 
   
     # - role: setup/samba
     #   tags:
@@ -77,11 +77,11 @@
         - containers
         - lidarr
 
-    - role: arr/readarr  
-      tags:
-        - arr
-        - containers
-        - readarr
+    # - role: arr/readarr  
+    #   tags:
+    #     - arr
+    #     - containers
+    #     - readarr
 
     - role: services/portainer  
       tags:
@@ -95,11 +95,11 @@
         - containers
         - bazarr
 
-    - role: arr/homarr  
-      tags:
-        - arr
-        - containers
-        - homarr
+    # - role: arr/homarr  
+    #   tags:
+    #     - arr
+    #     - containers
+    #     - homarr
 
     - role: arr/prowlarr  
       tags:
@@ -107,17 +107,11 @@
         - containers
         - prowlarr
 
-    - role: arr/tdarr  
-      tags:
-        - arr
-        - containers
-        - tdarr
-
-    # - role: arr/transmission  
+    # - role: arr/tdarr  
     #   tags:
     #     - arr
     #     - containers
-    #     - transmission
+    #     - tdarr
 
     - role: services/vaultwarden  
       tags:
@@ -268,6 +262,8 @@
     - role: arr/transmission-openvpn 
       tags:
         - containers
+        - arr
+        - transmission
         - transmission-openvpn
 
 # TODO: wire containers through gluetun 

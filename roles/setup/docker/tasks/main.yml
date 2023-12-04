@@ -71,8 +71,8 @@
 - name: Create a media network
   docker_network:
     name: media_network
-    ipam_options:
-      subnet: "{{ media_subnet }}"
+    ipam_config:
+      - subnet: "{{ media_subnet }}"
 
 #    - name: Check current docker-compose version
 #      command: docker-compose --version

@@ -4,8 +4,7 @@
     image: ghcr.io/advplyr/audiobookshelf:latest
     name: audiobookshelf
     networks:
-      - name: media_network
-    ports:
+      - name: proxy
     ports:
       - "13378:80"
     pull: yes
@@ -16,11 +15,20 @@
       TZ: "{{ timezone }}"
       AUDIOBOOKSHELF_UID: "99"
       AUDIOBOOKSHELF_GID: "100"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.audiobookshelf.entrypoints: "http"
+      traefik.http.routers.audiobookshelf.rule: "Host(`audiobooks.coulter.rocks`)"
+      traefik.http.middlewares.audiobookshelf-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.audiobookshelf.middlewares: "audiobookshelf-https-redirect"
+      traefik.http.routers.audiobookshelf-secure.entrypoints: "https"
+      traefik.http.routers.audiobookshelf-secure.rule: "Host(`audiobooks.coulter.rocks`)"
+      traefik.http.routers.audiobookshelf-secure.tls: "true"
+      traefik.http.routers.audiobookshelf-secure.service: "audiobookshelf"
+      traefik.http.services.audiobookshelf.loadbalancer.server.url: "http://vault.local:13378"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - "{{ config_root }}/audiobookshelf_config:/config"
       - "{{ config_root }}/audiobookshelf_metadata:/metadata"
       - "{{ data_root }}/media:/media"
-      # - </path/to/audiobooks>:/audiobooks
-      # - </path/to/podcasts>:/podcasts
     restart_policy: unless-stopped
