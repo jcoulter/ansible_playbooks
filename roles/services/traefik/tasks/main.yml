@@ -8,6 +8,7 @@
     src:  ../files/ 
     dest: "{{ config_root }}/traefik_config/"
 
+#  This didn't work for me, see volume comment below.
 # - name: make sure acme is 600
 #   ansible.builtin.file:
 #     path: "{{ config_root }}/traefik_config/acme.json"
@@ -66,7 +67,10 @@
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:roS
       - "{{ config_root }}/traefik_config/traefik.yml:/traefik.yml:ro"
-      # todo: figure out how to make acme a volume
+      # If acme.json volume is commented out, the container creates the file in 600 mode
+      # It can be copied out of the container and then used by the container on subsequent restarts
+      # docker cp traefik:/acme.json ./acme.json 
+      # Then uncomment the volume so the external file can successfully be used and not be lost every restart
       - "{{ config_root }}/traefik_config/acme.json:/acme.json:ro"
       - "{{ config_root }}/traefik_config/config.yml:/config.yml:ro"
       - "{{ config_root }}/traefik_config/logs:/var/log/traefik"
