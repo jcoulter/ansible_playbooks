@@ -55,11 +55,6 @@
     name: "{{ container_name }}"
     image: "homeassistant/home-assistant:stable"
     network_mode: host
-    labels:
-       traefik.enable: "true"
-       traefik.http.routers.hass.tls: "true"
-       traefik.http.routers.hass.rule: Host("hass.docker.localhost")
-       traefik.http.services.hass.loadbalancer.server.port: "8123"
     devices:
       - "/dev/ttyUSB1:/dev/zigbee"
       - "/dev/ttyUSB0:/dev/zwave"

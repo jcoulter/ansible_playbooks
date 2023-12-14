@@ -4,7 +4,7 @@
     image: "vaultwarden/server:latest"
     name: "vaultwarden"
     ports:
-      - 8086:80
+      - 8087:80
     state: 'started'
     env:
       PUID: "{{ puid }}"
@@ -24,7 +24,7 @@
       traefik.http.routers.vaultwarden-secure.rule: "Host(`vaultwarden.coulter.rocks`)"
       traefik.http.routers.vaultwarden-secure.tls: "true"
       traefik.http.routers.vaultwarden-secure.service: "vaultwarden"
-      traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vault.local:8086"
+      traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vault.local:8087"
 
       # traefik.docker.network: "proxy"
     networks:

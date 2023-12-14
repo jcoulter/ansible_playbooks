@@ -50,7 +50,7 @@
       - "443:443"
       # The Traefik Web UI port (enabled by api:insecure: true in traefik.yml)
       # - "8084:8080"
-      - "8083:80"
+      - "80:80"
     pull: yes
     state: 'started'
     env:
@@ -64,10 +64,10 @@
       TZ: "{{ timezone }}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock:roS
       - "{{ config_root }}/traefik_config/traefik.yml:/traefik.yml:ro"
       # todo: figure out how to make acme a volume
-      # - "{{ config_root }}/traefik_config/acme.json:/acme.json:ro"
+      - "{{ config_root }}/traefik_config/acme.json:/acme.json:ro"
       - "{{ config_root }}/traefik_config/config.yml:/config.yml:ro"
       - "{{ config_root }}/traefik_config/logs:/var/log/traefik"
     restart_policy: unless-stopped
