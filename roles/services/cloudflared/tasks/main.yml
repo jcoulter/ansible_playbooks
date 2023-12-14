@@ -1,0 +1,16 @@
+---
+- name: "Make sure the cloudflared container is created and running"
+  docker_container:
+    image: "cloudflare/cloudflared:latest"
+    name: "cloudflared"
+    security_opts:
+      - "no-new-privileges:true"
+    pull: yes
+    # attempting to recreate docker run cloudflare/cloudflared:latest tunnel --no-autoupdate run --token <TOKEN>
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    restart_policy: unless-stopped
+    command: "tunnel run --token {{ cloudflared_token }}"

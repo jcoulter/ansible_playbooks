@@ -9,11 +9,7 @@
     pull: yes
     state: 'started'
     env:
-      # DB_ENGINE: sqlite # Optional: 'sqlite', 'postgres'
-      # ALLOW_SIGNUP: "false"
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
-    # volumes:
-    #   - "{{ data_root }}/mealie_data:/app/data/"
     restart_policy: unless-stopped

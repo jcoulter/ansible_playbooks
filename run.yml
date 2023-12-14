@@ -171,10 +171,6 @@
     - role: neolink
       tags:
         - neolink
-
-    - role:  home-automation/wyze_bridge  
-      tags:
-        - wyze
         
     - role: home-automation/nodered  
       tags:
@@ -258,6 +254,11 @@
         - containers
         - traefik
         - trafik
+
+    - role: services/cloudflared  
+      tags:
+        - cloudflare
+        - cloudflared
 
     - role: arr/transmission-openvpn 
       tags:

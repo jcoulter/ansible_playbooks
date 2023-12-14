@@ -25,11 +25,11 @@
     labels:
       traefik.enable: "true"
       traefik.http.routers.jellyfin.entrypoints: "http"
-      traefik.http.routers.jellyfin.rule: "Host(`flicks.coulter.rocks`)"
+      traefik.http.routers.jellyfin.rule: "Host(`flicks.coulter.rocks`)||Host(`flicks-in.coulter.rocks`)"
       traefik.http.middlewares.jellyfin-https-redirect.redirectscheme.scheme: "https"
       traefik.http.routers.jellyfin.middlewares: "jellyfin-https-redirect"
       traefik.http.routers.jellyfin-secure.entrypoints: "https"
-      traefik.http.routers.jellyfin-secure.rule: "Host(`flicks.coulter.rocks`)"
+      traefik.http.routers.jellyfin-secure.rule: "Host(`flicks.coulter.rocks`)||Host(`flicks-in.coulter.rocks`)"
       traefik.http.routers.jellyfin-secure.tls: "true"
       traefik.http.routers.jellyfin-secure.service: "jellyfin"
       traefik.http.services.jellyfin.loadbalancer.server.url: "http://vault.local:8096"

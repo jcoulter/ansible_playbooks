@@ -31,11 +31,11 @@
     labels:
       traefik.enable: "true"
       traefik.http.routers.nextcloud.entrypoints: "http"
-      traefik.http.routers.nextcloud.rule: "Host(`next.coulter.rocks`)"
+      traefik.http.routers.nextcloud.rule: "Host(`next.coulter.rocks`)||Host(`next-in.coulter.rocks`)"
       traefik.http.middlewares.nextcloud-https-redirect.redirectscheme.scheme: "https"
       traefik.http.routers.nextcloud.middlewares: "nextcloud-https-redirect"
       traefik.http.routers.nextcloud-secure.entrypoints: "https"
-      traefik.http.routers.nextcloud-secure.rule: "Host(`next.coulter.rocks`)"
+      traefik.http.routers.nextcloud-secure.rule: "Host(`next.coulter.rocks`)||Host(`next-in.coulter.rocks`)"
       traefik.http.routers.nextcloud-secure.tls: "true"
       traefik.http.routers.nextcloud-secure.service: "nextcloud"
       traefik.http.services.nextcloud.loadbalancer.server.url: "http://vault.local:8080"

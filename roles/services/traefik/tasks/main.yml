@@ -3,6 +3,10 @@
   docker_network:
     name: proxy
 
+- name: Create a cloudflare tunnel network
+  docker_network:
+    name: cloudflare
+
 - name: Copy content of directory 'files'
   copy:
     src:  ../files/ 
@@ -17,8 +21,7 @@
 #     group: "{{ pgid }}"
 #     mode: '0600'
 
-- name: "Make sure the traefik container is created and running {{ traefik_password }} {{cloudflare_token}} {{cloudflare_email}}"
-  # become: yes
+- name: "Make sure the traefik container is created and running"
   docker_container:
     image: "traefik:latest"
     name: "traefik"
@@ -28,9 +31,7 @@
       traefik.enable: "true"
       traefik.http.routers.traefik.entrypoints: "http"
       traefik.http.routers.traefik.rule: "Host(`traefik.coulter.rocks`)"
-
       traefik.http.middlewares.traefik-ipwhitelist.ipwhitelist.sourcerange: "192.168.1.1/24"
-
       # traefik.http.middlewares.traefik-auth.basicauth.users: "{{ traefik_password }}"
       traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme: "https"
       traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
@@ -46,6 +47,7 @@
       # traefik.http.services.traefik.loadbalancer.server.port: "8083"
     networks:
       - name: proxy
+      - name: cloudflare
     ports:
       # HTTPS / SSL port
       - "443:443"
@@ -65,7 +67,7 @@
       TZ: "{{ timezone }}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:roS
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - "{{ config_root }}/traefik_config/traefik.yml:/traefik.yml:ro"
       # If acme.json volume is commented out, the container creates the file in 600 mode
       # It can be copied out of the container and then used by the container on subsequent restarts
