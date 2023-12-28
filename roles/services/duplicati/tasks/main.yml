@@ -1,0 +1,37 @@
+---
+- name: Make sure the duplicati container is created and running
+  docker_container:
+    image: lscr.io/linuxserver/duplicati:latest
+    name: duplicati
+    networks:
+      - name: proxy
+    ports:
+      - 8200:8200
+    pull: yes
+    state: 'started'
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.duplicati.entrypoints: "http"
+      # This syntax allows cloudflare tunnel to host duplicati.coulter.rocks which points to local duplicati-in.coulter.rocks over https
+      # Both duplicati.coulter.rocks and duplicati-in.coulter.rocks must be configured in local dns (pi-hole)
+      # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
+      traefik.http.routers.duplicati.rule: "Host(`duplicati.coulter.rocks`)||Host(`duplicati-in.coulter.rocks`)"
+      traefik.http.middlewares.duplicati-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.duplicati.middlewares: "duplicati-https-redirect"
+      traefik.http.routers.duplicati-secure.entrypoints: "https"
+      traefik.http.routers.duplicati-secure.rule: "Host(`duplicati.coulter.rocks`)||Host(`duplicati-in.coulter.rocks`)"
+      traefik.http.routers.duplicati-secure.tls: "true"
+      traefik.http.routers.duplicati-secure.service: "duplicati"
+      traefik.http.services.duplicati.loadbalancer.server.url: "http://vault.local:8200"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+            # - CLI_ARGS= #optional
+    volumes:
+      - "{{ config_root }}/duplicati_data:/config"
+      - "{{ data_root }}:/data"
+      - "{{ shares }}:/shares"
+      - "{{ backups }}:/backups"
+    restart_policy: unless-stopped
+

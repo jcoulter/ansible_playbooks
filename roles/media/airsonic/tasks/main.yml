@@ -1,0 +1,45 @@
+---
+- name: "make sure the airsonic container is created and running"
+  docker_container:
+    image: "lscr.io/linuxserver/airsonic:latest"
+    name: "airsonic"
+    # ports:
+    #   - 4040:4040
+    networks:
+      - name: proxy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.airsonic.entrypoints: "http"
+      traefik.http.routers.airsonic.rule: "Host(`airsonic.coulter.rocks`)||Host(`airsonic-in.coulter.rocks`)"
+      traefik.http.middlewares.airsonic-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.airsonic.middlewares: "airsonic-https-redirect"
+      traefik.http.routers.airsonic-secure.entrypoints: "https"
+      traefik.http.routers.airsonic-secure.rule: "Host(`airsonic.coulter.rocks`)||Host(`airsonic-in.coulter.rocks`)"
+      traefik.http.routers.airsonic-secure.tls: "true"
+      traefik.http.routers.airsonic-secure.service: "airsonic"
+      # traefik.http.services.airsonic.loadbalancer.server.url: "http://vault.local:8096"
+    pull: yes
+    state: 'started'
+    env:
+      JAVA_OPTS: "-Dserver.use-forward-headers=true"
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ config_root }}/airsonic_config:/config"
+      - "{{ data_root }}/media/music:/music"
+      - "{{ data_root }}/media:/media"
+      - "{{ data_root }}/media/podcasts:/podcasts"
+      - "{{ data_root }}/media/playlists:/playlists"
+    restart_policy: unless-stopped
+
+
+    # volumes:
+    #   - </path/to/music>:/music
+    #   - </path/to/playlists>:/playlists
+    #   - </path/to/podcasts>:/podcasts
+    #   - </path/to/other media>:/media #optional
+    # ports:
+    # devices:
+    #   - /dev/snd:/dev/snd #optional
+    # restart: unless-stopped

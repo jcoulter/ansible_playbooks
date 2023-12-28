@@ -3,8 +3,9 @@
   docker_container:
     image: hkotel/mealie:latest
     name: mealie
-    ports:
-      - "9092:80"
+    # With no ports, it can only be accessed through traefik
+    # ports:
+    #   - "9092:80"
     networks:
       - name: proxy
     labels:
@@ -20,7 +21,7 @@
       traefik.http.routers.mealie-secure.rule: "Host(`mealie.coulter.rocks`)||Host(`mealie-in.coulter.rocks`)"
       traefik.http.routers.mealie-secure.tls: "true"
       traefik.http.routers.mealie-secure.service: "mealie"
-      traefik.http.services.mealie.loadbalancer.server.url: "http://vault.local:9092"
+      # traefik.http.services.mealie.loadbalancer.server.url: "http://vault.local:9092"
     pull: yes
     state: 'started'
     env:

@@ -1,5 +1,7 @@
 ---
 data_root: /mnt/data
+backups: /mnt/brick/backups
+shares: /mnt/brick/data
 
 docker_dir: /opt/docker/data
 

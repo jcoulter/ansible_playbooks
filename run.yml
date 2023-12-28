@@ -52,6 +52,12 @@
         - media
         - containers
         - jellyfin
+
+    - role: media/airsonic  
+      tags:
+        - media
+        - containers
+        - airsonic
   
     # - role: media/plex  
     #   tags:
@@ -231,7 +237,7 @@
     - role: services/open-speed-test  
       tags:
         - containers
-        - speed-test
+        - speedtest
 
     - role: services/syncthing 
       become: yes 
@@ -248,6 +254,11 @@
       tags:
         - containers
         - vscode
+
+    - role: services/duplicati 
+      tags:
+        - containers
+        - duplicati
 
     - role: services/traefik  
       tags:
