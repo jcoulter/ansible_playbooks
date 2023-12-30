@@ -1,0 +1,49 @@
+---
+- name: Make sure the duplicacy container is created and running
+  docker_container:
+    image: saspus/duplicacy-web:latest
+    name: duplicacy
+    # host-name: duplicacy
+    networks:
+      - name: proxy
+    ports:
+      - 3875:3875
+    pull: yes
+    state: 'started'
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.duplicacy.entrypoints: "http"
+      # This syntax allows cloudflare tunnel to host duplicacy.coulter.rocks which points to local duplicacy-in.coulter.rocks over https
+      # Both duplicacy.coulter.rocks and duplicacy-in.coulter.rocks must be configured in local dns (pi-hole)
+      # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
+      traefik.http.routers.duplicacy.rule: "Host(`duplicacy.coulter.rocks`)||Host(`duplicacy-in.coulter.rocks`)"
+      traefik.http.middlewares.duplicacy-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.duplicacy.middlewares: "duplicacy-https-redirect"
+      traefik.http.routers.duplicacy-secure.entrypoints: "https"
+      traefik.http.routers.duplicacy-secure.rule: "Host(`duplicacy.coulter.rocks`)||Host(`duplicacy-in.coulter.rocks`)"
+      traefik.http.routers.duplicacy-secure.tls: "true"
+      traefik.http.routers.duplicacy-secure.service: "duplicacy"
+      traefik.http.services.duplicacy.loadbalancer.server.url: "http://vault.local:3875"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      # Generate a random hash
+      # MACHINE_ID: f3c133e1ee66d7cb1da217df78dd93ec
+    volumes:
+      - "{{ config_root }}/duplicacy_config:/config"
+      - "{{ config_root }}/duplicacy_config/logs:/logs"
+      - "{{ config_root }}/duplicacy_config/cache:/cache"
+      - "{{ data_root }}:/data"
+      - "{{ shares }}:/shares"
+      - "{{ backups }}:/backups"
+    restart_policy: unless-stopped
+
+
+    # cap_drop:
+    #   - ALL
+    #   MACHINE_ID: f3c133e1ee66d7cb1da217df78dd93ec
+    # volumes:
+    #   - /host/path/to/config:/etc/duplicacy
+    #   - /host/path/to/cache:/var/cache/duplicacy
+    #   - /host/path/to/some-storage:/storage
