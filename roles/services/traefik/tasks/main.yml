@@ -13,13 +13,13 @@
     dest: "{{ config_root }}/traefik_config/"
 
 #  This didn't work for me, see volume comment below.
-# - name: make sure acme is 600
-#   ansible.builtin.file:
-#     path: "{{ config_root }}/traefik_config/acme.json"
-#     state: touch
-#     owner: "{{ puid }}"
-#     group: "{{ pgid }}"
-#     mode: '0600'
+- name: make sure acme is 600
+  ansible.builtin.file:
+    path: "{{ config_root }}/traefik_config/acme.json"
+    state: touch
+    owner: "{{ puid }}"
+    group: "{{ pgid }}"
+    mode: '0600'
 
 - name: "Make sure the traefik container is created and running"
   docker_container:
@@ -44,7 +44,7 @@
       traefik.http.routers.traefik-secure.tls.domains[0].main: "coulter.rocks"
       traefik.http.routers.traefik-secure.tls.domains[0].sans: "*.coulter.rocks"
       traefik.http.routers.traefik-secure.service: "api@internal"
-      # traefik.http.services.traefik.loadbalancer.server.port: "8083"
+      traefik.http.services.traefik.loadbalancer.server.port: "8084"
     networks:
       - name: proxy
       - name: cloudflare
@@ -52,7 +52,7 @@
       # HTTPS / SSL port
       - "443:443"
       # The Traefik Web UI port (enabled by api:insecure: true in traefik.yml)
-      # - "8084:8080"
+      - "8084:8080"
       - "80:80"
     pull: yes
     state: 'started'
@@ -61,7 +61,6 @@
       CLOUDFLARE_API_KEY: "{{ cloudflare_token }}"
       CF_API_EMAIL: "{{ cloudflare_email }}"
       CF_API_L: "{{ cloudflare_token }}"
-
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"

@@ -1,0 +1,19 @@
+---
+- name: Make sure the homepage container is created and running
+  docker_container:
+    image: "ghcr.io/gethomepage/homepage:latest"
+    name: homepage
+    networks:
+      - name: media_network
+    ports:
+      - 89:3000
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ config_root }}/homepage_config:/app/config"
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
+    restart_policy: unless-stopped

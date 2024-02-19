@@ -189,6 +189,10 @@
       tags:
         - minecraft
 
+    - role: crafty  
+      tags:
+        - crafty
+
     - role: services/calibre  
       tags:
       - containers
@@ -249,6 +253,11 @@
       tags:
         - containers
         - dashy
+
+    - role: homepage 
+      tags:
+        - containers
+        - homepage
 
     - role: services/vscode 
       tags:

@@ -19,5 +19,6 @@
     volumes:
       - "{{ config_root }}/dashy_config:/dashy_config"
       - "{{ data_root }}/homeassistant/config:/hass_config"
+      - "{{ config_root }}/homepage_config:/hompage_config"
       - "{{ config_root }}/vscode_config:/config"
     restart_policy: unless-stopped

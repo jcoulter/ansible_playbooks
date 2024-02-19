@@ -48,4 +48,5 @@ http:
         - default-whitelist
         - default-headers
 
-        
+CLI: --serversTransport.insecureSkipVerify=true
+# (https://doc.traefik.io/traefik/routing/overview/#insecureskipverify)

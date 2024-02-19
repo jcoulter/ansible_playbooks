@@ -1,0 +1,45 @@
+---
+
+- name: Make sure the crafty control is created and running
+  docker_container:
+    image: registry.gitlab.com/crafty-controller/crafty-4:latest
+    # stdin_open: true
+    name: "crafty"
+    ports:
+      - "8001:8000" # HTTP
+      - "8444:8443" # HTTPS
+      - "8124:8123" # DYNMAP
+      - "19132:19132/udp" # BEDROCK
+      - "25500-25600:25500-25600" # MC SERV PORT RANGE
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.crafty.rule: "Host(`crafty.coulter.rocks`)||Host(`crafty-in.coulter.rocks`)"
+      traefik.http.services.crafty.loadbalancer.server.port: "8444" # port that Crafty operates on is 8443
+      traefik.http.routers.crafty.tls: "true" # tells traefik you want to use SSL/TLS to connect to your Crafty instance
+    #- "traefik.http.routers.listgartenphotography.tls.certresolver=<YOURTRAEFIKCERTRESOLVER> # OPTIONAL: If you want traefik to handle TLS certificates instead of Crafty, you should uncomment the beginning of this line and put the name of your traefik certificate resolver here
+      traefik.http.services.crafty.loadbalancer.server.scheme: "https" # tell traefik to connect to Crafty via https instead of http
+      traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https" # enable websockets for Crafty
+
+
+      # This syntax allows cloudflare tunnel to host crafty.coulter.rocks which points to local crafty-in.coulter.rocks over https
+      # Both crafty.coulter.rocks and crafty-in.coulter.rocks must be configured in local dns (pi-hole)
+      # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
+      # traefik.http.middlewares.crafty-https-redirect.redirectscheme.scheme: "https"
+      # traefik.http.routers.crafty.middlewares: "crafty-https-redirect"
+      # traefik.http.routers.crafty-secure.entrypoints: "https"
+      # traefik.http.routers.crafty-secure.rule: "Host(`crafty.coulter.rocks`)||Host(`crafty-in.coulter.rocks`)"
+      # traefik.http.routers.crafty-secure.service: "crafty"
+    pull: yes
+    # tty: true
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ config_root }}/crafty_data/backups:/crafty/backups"
+      - "{{ config_root }}/crafty_data/servers:/crafty/servers"
+      - "{{ config_root }}/crafty_data/import:/crafty/import"
+      - "{{ config_root }}/crafty_config/app/config:/crafty/app/config"
+      - "{{ config_root }}/crafty_config/logs:/crafty/logs"
+    restart_policy: unless-stopped

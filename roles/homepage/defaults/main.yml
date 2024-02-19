@@ -1,0 +1,12 @@
+---
+container_name: heimdall
+
+url: "heimdall.{{ host_local }}"
+
+homer_category: media
+
+ip_address: "{{ swag_base }}.5"
+# data_root: /mnt/data
+docker_dir: /opt/docker/data
+
+

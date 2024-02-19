@@ -9,7 +9,7 @@
       - "8180:80"
     pull: yes
     state: 'started'
-    command: "./openbooks server --dir /books --port 80 --name {{ irc_name }}"
+    command: "./openbooks server --dir /books --port 80 --name {{ irc_name }} -s irc.irchighway.net:9999"
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
