@@ -11,14 +11,19 @@
       - "8124:8123" # DYNMAP
       - "19132:19132/udp" # BEDROCK
       - "25500-25600:25500-25600" # MC SERV PORT RANGE
+    networks:
+      - name: proxy
     labels:
       traefik.enable: "true"
-      traefik.http.routers.crafty.rule: "Host(`crafty.coulter.rocks`)||Host(`crafty-in.coulter.rocks`)"
-      traefik.http.services.crafty.loadbalancer.server.port: "8444" # port that Crafty operates on is 8443
+      traefik.http.routers.crafty.entrypoints: "https-external"
+      traefik.http.routers.crafty.rule: "Host(`crafty.coulter.rocks`)"
+      traefik.http.services.crafty.loadbalancer.server.port: "8443" # port that Crafty operates on is 8443
       traefik.http.routers.crafty.tls: "true" # tells traefik you want to use SSL/TLS to connect to your Crafty instance
-    #- "traefik.http.routers.listgartenphotography.tls.certresolver=<YOURTRAEFIKCERTRESOLVER> # OPTIONAL: If you want traefik to handle TLS certificates instead of Crafty, you should uncomment the beginning of this line and put the name of your traefik certificate resolver here
+      traefik.http.routers.crafty.tls.certresolver: cloudflare # OPTIONAL: If you want traefik to handle TLS certificates instead of Crafty, you should uncomment the beginning of this line and put the name of your traefik certificate resolver here
       traefik.http.services.crafty.loadbalancer.server.scheme: "https" # tell traefik to connect to Crafty via https instead of http
       traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https" # enable websockets for Crafty
+      # TODO: is this needed?
+      # traefik.http.services.crafty.loadbalancer.server.url: "https://192.168.1.36:8443"
 
 
       # This syntax allows cloudflare tunnel to host crafty.coulter.rocks which points to local crafty-in.coulter.rocks over https

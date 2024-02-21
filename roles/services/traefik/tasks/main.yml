@@ -51,9 +51,11 @@
     ports:
       # HTTPS / SSL port
       - "443:443"
+      - "444:444"
       # The Traefik Web UI port (enabled by api:insecure: true in traefik.yml)
       - "8084:8080"
       - "80:80"
+      - "82:82"
     pull: yes
     state: 'started'
     env:

@@ -21,6 +21,12 @@ http:
     https-redirectscheme:
       redirectScheme:
         scheme: https
+        
+        # Find video from Jims Garage
+    # crowdsec-bouncer:
+    #   forwardauth:
+    #     address: http://bouncer-traefik:8000/api/v1/forwardAuth
+    #     trustForwardHeader: true
   
     default-headers:
       headers:
@@ -48,5 +54,7 @@ http:
         - default-whitelist
         - default-headers
 
-CLI: --serversTransport.insecureSkipVerify=true
+CLI:
+  serversTransport:
+    insecureSkipVerify: true
 # (https://doc.traefik.io/traefik/routing/overview/#insecureskipverify)
