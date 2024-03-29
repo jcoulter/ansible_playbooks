@@ -269,11 +269,6 @@
         - containers
         - duplicati
 
-    - role: services/duplicacy 
-      tags:
-        - containers
-        - duplicacy
-
     - role: services/traefik  
       tags:
         - containers

@@ -47,6 +47,11 @@ providers:
 log:
   level: INFO
   format: common
+  filePath: '/var/log/traefik/traefik.log'
+accessLog:
+  filePath: '/var/log/traefik/access.log'
+
+
 certificatesResolvers:
   cloudflare:
     acme:

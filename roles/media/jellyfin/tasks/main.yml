@@ -24,20 +24,19 @@
       - name: proxy
     labels:
       traefik.enable: "true"
-      traefik.http.routers.jellyfin.entrypoints: "http-external"
-      # traefik.http.routers.jellyfin.rule: "Host(`flicks.coulter.rocks`)||Host(`flicks-in.coulter.rocks`)||Host(`jelly.coulter.rocks`)"
+      traefik.http.routers.jellyfin.entrypoints: "http"
       traefik.http.routers.jellyfin.rule: "Host(`jelly.coulter.rocks`)"
       traefik.http.middlewares.jellyfin-https-redirect.redirectscheme.scheme: "https"
       traefik.http.routers.jellyfin.middlewares: "jellyfin-https-redirect"
-      traefik.http.routers.jellyfin-secure.entrypoints: "https-external"
+      traefik.http.routers.jellyfin-secure.entrypoints: "https"
       traefik.http.routers.jellyfin-secure.rule: "Host(`jelly.coulter.rocks`)"
       traefik.http.routers.jellyfin-secure.tls: "true"
       traefik.http.routers.jellyfin-secure.service: "jellyfin"
-      traefik.http.routers.jellyfin-secure-internal.entrypoints: "https"
-      traefik.http.routers.jellyfin-secure-internal.rule: "Host(`flicks.coulter.rocks`)"
-      traefik.http.routers.jellyfin-secure-internal.tls: "true"
-      traefik.http.routers.jellyfin-secure-internal.service: "jellyfin"
-      # traefik.http.services.jellyfin.loadbalancer.server.url: "http://192.168.1.36:8096"
+      # traefik.http.routers.jellyfin-secure-internal.entrypoints: "https"
+      # traefik.http.routers.jellyfin-secure-internal.rule: "Host(`flicks.coulter.rocks`)"
+      # traefik.http.routers.jellyfin-secure-internal.tls: "true"
+      # traefik.http.routers.jellyfin-secure-internal.service: "jellyfin"
+      traefik.http.services.jellyfin.loadbalancer.server.url: "http://192.168.1.36:8096"
 
       # ## HTTP Router
       # #### Entry point where Jellyfin is accessible via
