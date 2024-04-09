@@ -13,6 +13,10 @@
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
+      HOMEPAGE_VAR_OPNSENSE_USERNAME: "{{ opnsense_username }}"
+      HOMEPAGE_VAR_OPNSENSE_PASSWORD: "{{ opnsense_password }}"
+      HOMEPAGE_VAR_CALIBREWEB_USERNAME: "{{ calibreweb_username }}"
+      HOMEPAGE_VAR_CALIBREWEB_PASSWORD: "{{ calibreweb_password }}"
     volumes:
       - "{{ config_root }}/homepage_config:/app/config"
       - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
