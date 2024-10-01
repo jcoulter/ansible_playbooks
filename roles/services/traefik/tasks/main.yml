@@ -59,10 +59,9 @@
     pull: yes
     state: 'started'
     env:
-      CLOUDFLARE_EMAIL: "{{ cloudflare_email }}"
-      CLOUDFLARE_API_KEY: "{{ cloudflare_token }}"
-      CF_API_EMAIL: "{{ cloudflare_email }}"
-      CF_API_L: "{{ cloudflare_token }}"
+    # This token must be built 
+    # https://community.cloudflare.com/t/i-need-cf-zone-api-token-for-traefik-setting-but-dont-know-how-create-it/418006/3
+      CLOUDFLARE_DNS_API_TOKEN: "{{ cloudflare_token }}"
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
@@ -74,7 +73,7 @@
       # It can be copied out of the container and then used by the container on subsequent restarts
       # docker cp traefik:/acme.json ./acme.json 
       # Then uncomment the volume so the external file can successfully be used and not be lost every restart
-      - "{{ config_root }}/traefik_config/acme.json:/acme.json:ro"
+      - "{{ config_root }}/traefik_config/acme.json:/acme.json"
       - "{{ config_root }}/traefik_config/config.yml:/config.yml:ro"
       - "{{ config_root }}/traefik_config/logs:/var/log/traefik"
     restart_policy: unless-stopped
@@ -99,3 +98,14 @@
       # traefik.http.routers.traefik-secure.service: "api@internal"
 
       # https://www.youtube.com/watch?v=liV3c9m_OX8
+
+
+      # Successfull cloudflare cert generation: https://community.traefik.io/t/cloudflare-failed-to-find-zone-domain/19884/11
+
+      #Command to manually test credentials:
+      #
+      #CLOUDFLARE_DNS_API_TOKEN=<DNS TOKEN for all zones - see documentation linked above> \
+      #lego --email jacob.coulter@gmail.com --dns cloudflare --domains coulter.rocks run
+
+      # They seem to change the env vars for the cloudflare envs all the time, here is the provider documentation
+      # https://doc.traefik.io/traefik/https/acme/#providers

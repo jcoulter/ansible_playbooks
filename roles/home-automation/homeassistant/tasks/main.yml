@@ -69,7 +69,6 @@
       # - "{{ config_root }}/hass_config:/config"
       - "/etc/localtime:/etc/localtime:ro"
       - "/run/dbus:/run/dbus:ro"
-    state: 'started'
     restart_policy: unless-stopped
     # HOW CAN ANSIBLE LACK DOCKER depends_on ?!?!
     # depends_on:

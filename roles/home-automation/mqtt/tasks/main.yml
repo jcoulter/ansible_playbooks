@@ -15,7 +15,7 @@
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
+      NEO_LINK_MODE: "mqtt-rtsp"
     volumes:
       - "{{ config_root }}/mosquitto:/mosquitto"
-    state: 'started'
     restart_policy: unless-stopped

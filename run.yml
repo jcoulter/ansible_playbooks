@@ -91,7 +91,6 @@
 
     - role: services/portainer  
       tags:
-        - arr
         - containers
         - portainer
 

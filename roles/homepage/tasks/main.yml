@@ -17,6 +17,8 @@
       HOMEPAGE_VAR_OPNSENSE_PASSWORD: "{{ opnsense_password }}"
       HOMEPAGE_VAR_CALIBREWEB_USERNAME: "{{ calibreweb_username }}"
       HOMEPAGE_VAR_CALIBREWEB_PASSWORD: "{{ calibreweb_password }}"
+      HOMEPAGE_VAR_ADGUARD_USERNAME: "{{ adguard_username }}"
+      HOMEPAGE_VAR_ADGUARD_PASSWORD: "{{ adguard_password }}"
     volumes:
       - "{{ config_root }}/homepage_config:/app/config"
       - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
