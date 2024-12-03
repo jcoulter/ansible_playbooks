@@ -1,42 +1,65 @@
 ---
-# cd /etc/openvpn/custom
+# cd /mnt/config/surfshark
+
+# https://hub.docker.com/r/binhex/arch-qbittorrentvpn
 
 #  TODO: set script to download current surfshark opvns to the dir at surfshark_custom
 # openvpn us-dtw.prod.surfshark.com_udp.ovpn 
 
-- name: Make sure the transmission vpn container is created and running
+# I need to mount /config/qBittransmission/data to a diffferent volume and 
+# docker does not support volumes that are subdirectories of named volumes
+- name: Create symbolic for data 
+  become: true
+  file:
+    src: "{{ data_root }}/qbittorrent/data"
+    dest: "{{ config_root }}/qbittorrent_config/qBittorrent/data"
+    state: link
+
+# I need to mount /config/qBittransmission/data to a diffferent volume and 
+# docker does not support volumes that are subdirectories of named volumes
+- name: Create symbolic for downloads 
+  become: true
+  file:
+    src: "{{ data_root }}/qbittorrent/downloads"
+    dest: "{{ config_root }}/qbittorrent_config/qBittorrent/downloads"
+    state: link
+
+- name: Make sure the qbittorrent vpn container is created and running
   become: true
   docker_container:
-    image: "haugene/transmission-openvpn"
-    name: transmission-openvpn
+    image: "binhex/arch-qbittorrentvpn"
+    name: qbittorrentvpn
     capabilities:
       - NET_ADMIN
     ports:
-      - '9091:9091'
+      - '8085:8085'
+      # - '8085:8080'
+      - '8118:8118'
+      - '9118:9118'
+      - '58946:58946'
+      - '58946:58946/udp'
     pull: yes
     networks:
       - name: media_network
     state: started
     env:
-      # OPENVPN_CONFIG: us-ash.prod.surfshark.com_udp
-      OPENVPN_CONFIG: us-dtw.prod.surfshark.com_udp
-      # OPENVPN_CONFIG: us-dtw.prod.surfshark.com_tcp
-      # OPENVPN_CONFIG: ca-tor.prod.surfshark.com_udp
-      OPENVPN_PROVIDER: CUSTOM
-      OPENVPN_USERNAME: "{{ vpn_username }}"
-      OPENVPN_PASSWORD: "{{ vpn_password }}"
-      LOCAL_NETWORK: "192.168.0.0/16"
-      # LOCAL_NETWORK: "192.168.0.0/16,{{ media_subnet }}"
+      VPN_ENABLED: "yes"
+      # VPN_TYPE: "wireguard"
+      VPN_USER: "{{ vpn_username }}"
+      VPN_PASS: "{{ vpn_password }}"
+      LAN_NETWORK: "192.168.0.0/16"
+      VPN_CLIENT: "openvpn"
+      VPN_PROV: "custom"
+      WEBUI_PORT: "8085"
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
-      TRANSMISSION_WEB_UI: transmission-web-control
-      # TRANSMISSION_RATIO_LIMIT_ENABLED: "true"
-      TRANSMISSION_DOWNLOAD_QUEUE_SIZE: "50"
     volumes:
-      - "{{ config_root }}/surfshark:/etc/openvpn/custom"
-      - "{{ data_root }}/transmission/data:/data"
-      - "{{ config_root }}/transmission_config:/config"
+      - "{{ config_root }}/qbittorrent_config:/config"
+      # sym links are resolved in kernal space so I have to mount 
+      # the data and downloads folders too.
+      - "{{ data_root }}/qbittorrent/data:{{ data_root }}/qbittorrent/data"
+      - "{{ data_root }}/qbittorrent/downloads:{{ data_root }}/qbittorrent/downloads"
     restart_policy: unless-stopped
 
        

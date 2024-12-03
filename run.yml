@@ -169,6 +169,12 @@
         - containers
         - home-automation
         
+    - role: home-automation/musicassistant 
+      tags:
+        - music-assistant
+        - containers
+        - home-automation
+
     - role: home-automation/frigate  
       tags:
         - frigate       
@@ -282,9 +288,15 @@
     - role: arr/transmission-openvpn 
       tags:
         - containers
-        - arr
         - transmission
         - transmission-openvpn
+
+    - role: arr/qbittorrent-vpn
+      tags:
+        - containers
+        - qbit
+        - qbittorrent
+        - qbittorrent-vpn
 
 # TODO: wire containers through gluetun 
 

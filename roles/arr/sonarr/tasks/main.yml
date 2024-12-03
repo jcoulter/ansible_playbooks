@@ -17,4 +17,6 @@
       - "{{ config_root }}/sonarr_config:/config"
       - "{{ data_root }}/media:/media"
       - "{{ data_root }}/transmission/data/completed:/data/completed"
+      - "{{ data_root }}/qbittorrent/downloads:/data/qbit_completed"
+      - "{{ data_root }}/qbittorrent/downloads:/config/qBittorrent/downloads"
     restart_policy: unless-stopped
