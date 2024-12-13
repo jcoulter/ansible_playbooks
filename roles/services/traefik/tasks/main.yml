@@ -109,3 +109,19 @@
 
       # They seem to change the env vars for the cloudflare envs all the time, here is the provider documentation
       # https://doc.traefik.io/traefik/https/acme/#providers
+
+
+      # ******STEPS TO UPDATE CERT:
+      # 1. comment out "{{ config_root }}/traefik_config/acme.json:/acme.json" above
+      # 2. on server: `docker stop traefik`
+      # 3. on server: `docker rm traefik`
+      # 4. ansible-playbook run.yml --ask-vault-password -i inventory -t traefik
+      # 5. on server: `cd /mnt/config/traefik_config`
+      # 6. on server: `rm acme.json`
+      # 7. on server: `docker cp traefik:/acme.json ./acme.json`
+      # 8. on server: `docker stop traefik`
+      # 9. on server: `docker rm traefik`
+      # 10. uncomment out "{{ config_root }}/traefik_config/acme.json:/acme.json" above
+      # 11. ansible-playbook run.yml --ask-vault-password -i inventory -t traefik
+
+
