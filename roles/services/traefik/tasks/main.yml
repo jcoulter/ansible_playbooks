@@ -12,14 +12,14 @@
     src:  ../files/ 
     dest: "{{ config_root }}/traefik_config/"
 
-#  This didn't work for me, see volume comment below.
-- name: make sure acme is 600
-  ansible.builtin.file:
-    path: "{{ config_root }}/traefik_config/acme.json"
-    state: touch
-    owner: "{{ puid }}"
-    group: "{{ pgid }}"
-    mode: '0600'
+# #  This didn't work for me, see volume comment below.
+# - name: make sure acme is 600
+#   ansible.builtin.file:
+#     path: "{{ config_root }}/traefik_config/acme.json"
+#     state: touch
+#     owner: "{{ puid }}"
+#     group: "{{ pgid }}"
+#     mode: '0600'
 
 - name: "Make sure the traefik container is created and running"
   docker_container:
