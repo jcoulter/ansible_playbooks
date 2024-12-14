@@ -1,0 +1,138 @@
+---
+
+#   grampsweb_celery:
+#     <<: *grampsweb  # YAML merge key copying the entire grampsweb service config
+#     ports: []
+#     container_name: grampsweb_celery
+#     depends_on:
+#       - grampsweb_redis
+#     command: celery -A gramps_webapi.celery worker --loglevel=INFO --concurrency=2
+
+
+- name: Make sure the gramps celery container is created and running
+  docker_container:
+    image: ghcr.io/gramps-project/grampsweb:latest
+    name: grampsweb_celery
+    networks:
+      - name: proxy
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.routers.gramps.entrypoints: "http"
+    #   # This syntax allows cloudflare tunnel to host gramps.coulter.rocks which points to local gramps-in.coulter.rocks over https
+    #   # Both gramps.coulter.rocks and gramps-in.coulter.rocks must be configured in local dns (pi-hole)
+    #   # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
+    #   traefik.http.routers.gramps.rule: "Host(`gramps.coulter.rocks`)||Host(`gramps-in.coulter.rocks`)"
+    #   traefik.http.middlewares.gramps-https-redirect.redirectscheme.scheme: "https"
+    #   traefik.http.routers.gramps.middlewares: "gramps-https-redirect"
+    #   traefik.http.routers.gramps-secure.entrypoints: "https"
+    #   traefik.http.routers.gramps-secure.rule: "Host(`gramps.coulter.rocks`)||Host(`gramps-in.coulter.rocks`)"
+    #   traefik.http.routers.gramps-secure.tls: "true"
+    #   traefik.http.routers.gramps-secure.service: "gramps"
+    #   # traefik.http.services.gramps.loadbalancer.server.url: "http://vault.local:9092"
+    pull: yes
+    state: 'started'
+    command: celery -A gramps_webapi.celery worker --loglevel=INFO --concurrency=2
+    env:
+      GRAMPSWEB_TREE: "Gramps Web"  # will create a new tree if not exists
+      GRAMPSWEB_CELERY_CONFIG__broker_url: "redis://grampsweb_redis:6379/0"
+      GRAMPSWEB_CELERY_CONFIG__result_backend: "redis://grampsweb_redis:6379/0"
+      GRAMPSWEB_RATELIMIT_STORAGE_URI: redis://grampsweb_redis:6379/1
+      # DB_ENGINE: sqlite # Optional: 'sqlite', 'postgres'
+      # ALLOW_SIGNUP: "false"
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      # - "{{ data_root }}/gramps_data:/app/data/"
+      - "{{ data_root }}/gramps_data/users:/app/users"  # persist user database
+      - "{{ data_root }}/gramps_data/index:/app/indexdir"  # persist search index
+      - "{{ data_root }}/gramps_data/thumb_cache:/app/thumbnail_cache"  # persist thumbnails
+      - "{{ data_root }}/gramps_data/cache:/app/cache"  # persist export and report caches
+      - "{{ data_root }}/gramps_data/secret:/app/secret"  # persist flask secret
+      - "{{ data_root }}/gramps_data/db:/root/.gramps/grampsdb"  # persist Gramps database
+      - "{{ data_root }}/gramps_data/media:/app/media"  # persist media files
+      - "{{ data_root }}/gramps_data/tmp:/tmp"
+    restart_policy: unless-stopped
+
+
+# NOTE: NEXTCLOUD REDIS SERVER IS RUNNING SO THIS IS NOT NEEDED
+#
+# - name: Make sure the gramps redis container is created and running
+#   docker_container:
+#     image: docker.io/library/redis:7.2.4-alpine
+#     name: grampsweb_redis
+#     restart_policy: unless-stopped
+
+- name: Make sure the gramps container is created and running
+  docker_container:
+    image: ghcr.io/gramps-project/grampsweb:latest
+    name: grampsweb
+    ports:
+      - "5001:5000"
+    networks:
+      - name: proxy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.gramps.entrypoints: "http"
+      # This syntax allows cloudflare tunnel to host gramps.coulter.rocks which points to local gramps-in.coulter.rocks over https
+      # Both gramps.coulter.rocks and gramps-in.coulter.rocks must be configured in local dns (pi-hole)
+      # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
+      traefik.http.routers.gramps.rule: "Host(`gramps.coulter.rocks`)||Host(`gramps-in.coulter.rocks`)"
+      traefik.http.middlewares.gramps-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.gramps.middlewares: "gramps-https-redirect"
+      traefik.http.routers.gramps-secure.entrypoints: "https"
+      traefik.http.routers.gramps-secure.rule: "Host(`gramps.coulter.rocks`)||Host(`gramps-in.coulter.rocks`)"
+      traefik.http.routers.gramps-secure.tls: "true"
+      traefik.http.routers.gramps-secure.service: "gramps"
+      # traefik.http.services.gramps.loadbalancer.server.url: "http://vault.local:9092"
+    pull: yes
+    state: 'started'
+    env:
+      GRAMPSWEB_TREE: "Gramps Web"  # will create a new tree if not exists
+      GRAMPSWEB_CELERY_CONFIG__broker_url: "redis://grampsweb_redis:6379/0"
+      GRAMPSWEB_CELERY_CONFIG__result_backend: "redis://grampsweb_redis:6379/0"
+      GRAMPSWEB_RATELIMIT_STORAGE_URI: redis://grampsweb_redis:6379/1
+      # DB_ENGINE: sqlite # Optional: 'sqlite', 'postgres'
+      # ALLOW_SIGNUP: "false"
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      # - "{{ data_root }}/gramps_data:/app/data/"
+      - "{{ data_root }}/gramps_data/users:/app/users"  # persist user database
+      - "{{ data_root }}/gramps_data/index:/app/indexdir"  # persist search index
+      - "{{ data_root }}/gramps_data/thumb_cache:/app/thumbnail_cache"  # persist thumbnails
+      - "{{ data_root }}/gramps_data/cache:/app/cache"  # persist export and report caches
+      - "{{ data_root }}/gramps_data/secret:/app/secret"  # persist flask secret
+      - "{{ data_root }}/gramps_data/db:/root/.gramps/grampsdb"  # persist Gramps database
+      - "{{ data_root }}/gramps_data/media:/app/media"  # persist media files
+      - "{{ data_root }}/gramps_data/tmp:/tmp"
+    restart_policy: unless-stopped
+
+# Username: changeme@email.com
+# Password: MyPassword
+
+
+# services:
+#   grampsweb: &grampsweb
+#     image: ghcr.io/gramps-project/grampsweb:latest
+#     restart: always
+#     ports:
+#       - "80:5000"  # host:docker
+#     environment:
+#       GRAMPSWEB_TREE: "Gramps Web"  # will create a new tree if not exists
+#       GRAMPSWEB_CELERY_CONFIG__broker_url: "redis://grampsweb_redis:6379/0"
+#       GRAMPSWEB_CELERY_CONFIG__result_backend: "redis://grampsweb_redis:6379/0"
+#       GRAMPSWEB_RATELIMIT_STORAGE_URI: redis://grampsweb_redis:6379/1
+#     depends_on:
+#       - grampsweb_redis
+#     volumes:
+#       - "{{ data_root }}/gramps_data/users:/app/users  # persist user database
+#       - "{{ data_root }}/gramps_data/index:/app/indexdir  # persist search index
+#       - "{{ data_root }}/gramps_data/thumb_cache:/app/thumbnail_cache  # persist thumbnails
+#       - "{{ data_root }}/gramps_data/cache:/app/cache  # persist export and report caches
+#       - "{{ data_root }}/gramps_data/secret:/app/secret  # persist flask secret
+#       - "{{ data_root }}/gramps_data/db:/root/.gramps/grampsdb  # persist Gramps database
+#       - "{{ data_root }}/gramps_data/media:/app/media  # persist media files
+#       - "{{ data_root }}/gramps_data/tmp:/tmp
+

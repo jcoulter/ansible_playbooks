@@ -243,6 +243,11 @@
         - containers
         - mealie
 
+    - role: services/gramps  
+      tags:
+        - containers
+        - gramps
+
     - role: services/open-speed-test  
       tags:
         - containers
