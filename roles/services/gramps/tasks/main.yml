@@ -1,5 +1,9 @@
 ---
 
+- name: Create a gramps network
+  docker_network:
+    name: gramps
+
 #   grampsweb_celery:
 #     <<: *grampsweb  # YAML merge key copying the entire grampsweb service config
 #     ports: []
@@ -9,12 +13,22 @@
 #     command: celery -A gramps_webapi.celery worker --loglevel=INFO --concurrency=2
 
 
+# NOTE: grampsweb REDIS SERVER IS RUNNING SO THIS IS NOT NEEDED
+#
+- name: Make sure the gramps redis container is created and running
+  docker_container:
+    image: docker.io/library/redis:7.2.4-alpine
+    name: grampsweb_redis
+    restart_policy: unless-stopped
+    networks:
+      - name: gramps
+
 - name: Make sure the gramps celery container is created and running
   docker_container:
     image: ghcr.io/gramps-project/grampsweb:latest
     name: grampsweb_celery
     networks:
-      - name: proxy
+      - name: gramps
     # labels:
     #   traefik.enable: "true"
     #   traefik.http.routers.gramps.entrypoints: "http"
@@ -31,7 +45,7 @@
     #   # traefik.http.services.gramps.loadbalancer.server.url: "http://vault.local:9092"
     pull: yes
     state: 'started'
-    command: celery -A gramps_webapi.celery worker --loglevel=INFO --concurrency=2
+    command: 'celery -A gramps_webapi.celery worker --loglevel=INFO --concurrency=2'
     env:
       GRAMPSWEB_TREE: "Gramps Web"  # will create a new tree if not exists
       GRAMPSWEB_CELERY_CONFIG__broker_url: "redis://grampsweb_redis:6379/0"
@@ -43,7 +57,6 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     volumes:
-      # - "{{ data_root }}/gramps_data:/app/data/"
       - "{{ data_root }}/gramps_data/users:/app/users"  # persist user database
       - "{{ data_root }}/gramps_data/index:/app/indexdir"  # persist search index
       - "{{ data_root }}/gramps_data/thumb_cache:/app/thumbnail_cache"  # persist thumbnails
@@ -55,7 +68,7 @@
     restart_policy: unless-stopped
 
 
-# NOTE: NEXTCLOUD REDIS SERVER IS RUNNING SO THIS IS NOT NEEDED
+# NOTE: grampsweb REDIS SERVER IS RUNNING SO THIS IS NOT NEEDED
 #
 # - name: Make sure the gramps redis container is created and running
 #   docker_container:
@@ -70,7 +83,7 @@
     ports:
       - "5001:5000"
     networks:
-      - name: proxy
+      - name: gramps
     labels:
       traefik.enable: "true"
       traefik.http.routers.gramps.entrypoints: "http"
@@ -98,7 +111,6 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     volumes:
-      # - "{{ data_root }}/gramps_data:/app/data/"
       - "{{ data_root }}/gramps_data/users:/app/users"  # persist user database
       - "{{ data_root }}/gramps_data/index:/app/indexdir"  # persist search index
       - "{{ data_root }}/gramps_data/thumb_cache:/app/thumbnail_cache"  # persist thumbnails
@@ -112,13 +124,12 @@
 # Username: changeme@email.com
 # Password: MyPassword
 
-
 # services:
 #   grampsweb: &grampsweb
 #     image: ghcr.io/gramps-project/grampsweb:latest
 #     restart: always
 #     ports:
-#       - "80:5000"  # host:docker
+#       - "5001:5000"  # host:docker
 #     environment:
 #       GRAMPSWEB_TREE: "Gramps Web"  # will create a new tree if not exists
 #       GRAMPSWEB_CELERY_CONFIG__broker_url: "redis://grampsweb_redis:6379/0"
@@ -127,12 +138,34 @@
 #     depends_on:
 #       - grampsweb_redis
 #     volumes:
-#       - "{{ data_root }}/gramps_data/users:/app/users  # persist user database
-#       - "{{ data_root }}/gramps_data/index:/app/indexdir  # persist search index
-#       - "{{ data_root }}/gramps_data/thumb_cache:/app/thumbnail_cache  # persist thumbnails
-#       - "{{ data_root }}/gramps_data/cache:/app/cache  # persist export and report caches
-#       - "{{ data_root }}/gramps_data/secret:/app/secret  # persist flask secret
-#       - "{{ data_root }}/gramps_data/db:/root/.gramps/grampsdb  # persist Gramps database
-#       - "{{ data_root }}/gramps_data/media:/app/media  # persist media files
-#       - "{{ data_root }}/gramps_data/tmp:/tmp
+#       - gramps_users:/mnt/data/gramps_data/users  # persist user database
+#       - gramps_index:/mnt/data/gramps_data/index  # persist search index
+#       - gramps_thumb_cache:/mnt/data/gramps_data/thumbnail_cache  # persist thumbnails
+#       - gramps_cache:/mnt/data/gramps_data/cache  # persist export and report caches
+#       - gramps_secret:/mnt/data/gramps_data/secret  # persist flask secret
+#       - gramps_db:/mnt/data/gramps_data/.gramps/grampsdb  # persist Gramps database
+#       - gramps_media:/mnt/data/gramps_data/media  # persist media files
+#       - gramps_tmp:/mnt/data/gramps_data/tmp
 
+#   grampsweb_celery:
+#     <<: *grampsweb  # YAML merge key copying the entire grampsweb service config
+#     ports: []
+#     container_name: grampsweb_celery
+#     depends_on:
+#       - grampsweb_redis
+#     command: celery -A gramps_webapi.celery worker --loglevel=INFO --concurrency=2
+
+#   grampsweb_redis:
+#     image: docker.io/library/redis:latest
+#     container_name: grampsweb_redis
+#     restart: always
+
+# volumes:
+#   gramps_users:
+#   gramps_index:
+#   gramps_thumb_cache:
+#   gramps_cache:
+#   gramps_secret:
+#   gramps_db:
+#   gramps_media:
+#   gramps_tmp:

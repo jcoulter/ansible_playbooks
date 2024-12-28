@@ -279,7 +279,7 @@
         - containers
         - duplicati
 
-    - role: services/traefik  
+    - role: services/traefik
       tags:
         - containers
         - traefik

@@ -5,7 +5,6 @@
 # openvpn us-dtw.prod.surfshark.com_udp.ovpn 
 
 - name: Make sure the transmission vpn container is created and running
-  become: true
   docker_container:
     image: "haugene/transmission-openvpn"
     name: transmission-openvpn
@@ -17,6 +16,8 @@
     networks:
       - name: media_network
     state: started
+    devices:
+      - /dev/net/tun
     env:
       # OPENVPN_CONFIG: us-ash.prod.surfshark.com_udp
       OPENVPN_CONFIG: us-dtw.prod.surfshark.com_udp
