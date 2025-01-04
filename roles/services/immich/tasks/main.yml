@@ -1,0 +1,21 @@
+---
+- name: Copy content of directory 'files' while substituting vars
+  template:
+    src:  ../templates/.env
+    dest: "{{ config_root }}/immich_config/.env"
+
+- name: Copy content of directory 'files'
+  copy:
+    src:  ../files/
+    dest: "{{ config_root }}/immich_config/"
+
+# - name: "Provide response file"
+#   template: src=/custom.rsp dest=/opt/oracle/custom.rsp
+# # use files parameter to use multiple docker-compose.yml files
+- name: deploy Docker Compose stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ config_root }}/immich_config/"
+    state: restarted
+    # files:
+    # - docker-compose.yml
+    # - docker-compose.prod.yml

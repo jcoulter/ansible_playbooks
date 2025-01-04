@@ -1,0 +1,4 @@
+immich_version: release
+mountpoint: "immich"
+nc_db_path: "{{ data_root }}/nextcloud/db"
+nc_html_path: "{{ data_root }}/nextcloud/html"

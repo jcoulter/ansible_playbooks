@@ -228,10 +228,10 @@
         - containers
         - kavita
 
-    - role: services/photoprism  
+    - role: services/immich  
       tags:
         - containers
-        - photoprism
+        - immich
 
     - role: services/watchtower  
       tags:
