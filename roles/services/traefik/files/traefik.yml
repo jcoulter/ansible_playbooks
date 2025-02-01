@@ -20,20 +20,20 @@ entryPoints:
     # http:
       # middlewares:
       #   - crowdsec-bouncer@file
-  http-external:
-    address: ":82"
-    http:
-      # middlewares:
-      #   - crowdsec-bouncer@file
-      redirections:
-        entryPoint:
-          to: https-external
-          scheme: https
-  https-external:
-    address: ":444"
-    # http:
-      # middlewares:
-      #   - crowdsec-bouncer@file
+  # http-external:
+  #   address: ":82"
+  #   http:
+  #     # middlewares:
+  #     #   - crowdsec-bouncer@file
+  #     redirections:
+  #       entryPoint:
+  #         to: https-external
+  #         scheme: https
+  # https-external:
+  #   address: ":444"
+  #   # http:
+  #     # middlewares:
+  #     #   - crowdsec-bouncer@file
 serversTransport:
   insecureSkipVerify: true
 providers:
@@ -45,7 +45,7 @@ providers:
     filename: /config.yml
     watch: true
 log:
-  level: INFO
+  level: DEBUG
   format: common
   filePath: '/var/log/traefik/traefik.log'
 accessLog:

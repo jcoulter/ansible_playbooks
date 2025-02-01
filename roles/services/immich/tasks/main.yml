@@ -16,6 +16,8 @@
   community.docker.docker_compose_v2:
     project_src: "{{ config_root }}/immich_config/"
     state: restarted
+    recreate: always
+  register: output
     # files:
     # - docker-compose.yml
     # - docker-compose.prod.yml

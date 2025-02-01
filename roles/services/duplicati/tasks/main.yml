@@ -46,5 +46,6 @@
       - "{{ data_root }}:/data"
       - "{{ shares }}:/shares"
       - "{{ backups }}:/backups"
+      - "{{ shares }}/immich:/immich"
     restart_policy: unless-stopped
 

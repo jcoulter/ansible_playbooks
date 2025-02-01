@@ -52,6 +52,9 @@
       POSTGRES_DB: immich
       REDIS_HOST: nextcloud-redis
 
+~/media/takeout/immich-go -server=http://vault.local:2283 -key=eTGE7tAI0nvn4mxbWc1GYdFt2qRA0zW87xt6OApnE4 upload -create-albums -log-file=immich_backed_up_01_08_2025.txt .
+
+
 
 eTGE7tAI0nvn4mxbWc1GYdFt2qRA0zW87xt6OApnE4
 mdokfRXseYx3iMUJSoaCpFdMBVczyWJSLjDdHpmQNNo
@@ -161,7 +164,7 @@ fhRcV4ealSeK22zVcGdcOUknSVa2XNe2BtUhKQyA
     #   - "./library:/usr/src/app/upload"
     #   - /etc/localtime:/etc/localtime:ro
     volumes:
-      - "{{ brick_root }}/immich/upload:/usr/src/app/upload"
+      - "{{ shares }}/immich:/usr/src/app/upload"
       - "{{ config_root }}/immich_config/db:/var/lib/postgresql/data"
       - /etc/localtime:/etc/localtime:ro
     restart_policy: unless-stopped

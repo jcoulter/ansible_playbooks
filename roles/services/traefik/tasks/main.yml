@@ -3,10 +3,6 @@
   docker_network:
     name: proxy
 
-- name: Create a cloudflare tunnel network
-  docker_network:
-    name: cloudflare
-
 - name: Copy content of directory 'files'
   copy:
     src:  ../files/ 
@@ -31,14 +27,14 @@
       traefik.enable: "true"
       traefik.http.routers.traefik.entrypoints: "http"
       traefik.http.routers.traefik.rule: "Host(`traefik.coulter.rocks`)"
-      traefik.http.middlewares.traefik-ipwhitelist.ipwhitelist.sourcerange: "192.168.1.1/24"
+      # traefik.http.middlewares.traefik-ipwhitelist.ipwhitelist.sourcerange: "192.168.1.1/24"
       # traefik.http.middlewares.traefik-auth.basicauth.users: "{{ traefik_password }}"
       traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme: "https"
       traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
       traefik.http.routers.traefik.middlewares: "traefik-https-redirect"
       traefik.http.routers.traefik-secure.entrypoints: "https"
       traefik.http.routers.traefik-secure.rule: "Host(`traefik.coulter.rocks`)"
-      traefik.http.routers.traefik-secure.middlewares: "traefik-ipwhitelist"
+      # traefik.http.routers.traefik-secure.middlewares: "traefik-ipwhitelist"
       traefik.http.routers.traefik-secure.tls: "true"
       traefik.http.routers.traefik-secure.tls.certresolver: "cloudflare"
       traefik.http.routers.traefik-secure.tls.domains[0].main: "coulter.rocks"
@@ -47,7 +43,6 @@
       traefik.http.services.traefik.loadbalancer.server.port: "8084"
     networks:
       - name: proxy
-      - name: cloudflare
     ports:
       # HTTPS / SSL port
       - "443:443"
@@ -78,27 +73,13 @@
       - "{{ config_root }}/traefik_config/logs:/var/log/traefik"
     restart_policy: unless-stopped
 
-
+# Jim's Garage example - stopped working randomly?
 # https://www.youtube.com/watch?v=XH9XgiVM_z4&t=105s
-# The configuration files don't currently live in this project so this is insufficient to deploy to a new server.
-#      traefik.enable: "true"
-      # traefik.http.routers.traefik.entrypoints: "http"
-      # traefik.http.routers.traefik.rule: "Host(`traefik.coulter.rocks`)"
-      # traefik.http.middlewares.traefik-auth.basicauth.users: "{{ traefik_password }}"
-      # traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme: "https"
-      # traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
-      # traefik.http.routers.traefik.middlewares: "traefik-https-redirect"
-      # traefik.http.routers.traefik-secure.entrypoints: "https"
-      # traefik.http.routers.traefik-secure.rule: "Host(`traefik.coulter.rocks`)"
-      # traefik.http.routers.traefik-secure.middlewares: "traefik-auth"
-      # traefik.http.routers.traefik-secure.tls: "true"
-      # traefik.http.routers.traefik-secure.tls.certresolver: "cloudflare"
-      # traefik.http.routers.traefik-secure.tls.domains[0].main: "coulter.rocks"
-      # traefik.http.routers.traefik-secure.tls.domains[0].sans: "*.coulter.rocks"
-      # traefik.http.routers.traefik-secure.service: "api@internal"
 
+      # Techno Tim example
       # https://www.youtube.com/watch?v=liV3c9m_OX8
-
+      # updated version:
+      # https://www.youtube.com/watch?v=n1vOfdz5Nm8
 
       # Successfull cloudflare cert generation: https://community.traefik.io/t/cloudflare-failed-to-find-zone-domain/19884/11
 
@@ -125,3 +106,5 @@
       # 11. ansible-playbook run.yml --ask-vault-password -i inventory -t traefik
 
 
+# TO log into container:
+  # docker exec -it traefik /bin/sh
