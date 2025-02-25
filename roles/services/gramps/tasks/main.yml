@@ -32,14 +32,14 @@
     # labels:
     #   traefik.enable: "true"
     #   traefik.http.routers.gramps.entrypoints: "http"
-    #   # This syntax allows cloudflare tunnel to host gramps.coulter.rocks which points to local gramps-in.coulter.rocks over https
-    #   # Both gramps.coulter.rocks and gramps-in.coulter.rocks must be configured in local dns (pi-hole)
+    #   # This syntax allows cloudflare tunnel to host gramps.{{ domain }} which points to local gramps-in.{{ domain }} over https
+    #   # Both gramps.{{ domain }} and gramps-in.{{ domain }} must be configured in local dns (pi-hole)
     #   # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
-    #   traefik.http.routers.gramps.rule: "Host(`gramps.coulter.rocks`)||Host(`gramps-in.coulter.rocks`)"
+    #   traefik.http.routers.gramps.rule: "Host(`gramps.{{ domain }}`)||Host(`gramps-in.{{ domain }}`)"
     #   traefik.http.middlewares.gramps-https-redirect.redirectscheme.scheme: "https"
     #   traefik.http.routers.gramps.middlewares: "gramps-https-redirect"
     #   traefik.http.routers.gramps-secure.entrypoints: "https"
-    #   traefik.http.routers.gramps-secure.rule: "Host(`gramps.coulter.rocks`)||Host(`gramps-in.coulter.rocks`)"
+    #   traefik.http.routers.gramps-secure.rule: "Host(`gramps.{{ domain }}`)||Host(`gramps-in.{{ domain }}`)"
     #   traefik.http.routers.gramps-secure.tls: "true"
     #   traefik.http.routers.gramps-secure.service: "gramps"
     #   # traefik.http.services.gramps.loadbalancer.server.url: "http://vault.local:9092"
@@ -87,14 +87,14 @@
     labels:
       traefik.enable: "true"
       traefik.http.routers.gramps.entrypoints: "http"
-      # This syntax allows cloudflare tunnel to host gramps.coulter.rocks which points to local gramps-in.coulter.rocks over https
-      # Both gramps.coulter.rocks and gramps-in.coulter.rocks must be configured in local dns (pi-hole)
+      # This syntax allows cloudflare tunnel to host gramps.{{ domain }} which points to local gramps-in.{{ domain }} over https
+      # Both gramps.{{ domain }} and gramps-in.{{ domain }} must be configured in local dns (pi-hole)
       # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
-      traefik.http.routers.gramps.rule: "Host(`gramps.coulter.rocks`)||Host(`gramps-in.coulter.rocks`)"
+      traefik.http.routers.gramps.rule: "Host(`gramps.{{ domain }}`)||Host(`gramps-in.{{ domain }}`)"
       traefik.http.middlewares.gramps-https-redirect.redirectscheme.scheme: "https"
       traefik.http.routers.gramps.middlewares: "gramps-https-redirect"
       traefik.http.routers.gramps-secure.entrypoints: "https"
-      traefik.http.routers.gramps-secure.rule: "Host(`gramps.coulter.rocks`)||Host(`gramps-in.coulter.rocks`)"
+      traefik.http.routers.gramps-secure.rule: "Host(`gramps.{{ domain }}`)||Host(`gramps-in.{{ domain }}`)"
       traefik.http.routers.gramps-secure.tls: "true"
       traefik.http.routers.gramps-secure.service: "gramps"
       # traefik.http.services.gramps.loadbalancer.server.url: "http://vault.local:9092"

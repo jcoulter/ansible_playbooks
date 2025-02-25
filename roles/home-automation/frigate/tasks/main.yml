@@ -37,7 +37,6 @@
           size: 1000000000
         # config is working on the network share, the db must be on the same server as the container
       - ./db:/frigate/db
-    state: 'started'
     restart_policy: unless-stopped
 
 

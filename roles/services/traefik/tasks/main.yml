@@ -3,10 +3,16 @@
   docker_network:
     name: proxy
 
-- name: Copy content of directory 'files'
-  copy:
-    src:  ../files/ 
-    dest: "{{ config_root }}/traefik_config/"
+- name: Copy config.yml while substituting vars
+  template:
+    src:  ../templates/config.yml
+    dest: "{{ config_root }}/traefik_config/config.yml"
+
+- name: Copy traefik.yml while substituting vars
+  template:
+    src:  ../templates/traefik.yml
+    dest: "{{ config_root }}/traefik_config/traefik.yml"
+    
 
 # #  This didn't work for me, see volume comment below.
 # - name: make sure acme is 600
@@ -26,19 +32,19 @@
     labels:
       traefik.enable: "true"
       traefik.http.routers.traefik.entrypoints: "http"
-      traefik.http.routers.traefik.rule: "Host(`traefik.coulter.rocks`)"
+      traefik.http.routers.traefik.rule: "Host(`traefik.{{ domain }}`)"
       # traefik.http.middlewares.traefik-ipwhitelist.ipwhitelist.sourcerange: "192.168.1.1/24"
       # traefik.http.middlewares.traefik-auth.basicauth.users: "{{ traefik_password }}"
       traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme: "https"
       traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
       traefik.http.routers.traefik.middlewares: "traefik-https-redirect"
       traefik.http.routers.traefik-secure.entrypoints: "https"
-      traefik.http.routers.traefik-secure.rule: "Host(`traefik.coulter.rocks`)"
+      traefik.http.routers.traefik-secure.rule: "Host(`traefik.{{ domain }}`)"
       # traefik.http.routers.traefik-secure.middlewares: "traefik-ipwhitelist"
       traefik.http.routers.traefik-secure.tls: "true"
       traefik.http.routers.traefik-secure.tls.certresolver: "cloudflare"
-      traefik.http.routers.traefik-secure.tls.domains[0].main: "coulter.rocks"
-      traefik.http.routers.traefik-secure.tls.domains[0].sans: "*.coulter.rocks"
+      traefik.http.routers.traefik-secure.tls.domains[0].main: "{{ domain }}"
+      traefik.http.routers.traefik-secure.tls.domains[0].sans: "*.{{ domain }}"
       traefik.http.routers.traefik-secure.service: "api@internal"
       traefik.http.services.traefik.loadbalancer.server.port: "8084"
     networks:
@@ -86,7 +92,7 @@
       #Command to manually test credentials:
       #
       #CLOUDFLARE_DNS_API_TOKEN=<DNS TOKEN for all zones - see documentation linked above> \
-      #lego --email jacob.coulter@gmail.com --dns cloudflare --domains coulter.rocks run
+      #lego --email {{ primary_email }} --dns cloudflare --domains {{ domain }} run
 
       # They seem to change the env vars for the cloudflare envs all the time, here is the provider documentation
       # https://doc.traefik.io/traefik/https/acme/#providers

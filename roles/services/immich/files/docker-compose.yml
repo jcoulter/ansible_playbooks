@@ -6,6 +6,11 @@
 # The compose file on main may not be compatible with the latest release.
 #
 
+# TO UPGRADE:
+# docker-compose pull
+# docker-compose down
+# docker-compose up -d
+
 services:
   immich-server:
     container_name: immich_server

@@ -1,0 +1,42 @@
+---
+#  Create docker volume  /var/lib/docker/volumes/nextcloud_aio_mastercontainer/_data
+
+- name: Make sure - "NextCloud All In One container is created and running {{ ncaio_html_path }}"
+  docker_container:
+    container_default_behavior: compatibility
+    networks_cli_compatible: yes
+    name: nextcloud-aio-mastercontainer 
+    image: nextcloud/all-in-one:latest
+    restart_policy: unless-stopped
+    published_ports:
+      # - "8101:80"
+      - "8102:8080"
+      # - "8445:8443"
+    # networks:
+    #   - name: proxy
+    # labels:
+    #   traefik.enable: "true"
+    #   traefik.http.routers.nextcloudaio.entrypoints: "http"
+    #   traefik.http.routers.nextcloudaio.rule: "Host(`nextcloud.{{ domain }}`))"
+    #   traefik.http.middlewares.nextcloudaio-https-redirect.redirectscheme.scheme: "https"
+    #   traefik.http.routers.nextcloudaio.middlewares: "nextcloudaio-https-redirect"
+    #   traefik.http.routers.nextcloudaio-secure.entrypoints: "https"
+    #   traefik.http.routers.nextcloudaio-secure.rule: "Host(`nextcloud.{{ domain }}`)"
+    #   traefik.http.routers.nextcloudaio-secure.tls: "true"
+    #   traefik.http.routers.nextcloudaio-secure.service: "nextcloud-aio-mastercontainer "
+    #   traefik.http.services.nextcloudaio.loadbalancer.server.url: "http://192.168.1.36:8102"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      APACHE_PORT: "11000"
+      APACHE_IP_BINDING: "0.0.0.0"
+      APACHE_ADDITIONAL_NETWORK: "proxy"
+      SKIP_DOMAIN_VALIDATION: "false"
+    volumes:
+      # - "{{ ncaio_html_path }}:/var/www/html"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+

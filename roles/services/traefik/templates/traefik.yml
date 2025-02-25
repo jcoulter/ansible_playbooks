@@ -56,7 +56,7 @@ certificatesResolvers:
   cloudflare:
     acme:
     # TODO: substitutions from ansible_vault
-      email: jacob.coulter@gmail.com
+      email: "{{ primary_email }}"
       storage: acme.json
       dnsChallenge:
         provider: cloudflare

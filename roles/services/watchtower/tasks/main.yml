@@ -1,4 +1,5 @@
 ---
+# Watchtower is great but needs to avoid home assistant, nextcloud, and possibly others
 - name: Make sure the "{{ container_name }}" container is created and running
   become: yes
   docker_container:

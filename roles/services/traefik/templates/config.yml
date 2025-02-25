@@ -3,12 +3,22 @@ http:
     hass:
       entryPoints:
         - "https"
-      rule: "Host(`hass.coulter.rocks`)"
+      rule: "Host(`hass.{{ domain }}`)"
       middlewares:
         - default-headers
         - https-redirectscheme
       tls: {}
       service: hass
+    nextcloud:
+      rule: "Host(`nextcloud.{{ domain }}`)"
+      entrypoints:
+        - "https"
+      service: nextcloud
+      middlewares:
+          - https-redirectscheme
+          - nextcloud-secure-headers
+      tls:
+        certresolver: "letsencrypt"
       
   services:
     hass:
@@ -16,18 +26,35 @@ http:
         servers:
           - url: "http://192.168.1.36:8123/"
         passHostHeader: true
+    nextcloud:
+      loadBalancer:
+        servers:
+          - url: "http://nextcloud-aio-apache:11000"
+          # - url: "http://0.0.0.0:11000" # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
 
   middlewares:
     https-redirectscheme:
       redirectScheme:
         scheme: https
-        
+    nextcloud-secure-headers:
+      headers:
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        referrerPolicy: "same-origin"
+
         # Find video from Jims Garage
     # crowdsec-bouncer:
     #   forwardauth:
     #     address: http://bouncer-traefik:8000/api/v1/forwardAuth
     #     trustForwardHeader: true
   
+    # nextcloud-chain:
+    #   chain:
+    #     middlewares:
+    #       # - ... (e.g. rate limiting middleware)
+    #       - https-redirectscheme
+    #       - nextcloud-secure-headers
+
     default-headers:
       headers:
         frameDeny: true

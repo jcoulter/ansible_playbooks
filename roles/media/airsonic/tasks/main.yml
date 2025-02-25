@@ -10,14 +10,13 @@
     labels:
       traefik.enable: "true"
       # traefik.http.routers.airsonic.entrypoints: "http"
-      # traefik.http.routers.airsonic.rule: "Host(`airsonic.coulter.rocks`)||Host(`airsonic-in.coulter.rocks`)"
+      # traefik.http.routers.airsonic.rule: "Host(`airsonic.{{ domain }}`)||Host(`airsonic-in.{{ domain }}`)"
       # traefik.http.middlewares.airsonic-https-redirect.redirectscheme.scheme: "https"
       # traefik.http.routers.airsonic.middlewares: "airsonic-https-redirect"
       traefik.http.routers.airsonic-secure.entrypoints: "https"
-      traefik.http.routers.airsonic-secure.rule: "Host(`airsonic.coulter.rocks`)||Host(`airsonic-in.coulter.rocks`)"
+      traefik.http.routers.airsonic-secure.rule: "Host(`airsonic.{{ domain }}`)||Host(`airsonic-in.{{ domain }}`)"
       traefik.http.routers.airsonic-secure.tls: "true"
       traefik.http.routers.airsonic-secure.service: "airsonic"
-      # traefik.http.services.airsonic.loadbalancer.server.url: "http://vault.local:8096"
     pull: yes
     state: 'started'
     env:

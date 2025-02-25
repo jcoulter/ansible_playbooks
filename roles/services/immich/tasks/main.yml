@@ -1,5 +1,5 @@
 ---
-- name: Copy content of directory 'files' while substituting vars
+- name: Copy content of directory 'templates' while substituting vars
   template:
     src:  ../templates/.env
     dest: "{{ config_root }}/immich_config/.env"

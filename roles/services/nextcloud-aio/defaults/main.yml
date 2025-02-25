@@ -1,0 +1,3 @@
+# mountpoint: "nextcloud-aio"
+# ncaio_db_path: "{{ data_root }}/nextcloud-aio/db"
+# ncaio_html_path: "{{ data_root }}/nextcloud-aio/html"

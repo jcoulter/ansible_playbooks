@@ -68,9 +68,9 @@ services:
       - ./app/themes:/var/www/html/themes
       - /etc/localtime:/etc/localtime:ro
     environment:
-      - VIRTUAL_HOST=nextcloud.coulter.ninja
-      - LETSENCRYPT_HOST=nextcloud.coulter.ninja
-      - LETSENCRYPT_EMAIL=jacob.coulter@gmail.com
+      - VIRTUAL_HOST=nextcloud.{{ domain }}
+      - "LETSENCRYPT_HOST=nextcloud.{{ domain }}"
+      - "LETSENCRYPT_EMAIL={{ primary_email}}
     restart: unless-stopped
 
 volumes:
@@ -81,5 +81,5 @@ networks:
   nextcloud_network:
 
 
-nextcloud-letsencrypt | [Wed Apr 27 00:24:41 CEST 2022] nextcloud.coulter.ninja:Verify error:DNS problem: NXDOMAIN looking up A for nextcloud.coulter.ninja - check that a DNS record exists for this domain; DNS problem: NXDOMAIN looking up AAAA for nextcloud.coulter.ninja - check that a DNS record exists for this domain
+nextcloud-letsencrypt | [Wed Apr 27 00:24:41 CEST 2022] nextcloud.{{ domain }}:Verify error:DNS problem: NXDOMAIN looking up A for nextcloud.{{ domain }} - check that a DNS record exists for this domain; DNS problem: NXDOMAIN looking up AAAA for nextcloud.{{ domain }} - check that a DNS record exists for this domain
 

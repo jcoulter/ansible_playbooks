@@ -29,12 +29,33 @@
     #   tags:
     #     - setup
     #     - samba 
+    - role: services/paperless-ngx
+      become: true
+      tags:
+        - paperless
+        - paperless-ngx
+        - services
 
     - role: services/nextcloud
       tags:
         - services
-        # - containers
         - nextcloud
+
+    - role: services/nextcloud-aio
+      tags:
+        - services
+        - nextcloud-aio
+
+    - role: services/onlyoffice
+      tags:
+        - services
+        - onlyoffice
+
+    - role: services/colabra
+      tags:
+        - services
+        # - containers
+        - colabra
 
     # - role: services/seafile
     #   tags:

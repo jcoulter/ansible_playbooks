@@ -1,0 +1,56 @@
+---
+- name: Make sure the onlyoffice container is created and running
+  docker_container:
+    image: onlyoffice/documentserver:latest
+    name: onlyoffice
+    published_ports:
+      - "8088:80"
+    networks:
+      - name: proxy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.onlyoffice.entrypoints: "http"
+      # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
+      traefik.http.routers.onlyoffice.rule: "Host(`office.{{ domain }}`)"
+      traefik.http.services.onlyoffice.loadbalancer.server.url: "http://vault.local:8088"
+      traefik.http.middlewares.onlyoffice-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.onlyoffice.middlewares: "onlyoffice-https-redirect"
+      traefik.http.routers.onlyoffice-secure.entrypoints: "https"
+      traefik.http.routers.onlyoffice-secure.rule: "Host(`office.{{ domain }}`)"
+      traefik.http.routers.onlyoffice-secure.tls: "true"
+      traefik.http.routers.onlyoffice-secure.service: "onlyoffice"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      # To get a jwt_secret, 
+      # comment out the JWT_SECRET environment variable and deploy the server
+      # Then ssh onto the server and run:
+      # `docker exec d25f69df7ee9 /var/www/onlyoffice/documentserver/npm/json -f /etc/onlyoffice/documentserver/local.json 'services.CoAuthoring.secret.session.string'`
+      # then save the secret in ansible vault
+      JWT_SECRET: "{{ jwt_secret }}"
+      # If you want to use certbot for https instead of traefik uncomment these and add an https port.
+      # LETS_ENCRYPT_DOMAIN: "{{ domain }}"
+      # LETS_ENCRYPT_MAIL: "{{ primary_email }}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "{{ config_root }}/onlyoffice/logs:/var/log/onlyoffice"
+      - "{{ config_root }}/onlyoffice/data:/var/www/onlyoffice/Data"
+      - "{{ config_root }}/onlyoffice/lib:/var/lib/onlyoffice"
+      - "{{ config_root }}/onlyoffice/db:/var/lib/postgresql"
+    restart_policy: unless-stopped
+
+
+# https://helpcenter.onlyoffice.com/installation/docs-community-install-docker.aspx
+
+    # sudo docker run -i -t -d -p 80:80 --restart=always \
+    # -v /app/onlyoffice/DocumentServer/logs:/var/log/onlyoffice  \
+    # -v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data  \
+    # -v /app/onlyoffice/DocumentServer/lib:/var/lib/onlyoffice \
+    # -v /app/onlyoffice/DocumentServer/db:/var/lib/postgresql -e JWT_SECRET=my_jwt_secret onlyoffice/documentserver
+
+
+# sudo docker run -i -t -d -p 443:443 --restart=always \
+# -v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data -e JWT_SECRET=my_jwt_secret onlyoffice/documentserver

@@ -22,7 +22,7 @@
     container_default_behavior: compatibility
     networks_cli_compatible: yes
     name: nextcloud
-    image: nextcloud:latest
+    image: nextcloud:30
     restart_policy: unless-stopped
     published_ports:
       - "8080:80"
@@ -31,11 +31,11 @@
     labels:
       traefik.enable: "true"
       traefik.http.routers.nextcloud.entrypoints: "http"
-      traefik.http.routers.nextcloud.rule: "Host(`next.coulter.rocks`)||Host(`next-in.coulter.rocks`)"
+      traefik.http.routers.nextcloud.rule: "Host(`next.{{ domain }}`)||Host(`next-in.{{ domain }}`)"
       traefik.http.middlewares.nextcloud-https-redirect.redirectscheme.scheme: "https"
       traefik.http.routers.nextcloud.middlewares: "nextcloud-https-redirect"
       traefik.http.routers.nextcloud-secure.entrypoints: "https"
-      traefik.http.routers.nextcloud-secure.rule: "Host(`next.coulter.rocks`)||Host(`next-in.coulter.rocks`)"
+      traefik.http.routers.nextcloud-secure.rule: "Host(`next.{{ domain }}`)||Host(`next-in.{{ domain }}`)"
       traefik.http.routers.nextcloud-secure.tls: "true"
       traefik.http.routers.nextcloud-secure.service: "nextcloud"
       traefik.http.services.nextcloud.loadbalancer.server.url: "http://vault.local:8080"
@@ -47,8 +47,6 @@
       "MYSQL_USER": nextcloud
       "MYSQL_PASSWORD": "{{ mariadb_password }}"
       "REDIS_HOST": nextcloud-redis
-    networks: 
-      - name: proxy
     volumes:
       - "{{ nc_html_path }}:/var/www/html"
       - "{{ data_root }}/sync:/sync"
@@ -87,7 +85,7 @@
 - name: "Make sure - Nextcloud msql container is created and running"
   docker_container:
     name: "nextcloud-msql-db"
-    image: mysql:latest
+    image: mysql:9
     pull: yes
     networks:
       - name: proxy

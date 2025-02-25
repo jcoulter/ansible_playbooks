@@ -1,0 +1,17 @@
+---
+paperless_data_dir: "{{ data_root }}/paperless"
+paperless_port: 8011
+paperless_timezone: "{{ timezone }}"
+
+# Network settings
+paperless_network_name: proxy
+
+# Database settings
+paperless_db_user: paperless
+paperless_db_name: paperless
+
+# Redis settings
+paperless_redis_port: 6379
+
+# Default admin user
+paperless_admin_user: admin

@@ -15,4 +15,4 @@
       TZ: "{{ timezone }}"
     volumes:
       - "{{ config_root }}/trilium_data:/home/node/trilium-data"
-    restart_policy: unless-stopped
+    restart_policy: always

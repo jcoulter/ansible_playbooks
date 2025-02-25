@@ -1,0 +1,80 @@
+---
+- name: Create required directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - "{{ paperless_data_dir }}"
+    - "{{ paperless_data_dir }}/data"
+    - "{{ paperless_data_dir }}/media"
+    - "{{ paperless_data_dir }}/export"
+    - "{{ paperless_data_dir }}/consume"
+    - "{{ paperless_data_dir }}/pgdata"
+    - "{{ paperless_data_dir }}/redisdata"
+
+# - name: Create Docker network
+#   community.docker.docker_network:
+#     name: "{{ paperless_network_name }}"
+#     state: present
+
+- name: Deploy Redis container
+  community.docker.docker_container:
+    name: paperless_redis
+    image: redis:6-alpine
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ paperless_network_name }}"
+    ports:
+      - "127.0.0.1:{{ paperless_redis_port }}:6379"
+    volumes:
+      - "{{ paperless_data_dir }}/redisdata:/data"
+
+- name: Deploy PostgreSQL container
+  community.docker.docker_container:
+    name: paperless_db
+    image: postgres:13
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ paperless_network_name }}"
+    volumes:
+      - "{{ paperless_data_dir }}/pgdata:/var/lib/postgresql/data"
+    env:
+      POSTGRES_DB: "{{ paperless_db_name }}"
+      POSTGRES_USER: "{{ paperless_db_user }}"
+      POSTGRES_PASSWORD: "{{ paperless_db_password }}"
+
+- name: Deploy Paperless-ngx container
+  community.docker.docker_container:
+    name: paperless_webserver
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ paperless_network_name }}"
+    ports:
+      - "{{ paperless_port }}:8000"
+    volumes:
+      - "{{ paperless_data_dir }}/data:/usr/src/paperless/data"
+      - "{{ paperless_data_dir }}/media:/usr/src/paperless/media"
+      - "{{ paperless_data_dir }}/export:/usr/src/paperless/export"
+      - "{{ paperless_data_dir }}/consume:/usr/src/paperless/consume"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      PAPERLESS_REDIS: "redis://paperless_redis:6379"
+      PAPERLESS_DBHOST: "paperless_db"
+      PAPERLESS_DBNAME: "{{ paperless_db_name }}"
+      PAPERLESS_DBUSER: "{{ paperless_db_user }}"
+      PAPERLESS_DBPASS: "{{ paperless_db_password }}"
+      PAPERLESS_TIME_ZONE: "{{ paperless_timezone }}"
+      PAPERLESS_OCR_LANGUAGE: "eng"
+      PAPERLESS_ADMIN_USER: "{{ paperless_admin_user }}"
+      PAPERLESS_ADMIN_PASSWORD: "{{ paperless_admin_password }}"
+      PAPERLESS_ADMIN_EMAIL: "{{ primary_email }}"
+    # dependencies:
+    #   - paperless_db
+    #   - paperless_redis

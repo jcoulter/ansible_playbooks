@@ -16,7 +16,7 @@
     labels:
       traefik.enable: "true"
       traefik.http.routers.crafty.entrypoints: "https-external"
-      traefik.http.routers.crafty.rule: "Host(`crafty.coulter.rocks`)"
+      traefik.http.routers.crafty.rule: "Host(`crafty.{{ domain }}`)"
       traefik.http.services.crafty.loadbalancer.server.port: "8443" # port that Crafty operates on is 8443
       traefik.http.routers.crafty.tls: "true" # tells traefik you want to use SSL/TLS to connect to your Crafty instance
       traefik.http.routers.crafty.tls.certresolver: cloudflare # OPTIONAL: If you want traefik to handle TLS certificates instead of Crafty, you should uncomment the beginning of this line and put the name of your traefik certificate resolver here
@@ -26,13 +26,13 @@
       # traefik.http.services.crafty.loadbalancer.server.url: "https://192.168.1.36:8443"
 
 
-      # This syntax allows cloudflare tunnel to host crafty.coulter.rocks which points to local crafty-in.coulter.rocks over https
-      # Both crafty.coulter.rocks and crafty-in.coulter.rocks must be configured in local dns (pi-hole)
+      # This syntax allows cloudflare tunnel to host crafty.{{ domain }} which points to local crafty-in.{{ domain }} over https
+      # Both crafty.{{ domain }} and crafty-in.{{ domain }} must be configured in local dns (pi-hole)
       # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
       # traefik.http.middlewares.crafty-https-redirect.redirectscheme.scheme: "https"
       # traefik.http.routers.crafty.middlewares: "crafty-https-redirect"
       # traefik.http.routers.crafty-secure.entrypoints: "https"
-      # traefik.http.routers.crafty-secure.rule: "Host(`crafty.coulter.rocks`)||Host(`crafty-in.coulter.rocks`)"
+      # traefik.http.routers.crafty-secure.rule: "Host(`crafty.{{ domain }}`)||Host(`crafty-in.{{ domain }}`)"
       # traefik.http.routers.crafty-secure.service: "crafty"
     pull: yes
     # tty: true
