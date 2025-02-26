@@ -14,4 +14,4 @@ paperless_db_name: paperless
 paperless_redis_port: 6379
 
 # Default admin user
-paperless_admin_user: admin
+# : admin

@@ -13,15 +13,31 @@
     - "{{ paperless_data_dir }}/pgdata"
     - "{{ paperless_data_dir }}/redisdata"
 
-# - name: Create Docker network
-#   community.docker.docker_network:
-#     name: "{{ paperless_network_name }}"
-#     state: present
+#  Apparently the celerybeat scheduler has issues running on mergerfs
+# - name: Ensure celerybeat file can be created
+#   ansible.builtin.file:
+#     path: "{{ paperless_data_dir }}/data/celerybeat-schedule.db"
+#     state: touch
+#     mode: '0644'
+#     owner: "{{ puid | default('1000') }}"
+#     group: "{{ pgid | default('1000') }}"
+
+- name: Set vm.overcommit_memory
+  ansible.posix.sysctl:
+    name: vm.overcommit_memory
+    value: '1'
+    state: present
+    sysctl_file: /etc/sysctl.conf
+    reload: true
+
+- name: Apply sysctl settings
+  ansible.builtin.command: sysctl -p
+  changed_when: false
 
 - name: Deploy Redis container
   community.docker.docker_container:
     name: paperless_redis
-    image: redis:6-alpine
+    image: redis:latest
     state: started
     restart_policy: unless-stopped
     networks:
@@ -56,6 +72,13 @@
       - name: "{{ paperless_network_name }}"
     ports:
       - "{{ paperless_port }}:8000"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.paperless_webserver-secure.entrypoints: "https"
+      traefik.http.routers.paperless_webserver-secure.rule: "Host(`paperless.{{ domain }}`)"
+      traefik.http.routers.paperless_webserver-secure.tls: "true"
+      traefik.http.routers.paperless_webserver-secure.service: "paperless_webserver"
+      traefik.http.services.paperless_webserver.loadbalancer.server.port: "8000"
     volumes:
       - "{{ paperless_data_dir }}/data:/usr/src/paperless/data"
       - "{{ paperless_data_dir }}/media:/usr/src/paperless/media"
@@ -75,6 +98,15 @@
       PAPERLESS_ADMIN_USER: "{{ paperless_admin_user }}"
       PAPERLESS_ADMIN_PASSWORD: "{{ paperless_admin_password }}"
       PAPERLESS_ADMIN_EMAIL: "{{ primary_email }}"
+      PAPERLESS_URL: "https://paperless.{{ domain }}"
+      PAPERLESS_TRUSTED_PROXIES: "*"
+      PAPERLESS_CSRF_TRUSTED_ORIGINS: "https://paperless.{{ domain }}"
+      PAPERLESS_FORCE_SCRIPT_NAME: ""
+      PAPERLESS_PROXY_SSL_HEADER: '["HTTP_X_FORWARDED_PROTO", "https"]'
+      # PAPERLESS_CELERY_BEAT_SCHEDULER: "database"
+      PAPERLESS_CELERY_WORKER_TIMEOUT: "3600"
+      PAPERLESS_CELERY_BEAT_SCHEDULER: "django_celery_beat.schedulers:DatabaseScheduler"
+      # PAPERLESS_CELERY_BEAT_PATH: "/usr/src/paperless/data/celerybeat-schedule.db"
     # dependencies:
     #   - paperless_db
     #   - paperless_redis
