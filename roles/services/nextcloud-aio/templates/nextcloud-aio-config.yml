@@ -2,7 +2,7 @@
 http:
   routers:
     nextcloud:
-      rule: "Host(`nextcloud.{{ domain }}`))"
+      rule: "Host(`nextcloud.{{ domain }}`)"
       entrypoints:
         - "https"
       service: nextcloud

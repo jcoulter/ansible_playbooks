@@ -23,7 +23,7 @@
       traefik.http.services.crafty.loadbalancer.server.scheme: "https" # tell traefik to connect to Crafty via https instead of http
       traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https" # enable websockets for Crafty
       # TODO: is this needed?
-      # traefik.http.services.crafty.loadbalancer.server.url: "https://192.168.1.36:8443"
+      # traefik.http.services.crafty.loadbalancer.server.url: "https://{{ ansible_default_ipv4.address }}:8443"
 
 
       # This syntax allows cloudflare tunnel to host crafty.{{ domain }} which points to local crafty-in.{{ domain }} over https

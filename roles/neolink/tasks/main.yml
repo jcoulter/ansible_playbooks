@@ -17,9 +17,9 @@
     # does this offer an image url?
     
     # I expose the E1 as garage and can hit it with: 
-    # rtsp://192.168.1.36:8554/garage 
-    # rtsp://192.168.1.36:8554/garage/subStream 
-    # rtsp://192.168.1.36:8554/garage/mainStream
+    # "rtsp://{{ ansible_default_ipv4.address }}:8554/garage"
+    # "rtsp://{{ ansible_default_ipv4.address }}:8554/garage/subStream" 
+    # "rtsp://{{ ansible_default_ipv4.address }}:8554/garage/mainStream"
 
     # Can configure user and password.
 

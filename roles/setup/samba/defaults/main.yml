@@ -2,4 +2,4 @@
 nc_mountpoint: "/mnt/nextcloud"
 permission: '0777'
 myopts: 'rw,sync'
-uri: "//192.168.1.54/nextcloud"
+uri: "//{{ ansible_default_ipv4.address }}/nextcloud"

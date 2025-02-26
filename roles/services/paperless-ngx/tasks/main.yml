@@ -13,15 +13,6 @@
     - "{{ paperless_data_dir }}/pgdata"
     - "{{ paperless_data_dir }}/redisdata"
 
-#  Apparently the celerybeat scheduler has issues running on mergerfs
-# - name: Ensure celerybeat file can be created
-#   ansible.builtin.file:
-#     path: "{{ paperless_data_dir }}/data/celerybeat-schedule.db"
-#     state: touch
-#     mode: '0644'
-#     owner: "{{ puid | default('1000') }}"
-#     group: "{{ pgid | default('1000') }}"
-
 - name: Set vm.overcommit_memory
   ansible.posix.sysctl:
     name: vm.overcommit_memory
@@ -103,10 +94,8 @@
       PAPERLESS_CSRF_TRUSTED_ORIGINS: "https://paperless.{{ domain }}"
       PAPERLESS_FORCE_SCRIPT_NAME: ""
       PAPERLESS_PROXY_SSL_HEADER: '["HTTP_X_FORWARDED_PROTO", "https"]'
-      # PAPERLESS_CELERY_BEAT_SCHEDULER: "database"
       PAPERLESS_CELERY_WORKER_TIMEOUT: "3600"
       PAPERLESS_CELERY_BEAT_SCHEDULER: "django_celery_beat.schedulers:DatabaseScheduler"
-      # PAPERLESS_CELERY_BEAT_PATH: "/usr/src/paperless/data/celerybeat-schedule.db"
     # dependencies:
     #   - paperless_db
     #   - paperless_redis

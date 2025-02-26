@@ -32,7 +32,7 @@
       traefik.http.routers.jellyfin-secure.rule: "Host(`jelly.{{ domain }}`)"
       traefik.http.routers.jellyfin-secure.tls: "true"
       traefik.http.routers.jellyfin-secure.service: "jellyfin"
-      traefik.http.services.jellyfin.loadbalancer.server.url: "http://192.168.1.36:8096"
+      traefik.http.services.jellyfin.loadbalancer.server.url: "http://{{ ansible_default_ipv4.address }}:8096"
     pull: yes
     # privileged: yes
     # devices:

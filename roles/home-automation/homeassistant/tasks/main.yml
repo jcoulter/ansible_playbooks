@@ -1,7 +1,7 @@
 ---
 #  Recorder connection string is defined in configuration.yml
 # recorder:
-#   db_url: mysql://hass:<password>@192.168.1.36:3306/hass?charset=utf8
+#   db_url: "mysql://hass:<password>@{{ ansible_default_ipv4.address }}:3306/hass?charset=utf8"
 
 # https://community.home-assistant.io/t/complete-guide-on-setting-up-grafana-influxdb-with-home-assistant-using-official-docker-images/42860
 # Deploy and then manually create db (step 2)

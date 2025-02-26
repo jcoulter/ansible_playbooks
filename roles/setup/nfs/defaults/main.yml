@@ -1,5 +1,5 @@
-media_nfs: "192.168.1.36:/export/media"
-config_nfs: "192.168.1.36:/export/config"
+media_nfs: "{{ ansible_default_ipv4.address }}:/export/media"
+config_nfs: "{{ ansible_default_ipv4.address }}:/export/config"
 data_mountpoint: "/mnt/data"
 brick_mountpoint: "/mnt/brick"
 config_mountpoint: "/mnt/config"

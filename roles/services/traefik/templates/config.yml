@@ -10,37 +10,54 @@ http:
       tls: {}
       service: hass
     nextcloud:
-      rule: "Host(`nextcloud.{{ domain }}`)"
-      entrypoints:
+      entryPoints:
         - "https"
-      service: nextcloud
-      middlewares:
-          - https-redirectscheme
-          - nextcloud-secure-headers
+      rule: "Host(`nextcloud.{{ domain }}`)"
+      service: "nextcloud"
       tls:
-        certresolver: "letsencrypt"
+        certResolver: "letsencrypt"
+      middlewares:
+        - "nextcloud-headers"
+        - "nextcloud-redirects"
+
       
   services:
     hass:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.36:8123/"
+          - url: "http:/{{ ansible_default_ipv4.address }}:8123/"
         passHostHeader: true
     nextcloud:
       loadBalancer:
         servers:
           - url: "http://nextcloud-aio-apache:11000"
-          # - url: "http://0.0.0.0:11000" # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
+        passHostHeader: true
 
   middlewares:
     https-redirectscheme:
       redirectScheme:
         scheme: https
-    nextcloud-secure-headers:
+        
+    nextcloud-headers:
       headers:
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        customFrameOptionsValue: "SAMEORIGIN"
+        contentSecurityPolicy: "frame-ancestors 'self'"
         hostsProxyHeaders:
           - "X-Forwarded-Host"
         referrerPolicy: "same-origin"
+  
+    nextcloud-redirects:
+      redirectRegex:
+        permanent: true
+        regex: "https://nextcloud.{{ domain }}/.well-known/(card|cal)dav"
+        replacement: "https://nextcloud.{{ domain }}/remote.php/dav/"
+    # nextcloud-secure-headers:
+    #   headers:
+    #     hostsProxyHeaders:
+    #       - "X-Forwarded-Host"
+    #     referrerPolicy: "same-origin"
 
         # Find video from Jims Garage
     # crowdsec-bouncer:
@@ -75,11 +92,6 @@ http:
     #     - "192.168.0.0/16"
     #     - "172.16.0.0/12"
 
-    secured:
-      chain:
-        middlewares:
-        # - default-whitelist
-        - default-headers
 
 CLI:
   serversTransport:
