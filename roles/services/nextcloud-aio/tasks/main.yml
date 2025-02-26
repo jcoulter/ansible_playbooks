@@ -19,6 +19,8 @@
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
+      NEXTCLOUD_DATADIR: "{{ brick_root }}/nextcloud/ncdata"
+      NEXTCLOUD_MOUNT: "{{ brick_root }}/nextcloud"
       APACHE_PORT: "11000"
       APACHE_IP_BINDING: "0.0.0.0"
       APACHE_ADDITIONAL_NETWORK: "proxy"

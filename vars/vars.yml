@@ -13,6 +13,7 @@ timezone: "America/New_York"
 created_username: jcoulter
 config_root: "/mnt/config"
 brick_root: "/mnt/brick"
+brick_data: "/mnt/brick/data"
 db_path: "{{ config_root }}/mariadb"
 
 # 172.18.0.1 - 172.18.0.62
