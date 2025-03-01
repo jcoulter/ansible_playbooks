@@ -22,3 +22,6 @@ Variables are not adequately extracted.
 
 `ansible-playbook run.yml -t minecraft -kK --ask-vault-password -i inventory`
 hoping to someday be something like https://github.com/notthebee/infra
+
+brew install ansible
+brew install sshpass
