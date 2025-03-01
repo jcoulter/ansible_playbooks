@@ -139,7 +139,6 @@
         - containers
         - home-automation
   
-
     - role:  home-automation/esphome  
       tags:
         - esphome
@@ -194,11 +193,6 @@
       tags:
         - containers
         - kavita
-
-    - role: services/photoprism  
-      tags:
-        - containers
-        - photoprism
 
     - role: services/watchtower  
       tags:
