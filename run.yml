@@ -12,6 +12,7 @@
       tags:
         - setup
         - user_setup
+        - user-setup
   
     - role: setup/docker
       become: yes

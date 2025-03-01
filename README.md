@@ -21,3 +21,6 @@ Variables are not adequately extracted.
 (may require `-kK` options for first run to prompt for passwords)
 `ansible-playbook run.yml -t frigate -kK --ask-vault-password -i inventory`
 hoping to someday be something like https://github.com/notthebee/infra
+
+brew install ansible
+brew install sshpass
