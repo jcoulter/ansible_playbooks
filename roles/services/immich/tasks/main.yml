@@ -1,8 +1,14 @@
 ---
-- name: Copy content of directory 'templates' while substituting vars
+- name: Copy .env while substituting vars
   template:
     src:  ../templates/.env
     dest: "{{ config_root }}/immich_config/.env"
+
+- name: Copy docker-compose.yml while substituting vars
+  template:
+    src:  ../templates/docker-compose.yml
+    dest: "{{ config_root }}/immich_config/docker-compose.yml"
+
 
 - name: Copy content of directory 'files'
   copy:

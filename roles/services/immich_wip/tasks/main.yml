@@ -52,13 +52,6 @@
       POSTGRES_DB: immich
       REDIS_HOST: nextcloud-redis
 
-~/media/takeout/immich-go -server=http://vault.local:2283 -key=eTGE7tAI0nvn4mxbWc1GYdFt2qRA0zW87xt6OApnE4 upload -create-albums -log-file=immich_backed_up_01_08_2025.txt .
-
-
-
-eTGE7tAI0nvn4mxbWc1GYdFt2qRA0zW87xt6OApnE4
-mdokfRXseYx3iMUJSoaCpFdMBVczyWJSLjDdHpmQNNo
-fhRcV4ealSeK22zVcGdcOUknSVa2XNe2BtUhKQyA
     volumes:
       # Do not edit the next line. If you want to change the database storage location on your system, edit the value of DB_DATA_LOCATION in the .env file
         # - ./postgres:/var/lib/postgresql/data

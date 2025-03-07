@@ -6,6 +6,8 @@
 # The compose file on main may not be compatible with the latest release.
 #
 
+# FIXME: have
+
 # TO UPGRADE:
 # docker-compose pull
 # docker-compose down
@@ -22,6 +24,16 @@ services:
       # Do not edit the next line. If you want to change the media storage location on your system, edit the value of UPLOAD_LOCATION in the .env file
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.immich.entrypoints=http"
+      - "traefik.http.routers.immich.rule=Host(`photos.{{ domain }}`)"
+      - "traefik.http.routers.immich.middlewares=immich-https-redirect"
+      - "traefik.http.middlewares.immich-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.immich-secure.entrypoints=https"
+      - "traefik.http.routers.immich-secure.rule=Host(`photos.{{ domain }}`)"
+      - "traefik.http.routers.immich-secure.tls=true"
+      - "traefik.http.services.immich.loadbalancer.server.port=2283"
     env_file:
       - .env
     ports:
@@ -32,6 +44,9 @@ services:
     restart: always
     healthcheck:
       disable: false
+    networks:
+      - proxy
+      - immich
 
   immich-machine-learning:
     container_name: immich_machine_learning
@@ -48,6 +63,8 @@ services:
     restart: always
     healthcheck:
       disable: false
+    networks:
+      - immich
 
   redis:
     container_name: immich_redis
@@ -55,6 +72,8 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     restart: always
+    networks:
+      - immich
 
   database:
     container_name: immich_postgres
@@ -86,6 +105,13 @@ services:
       -c shared_buffers=512MB
       -c wal_compression=on
     restart: always
+    networks:
+      - immich
 
 volumes:
   model-cache:
+
+networks:
+  proxy:
+    external: true
+  immich:
