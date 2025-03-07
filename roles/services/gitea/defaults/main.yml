@@ -1,0 +1,9 @@
+---
+gitea_domain: "gitea.{{ domain }}"
+gitea_port: "3001"
+gitea_ssh_port: "23"
+gitea_data_path: "{{ data_root }}/gitea" 
+gitea_config_path: "{{ config_root }}/gitea" 
+gitea_db_type: "sqlite3"
+gitea_db_path: "data/gitea.db"
+gitea_version: "latest"

@@ -12,6 +12,7 @@
       tags:
         - setup
         - user_setup
+        - user-setup
   
     - role: setup/docker
       become: yes
@@ -35,6 +36,12 @@
         - paperless
         - paperless-ngx
         - services
+
+    - role: services/gitea
+      tags:
+        - services
+        - containers
+        - gitea
 
     - role: services/nextcloud
       tags:

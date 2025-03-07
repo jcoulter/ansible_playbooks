@@ -1,0 +1,70 @@
+---
+- name: Create Gitea directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - "{{ gitea_data_path }}"
+    - "{{ gitea_config_path }}"
+
+# - name: Stop existing Gitea container
+#   docker_container:
+#     name: gitea
+#     state: stopped
+#     force_kill: true
+#   ignore_errors: true
+
+# - name: Wait for container to stop
+#   pause:
+#     seconds: 5
+
+# - name: Remove existing Gitea container
+#   docker_container:
+#     name: gitea
+#     state: absent
+#     force_kill: true
+#     force: true
+#   ignore_errors: true
+
+# - name: Wait for container to be removed
+#   pause:
+#     seconds: 5
+
+- name: Deploy Gitea container
+  docker_container:
+    name: gitea
+    image: "gitea/gitea:{{ gitea_version }}"
+    restart_policy: unless-stopped
+    force_kill: true
+    recreate: true
+    state: started
+    networks:
+      - name: proxy
+    ports:
+      - "{{ gitea_port }}:3000"
+      - "{{ gitea_ssh_port }}:22"
+    volumes:
+      - "{{ gitea_data_path }}/data:/data"
+      - "{{ gitea_data_path }}/config:/etc/gitea"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.gitea.entrypoints: "http"
+      traefik.http.routers.gitea.rule: "Host(`{{ gitea_domain }}`)"
+      traefik.http.middlewares.gitea-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.gitea.middlewares: "gitea-https-redirect"
+      traefik.http.routers.gitea-secure.entrypoints: "https"
+      traefik.http.routers.gitea-secure.rule: "Host(`{{ gitea_domain }}`)"
+      traefik.http.routers.gitea-secure.tls: "true"
+      traefik.http.routers.gitea-secure.service: "gitea"
+      traefik.http.services.gitea.loadbalancer.server.port: "3000"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      GITEA__database__DB_TYPE: "{{ gitea_db_type }}"
+      GITEA__database__PATH: "{{ gitea_db_path }}"
+      GITEA__server__DOMAIN: "{{ gitea_domain }}"
+      GITEA__server__ROOT_URL: "https://{{ gitea_domain }}"
