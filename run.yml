@@ -37,6 +37,12 @@
         - paperless-ngx
         - services
 
+    - role: services/gitea
+      tags:
+        - services
+        - containers
+        - gitea
+
     - role: services/nextcloud
       tags:
         - services
