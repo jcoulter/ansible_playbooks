@@ -304,10 +304,10 @@
         - qbittorrent
         - qbittorrent-vpn
 
-    - role: calcom
+    - role: rally
       tags:
         - containers
-        - calcom
+        - rally
         
 # TODO: wire containers through gluetun 
 

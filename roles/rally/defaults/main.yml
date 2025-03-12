@@ -1,0 +1,8 @@
+---
+rallly_data: "{{ data_root }}/rallly_data"
+rallly_postgres_data: "{{ rallly_data }}/postgres"
+rallly_domain: "rally.{{ domain }}"
+rallly_secret: "{{ rally_secret }}"  # Change this in your vault
+postgres_user: rallly
+postgres_password: "{{ postgres_password }}"  # Change this in your vault
+postgres_db: rallly
