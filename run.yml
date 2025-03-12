@@ -304,6 +304,11 @@
         - qbittorrent
         - qbittorrent-vpn
 
+    - role: calcom
+      tags:
+        - containers
+        - calcom
+        
 # TODO: wire containers through gluetun 
 
 # indexer 
