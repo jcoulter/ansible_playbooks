@@ -68,3 +68,4 @@
       GITEA__database__PATH: "{{ gitea_db_path }}"
       GITEA__server__DOMAIN: "{{ gitea_domain }}"
       GITEA__server__ROOT_URL: "https://{{ gitea_domain }}"
+      GITEA__server__SSH_PORT: "{{ gitea_ssh_port }}"

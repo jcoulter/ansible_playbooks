@@ -12,9 +12,9 @@
     security_opts:
       - apparmor:unconfined
     network_mode: host
-    devices:
-      - "/dev/ttyUSB1:/dev/zigbee"
-      - "/dev/ttyUSB0:/dev/zwave"
+    # devices:
+    #   - "/dev/ttyUSB0:/dev/zigbee"
+    #   # - "/dev/ttyUSB0:/dev/zwave"
     pull: yes
     state: 'started'
     env:
