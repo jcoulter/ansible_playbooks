@@ -70,7 +70,7 @@ services:
     environment:
       - VIRTUAL_HOST=nextcloud.{{ domain }}
       - "LETSENCRYPT_HOST=nextcloud.{{ domain }}"
-      - "LETSENCRYPT_EMAIL={{ primary_email}}
+      - "LETSENCRYPT_EMAIL={{ primary_email }}
     restart: unless-stopped
 
 volumes:

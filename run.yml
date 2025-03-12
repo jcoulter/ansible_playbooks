@@ -53,17 +53,6 @@
         - services
         - nextcloud-aio
 
-    - role: services/onlyoffice
-      tags:
-        - services
-        - onlyoffice
-
-    - role: services/colabra
-      tags:
-        - services
-        # - containers
-        - colabra
-
     # - role: services/seafile
     #   tags:
     #     - services
@@ -86,12 +75,6 @@
         - media
         - containers
         - airsonic
-  
-    # - role: media/plex  
-    #   tags:
-    #     - media
-    #     - containers
-    #     - plex
 
     - role: arr/sonarr  
       tags:
@@ -127,12 +110,6 @@
         - arr
         - containers
         - bazarr
-
-    # - role: arr/homarr  
-    #   tags:
-    #     - arr
-    #     - containers
-    #     - homarr
 
     - role: arr/prowlarr  
       tags:
@@ -206,10 +183,6 @@
     - role: home-automation/frigate  
       tags:
         - frigate       
-
-    - role: neolink
-      tags:
-        - neolink
         
     - role: home-automation/nodered  
       tags:
@@ -331,6 +304,11 @@
         - qbittorrent
         - qbittorrent-vpn
 
+    - role: rally
+      tags:
+        - containers
+        - rally
+        
 # TODO: wire containers through gluetun 
 
 # indexer 

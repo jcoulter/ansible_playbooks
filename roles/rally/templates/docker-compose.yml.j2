@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - "{{ rallly_postgres_data }}:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_USER: {{ postgres_user }}
+      POSTGRES_PASSWORD: {{ postgres_password }}
+      POSTGRES_DB: {{ postgres_db }}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ postgres_user }} -d {{ postgres_db }}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rallly
+
+  app:
+    image: lukevella/rallly:latest
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - rallly
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rallly.rule=Host(`{{ rallly_domain }}`)"
+      - "traefik.http.routers.rallly.entrypoints=https"
+      - "traefik.http.routers.rallly.tls=true"
+      - "traefik.http.services.rallly.loadbalancer.server.port=3000"
+      - "traefik.http.routers.rallly-http.rule=Host(`{{ rallly_domain }}`)"
+      - "traefik.http.routers.rallly-http.entrypoints=http"
+      - "traefik.http.routers.rallly-http.middlewares=rally-https-redirect"
+      - "traefik.http.middlewares.rally-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.rally-https-redirect.redirectscheme.permanent=true"
+
+networks:
+  rallly:
+    name: rallly
+  proxy:
+    external: true
