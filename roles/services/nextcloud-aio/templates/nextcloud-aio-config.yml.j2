@@ -1,4 +1,3 @@
----
 http:
   routers:
     nextcloud:
@@ -15,7 +14,7 @@ http:
     nextcloud:
       loadBalancer:
         servers:
-          - url: "http://0.0.0.0:11000" # Adjust to match APACHE_PORT and APACHE_IP_BINDING. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#adapting-the-sample-web-server-configurations-below
+          - url: "http://0.0.0.0:11000"
 
   middlewares:
     nextcloud-secure-headers:
@@ -23,6 +22,14 @@ http:
         hostsProxyHeaders:
           - "X-Forwarded-Host"
         referrerPolicy: "same-origin"
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+        
+    nextcloud-websocket:
+      headers:
+        customRequestHeaders:
+          Connection: "Upgrade"
+          Upgrade: "websocket"
 
     https-redirect:
       redirectscheme:
@@ -31,6 +38,6 @@ http:
     nextcloud-chain:
       chain:
         middlewares:
-          # - ... (e.g. rate limiting middleware)
           - https-redirect
           - nextcloud-secure-headers
+          - nextcloud-websocket

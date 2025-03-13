@@ -9,6 +9,30 @@ http:
         - https-redirectscheme
       tls: {}
       service: hass
+
+    collabora:
+      entryPoints:
+        - "https"
+      rule: "Host(`nextcloud.{{ domain }}`) && PathPrefix(`/cool/`)"
+      service: "nextcloud"
+      tls:
+        certResolver: "letsencrypt"
+      middlewares:
+        - "collabora-headers"
+        - "collabora-websocket" 
+      priority: 300
+
+    nextcloud-websocket:
+      entryPoints:
+        - "https"
+      rule: "Host(`nextcloud.{{ domain }}`) && (PathPrefix(`/push/`) || PathPrefix(`/apps/notify_push/`) || PathPrefix(`/browser/`))"
+      service: "nextcloud"
+      tls:
+        certResolver: "letsencrypt"
+      middlewares:
+        - "nextcloud-websocket"
+      priority: 200
+
     nextcloud:
       entryPoints:
         - "https"
@@ -19,8 +43,8 @@ http:
       middlewares:
         - "nextcloud-headers"
         - "nextcloud-redirects"
+      priority: 100
 
-      
   services:
     hass:
       loadBalancer:
@@ -32,12 +56,39 @@ http:
         servers:
           - url: "http://nextcloud-aio-apache:11000"
         passHostHeader: true
+        responseForwarding:
+          flushInterval: "100ms"
+        serversTransport: "nextcloud-transport"
 
   middlewares:
     https-redirectscheme:
       redirectScheme:
         scheme: https
+    nextcloud-websocket:
+      headers:
+        customRequestHeaders:
+          Connection: "Upgrade"
+          Upgrade: "websocket"
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
         
+    collabora-websocket:
+      headers:
+        customRequestHeaders:
+          Connection: "Upgrade"
+          Upgrade: "websocket"
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+
+    collabora-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        customFrameOptionsValue: "SAMEORIGIN"
+        contentSecurityPolicy: "frame-ancestors 'self' https://nextcloud.{{ domain }}"
+
     nextcloud-headers:
       headers:
         stsSeconds: 31536000
@@ -47,30 +98,14 @@ http:
         hostsProxyHeaders:
           - "X-Forwarded-Host"
         referrerPolicy: "same-origin"
+        customRequestHeaders: 
+          X-Forwarded-Proto: "https"
   
     nextcloud-redirects:
       redirectRegex:
         permanent: true
         regex: "https://nextcloud.{{ domain }}/.well-known/(card|cal)dav"
         replacement: "https://nextcloud.{{ domain }}/remote.php/dav/"
-    # nextcloud-secure-headers:
-    #   headers:
-    #     hostsProxyHeaders:
-    #       - "X-Forwarded-Host"
-    #     referrerPolicy: "same-origin"
-
-        # Find video from Jims Garage
-    # crowdsec-bouncer:
-    #   forwardauth:
-    #     address: http://bouncer-traefik:8000/api/v1/forwardAuth
-    #     trustForwardHeader: true
-  
-    # nextcloud-chain:
-    #   chain:
-    #     middlewares:
-    #       # - ... (e.g. rate limiting middleware)
-    #       - https-redirectscheme
-    #       - nextcloud-secure-headers
 
     default-headers:
       headers:
@@ -85,15 +120,13 @@ http:
         customRequestHeaders:
           X-Forwarded-Proto: https
 
-    # default-whitelist:
-    #   ipWhiteList:
-    #     sourceRange:
-    #     - "10.0.0.0/8"
-    #     - "192.168.0.0/16"
-    #     - "172.16.0.0/12"
-
+  serversTransports:
+    nextcloud-transport:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "30s"
+        idleConnTimeout: "1h"
 
 CLI:
   serversTransport:
     insecureSkipVerify: true
-# (https://doc.traefik.io/traefik/routing/overview/#insecureskipverify)

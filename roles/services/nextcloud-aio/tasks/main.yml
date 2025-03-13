@@ -1,39 +1,85 @@
----
 - name: "Make sure - NextCloud All In One container is created and running"
+  become: yes
   docker_container:
-    container_default_behavior: compatibility
-    networks_cli_compatible: yes
     name: nextcloud-aio-mastercontainer 
     image: nextcloud/all-in-one:latest
     restart_policy: unless-stopped
     published_ports:
       - "8102:8080"
-      # - "11000:11000"
     networks:
       - name: proxy
         aliases:
           - nextcloud
-    pull: yes
+          - nextcloud-aio-apache
+          - collabora
     state: 'started'
     env:
+      # System settings
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
+      
+      # Nextcloud paths
       NEXTCLOUD_DATADIR: "{{ brick_root }}/nextcloud/ncdata"
       NEXTCLOUD_MOUNT: "{{ brick_root }}/nextcloud"
+      
+      # Collabora settings
+      COLLABORA_SECCOMP_DISABLED: "true"
+      COLLABORA_SECCOMP_POLICY: "disabled"
+      COLLABORA_HOST: "nextcloud.{{ domain }}"
+      COLLABORA_DICTIONARIES: "en_US"
+      COLLABORA_EXTRA_PARAMS: "--o:ssl.enable=false --o:ssl.termination=true --o:net.post_allow.host[0]=.* --o:security.capabilities=true --o:mount_jail_tree=false --o:sys_template_path=/opt/cool/systemplate --o:child_root_path=/opt/cool/child-roots --o:file_server_root_path=/usr/share/coolwsd --o:security.enable_capabilities=true"
+      COLLABORA_ARGS: "--o:security.capabilities=true --o:mount_jail_tree=false --o:security.enable_capabilities=true"
+      
+      # Apache settings
       APACHE_PORT: "11000"
       APACHE_IP_BINDING: "0.0.0.0"
       APACHE_ADDITIONAL_NETWORK: "proxy"
-      SKIP_DOMAIN_VALIDATION: "true"
+      APACHE_ADDITIONAL_TRUSTED_PROXIES: "0.0.0.0/0"
+      
+      # Domain and proxy settings
+      TRUSTED_PROXIES: "0.0.0.0/0" 
       NC_DOMAIN: "nextcloud.{{ domain }}"
-      AIO_DISABLE_DOMAINCHECK: "true"
-      NEXTCLOUD_ADDITIONAL_TRUSTED_DOMAINS: "nextcloud-aio-apache"  # Add this
-      NEXTCLOUD_ADDITIONAL_APCU_FAST_SHUTDOWN: "1"  # Optional performance improvement
+      NEXTCLOUD_TRUSTED_DOMAINS: "nextcloud.{{ domain }} nextcloud-aio-apache localhost collabora nextcloud-aio-collabora" 
+      NEXTCLOUD_ADDITIONAL_TRUSTED_DOMAINS: "nextcloud-aio-apache nextcloud-aio-collabora collabora"
+      
+      # Performance and security settings
+      NEXTCLOUD_ADDITIONAL_APCU_FAST_SHUTDOWN: "1"
+      AIO_DISABLE_BACKUP_CLEANUP: "true"
+      
+      # Skip checks
+      SKIP_CAPABILITIES_CHECK: "true"
+      DONT_CHECK_SYSTEM_SETUP: "true"
+      DONT_CHECK_CONTAINER_VERSIONS: "true"
+      SKIP_DOMAIN_CHECK: "true"
+      SKIP_UPDATE_CHECK: "true"
+      SKIP_DOMAIN_VALIDATION: "true"
+      SKIP_NETWORK_CHECK: "true"
+      DONT_GEN_SSL_CERT: "true"
+      
+      # URL settings
+      OVERWRITEHOST: "nextcloud.{{ domain }}"
+      OVERWRITEPROTOCOL: "https"
+      OVERWRITECLIURL: "https://nextcloud.{{ domain }}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+      - "{{ brick_root }}/nextcloud:/mnt/ncdata:z"  # Add this volume with :z option
     memory: "{{ nextcloud_memory_limit }}"
     memory_reservation: "{{ nextcloud_memory_reservation }}"
-    cpu_shares: 1024
     security_opts:
-      - no-new-privileges:true
+      - no-new-privileges:false 
+      - seccomp=unconfined     
+    capabilities:
+      - SYS_ADMIN
+      - MKNOD
+      - CHOWN
+      - FOWNER
+    privileged: true          
+    etc_hosts:
+      # Internal DNS resolution for Nextcloud and Collabora services
+      nextcloud.{{ domain }}: 127.0.0.1
+      collabora: 127.0.0.1
+      nextcloud-aio-collabora: 127.0.0.1
+    dns_servers:
+      - "{{ dns_server }}"
