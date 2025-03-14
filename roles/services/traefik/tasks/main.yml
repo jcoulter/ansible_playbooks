@@ -49,6 +49,7 @@
       traefik.http.services.traefik.loadbalancer.server.port: "8084"
     networks:
       - name: proxy
+      - name: nextcloud-aio
     ports:
       # HTTPS / SSL port
       - "443:443"
