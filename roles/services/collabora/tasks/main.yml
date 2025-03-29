@@ -1,5 +1,5 @@
 ---
-- name: Ensure Collabora standalone container is running
+- name: Ensure Collabora container is running
   docker_container:
     name: "{{ collabora_container_name }}"
     image: "{{ collabora_image }}"
@@ -8,16 +8,20 @@
     ports:
       - "{{ collabora_port }}:9980"
     env:
-      domain: "{{ collabora_domain | regex_escape }}"
-      username: "{{ collabora_username }}"
-      password: "{{ collabora_password }}"
+      # wtd_docker_collabora_capabilities: "MKNOD"
+      # domain: ''
+      domain: "nextcloud\\.coulter\\.rocks"
+      # username: "{{ collabora_username }}"
+      # password: "{{ collabora_password }}"
       extra_params: "{{ collabora_extra_params }}"
     networks:
-      - name: "{{ collabora_network }}"
+      # - name: "{{ collabora_network }}"
       - name: "proxy"
-    volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
-        # - "{{ config_root }}/colabra_config/coolwsd:/etc/coolwsd"
+    # volumes:
+    #     - /var/run/docker.sock:/var/run/docker.sock:ro
+    #     - "{{ config_root }}/collabora_config/cool:/opt/cool"
+    capabilities:
+      - MKNOD
   register: collabora_container
 
 # # TODO: Start from here - requires template substitution
@@ -44,7 +48,7 @@
 # - name: Configure Nextcloud to use standalone Collabora
 #   community.docker.docker_container_exec:
 #     container: "nextcloud-aio-nextcloud"
-#     command: "php occ config:app:set richdocuments wopi_url --value='https://{{ collabora_domain }}/cool/'"
+#     command: "php occ config:app:set richdocuments wopi_url --value='https://{{ collabora_domain }}'"
 #     user: "www-data"
 #   register: nextcloud_config
 #   changed_when: "'already set' not in nextcloud_config.stdout"
