@@ -3,7 +3,6 @@
 - name: Make sure the crafty control is created and running
   docker_container:
     image: registry.gitlab.com/crafty-controller/crafty-4:latest
-    # stdin_open: true
     name: "crafty"
     ports:
       - "8001:8000" # HTTP
@@ -15,27 +14,19 @@
       - name: proxy
     labels:
       traefik.enable: "true"
-      traefik.http.routers.crafty.entrypoints: "https-external"
+      traefik.http.routers.crafty.entrypoints: "https"
       traefik.http.routers.crafty.rule: "Host(`crafty.{{ domain }}`)"
       traefik.http.services.crafty.loadbalancer.server.port: "8443" # port that Crafty operates on is 8443
       traefik.http.routers.crafty.tls: "true" # tells traefik you want to use SSL/TLS to connect to your Crafty instance
       traefik.http.routers.crafty.tls.certresolver: cloudflare # OPTIONAL: If you want traefik to handle TLS certificates instead of Crafty, you should uncomment the beginning of this line and put the name of your traefik certificate resolver here
       traefik.http.services.crafty.loadbalancer.server.scheme: "https" # tell traefik to connect to Crafty via https instead of http
       traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https" # enable websockets for Crafty
-      # TODO: is this needed?
-      # traefik.http.services.crafty.loadbalancer.server.url: "https://{{ ansible_default_ipv4.address }}:8443"
-
-
-      # This syntax allows cloudflare tunnel to host crafty.{{ domain }} which points to local crafty-in.{{ domain }} over https
-      # Both crafty.{{ domain }} and crafty-in.{{ domain }} must be configured in local dns (pi-hole)
-      # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
-      # traefik.http.middlewares.crafty-https-redirect.redirectscheme.scheme: "https"
-      # traefik.http.routers.crafty.middlewares: "crafty-https-redirect"
-      # traefik.http.routers.crafty-secure.entrypoints: "https"
-      # traefik.http.routers.crafty-secure.rule: "Host(`crafty.{{ domain }}`)||Host(`crafty-in.{{ domain }}`)"
-      # traefik.http.routers.crafty-secure.service: "crafty"
+      traefik.http.middlewares.crafty-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.crafty.middlewares: "crafty-https-redirect,sslheader"
+      traefik.http.middlewares.crafty-security.headers.stsSeconds: "315360000"
+      traefik.http.middlewares.crafty-security.headers.browserXssFilter: "true"
+      traefik.http.middlewares.crafty-security.headers.contentTypeNosniff: "true"
     pull: yes
-    # tty: true
     state: 'started'
     env:
       PUID: "{{ puid }}"
