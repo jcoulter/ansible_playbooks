@@ -1,4 +1,6 @@
 ---
+# https://www.youtube.com/watch?v=xO-EVYNinXA
+# FIXME: add tika and gotenberg so emails can also be dumped into paperless
 - name: Create required directories
   ansible.builtin.file:
     path: "{{ item }}"

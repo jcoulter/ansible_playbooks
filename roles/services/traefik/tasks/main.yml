@@ -1,4 +1,8 @@
 ---
+# PiHole has a bug with traefik that causes intermittent cer errors.
+# You must block local https requests to your local domeain:
+# add this to blocked regex configs (replace {domain}): {domain};querytype=HTTPS
+# https://discourse.pi-hole.net/t/local-dns-https-record/61235/3
 - name: Create a proxy network
   docker_network:
     name: proxy
