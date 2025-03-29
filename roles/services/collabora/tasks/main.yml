@@ -15,7 +15,6 @@
       # password: "{{ collabora_password }}"
       extra_params: "{{ collabora_extra_params }}"
     networks:
-      # - name: "{{ collabora_network }}"
       - name: "proxy"
     # volumes:
     #     - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -44,66 +43,3 @@
     dest: "{{ traefik_dynamic_config_dir }}/traefik_collabora.yml"
     mode: "0644"
   notify: Restart Traefik
-
-# - name: Configure Nextcloud to use standalone Collabora
-#   community.docker.docker_container_exec:
-#     container: "nextcloud-aio-nextcloud"
-#     command: "php occ config:app:set richdocuments wopi_url --value='https://{{ collabora_domain }}'"
-#     user: "www-data"
-#   register: nextcloud_config
-#   changed_when: "'already set' not in nextcloud_config.stdout"
-
-# - name: Restart Nextcloud Apache if config changed
-#   docker_container:
-#     name: "nextcloud-aio-apache"
-#     state: started
-#     restart: yes
-#   when: nextcloud_config.changed
-
-
-# FIXME: If I am running collabora standalone I should run it at collabora.domain instead of nesting under nextcloud
-
-#     labels:
-#       traefik.enable: "true"
-#       traefik.http.routers.colabra.entrypoints: "http"
-#       # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
-#       traefik.http.routers.colabra.rule: "Host(`colabra.{{ domain }}`)"
-#       traefik.http.services.colabra.loadbalancer.server.url: "http://vault.local:9980"
-#       traefik.http.middlewares.colabra-https-redirect.redirectscheme.scheme: "https"
-#       traefik.http.routers.colabra.middlewares: "colabra-https-redirect"
-#       traefik.http.routers.colabra-secure.entrypoints: "https"
-#       traefik.http.routers.colabra-secure.rule: "Host(`colabra.{{ domain }}`)"
-#       traefik.http.routers.colabra-secure.tls: "true"
-#       traefik.http.routers.colabra-secure.service: "colabra"
-#     pull: yes
-#     state: 'started'
-#     env:
-#       PUID: "{{ puid }}"
-#       PGID: "{{ pgid }}"
-#       TZ: "{{ timezone }}"
-#       # To get a jwt_secret, 
-#       # comment out the JWT_SECRET environment variable and deploy the server
-#       # Then ssh onto the server and run:
-#       # `docker exec d25f69df7ee9 /var/www/colabra/documentserver/npm/json -f /etc/colabra/documentserver/local.json 'services.CoAuthoring.secret.session.string'`
-#       # then save the secret in ansible vault
-#       extra_params: "--o:ssl.enable=false"
-#       # If you want to use certbot for https instead of traefik uncomment these and add an https port.
-#       # LETS_ENCRYPT_DOMAIN: "{{ domain }}"
-#       # LETS_ENCRYPT_MAIL: "{{ primary_email }}"
-#     volumes:
-#       - /var/run/docker.sock:/var/run/docker.sock:ro
-#       # - "{{ config_root }}/colabra_config/coolwsd:/etc/coolwsd"
-#     restart_policy: unless-stopped
-
-
-# # https://helpcenter.colabra.com/installation/docs-community-install-docker.aspx
-
-#     # sudo docker run -i -t -d -p 80:80 --restart=always \
-#     # -v /app/colabra/DocumentServer/logs:/var/log/colabra  \
-#     # -v /app/colabra/DocumentServer/data:/var/www/colabra/Data  \
-#     # -v /app/colabra/DocumentServer/lib:/var/lib/colabra \
-#     # -v /app/colabra/DocumentServer/db:/var/lib/postgresql -e JWT_SECRET=my_jwt_secret colabra/documentserver
-
-
-# # sudo docker run -i -t -d -p 443:443 --restart=always \
-# # -v /app/colabra/DocumentServer/data:/var/www/colabra/Data -e JWT_SECRET=my_jwt_secret colabra/documentserver
