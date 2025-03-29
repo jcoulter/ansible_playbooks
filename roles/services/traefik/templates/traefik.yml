@@ -42,7 +42,7 @@ providers:
     watch: true
     exposedByDefault: false
   file:
-    filename: /config.yml
+    directory: /dynamic
     watch: true
 log:
   level: DEBUG

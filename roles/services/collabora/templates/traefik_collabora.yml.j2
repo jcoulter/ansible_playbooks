@@ -1,0 +1,64 @@
+http:
+  routers:
+    collabora:
+      entryPoints:
+        - "https"
+      rule: "Host(`{{ collabora_domain }}`) && PathPrefix(`/cool/`)"
+      service: "collabora"
+      tls:
+        certResolver: "cloudflare"
+      middlewares:
+        - "collabora-strip-prefix"
+        - "collabora-secure-headers"
+      priority: 200
+    collabora-root:
+      rule: "Host(`{{ collabora_domain }}`)"
+      service: "collabora"
+      tls: {}
+      entryPoints:
+        - "https"
+      middlewares:
+        - "collabora-redirect"
+
+    collabora-websocket:
+      entryPoints:
+        - "https"
+      rule: "Host(`{{ collabora_domain }}`) && PathPrefix(`/cool/`)"
+      service: "collabora"
+      tls:
+        certResolver: "cloudflare"
+      middlewares:
+        - "collabora-websocket"
+        - "collabora-secure-headers"
+      priority: 210
+
+  services:
+    collabora:
+      loadBalancer:
+        servers:
+          - url: "http://{{ collabora_container_name }}:9980"
+        passHostHeader: true
+
+  middlewares:
+  # TODO: replace with variables
+    collabora-redirect:
+      redirectRegex:
+        regex: "^https://collabora\\.coulter\\.rocks/?$"
+        replacement: "https://collabora.coulter.rocks/cool/"
+    collabora-secure-headers:
+      headers:
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        contentTypeNosniff: true
+    collabora-strip-prefix:
+      stripPrefix:
+        prefixes:
+          - "/cool"
+    collabora-websocket:
+      headers:
+        customRequestHeaders:
+          Connection: "Upgrade"
+          Upgrade: "websocket"
+        customResponseHeaders:
+          Connection: "Upgrade"
+          Upgrade: "websocket"

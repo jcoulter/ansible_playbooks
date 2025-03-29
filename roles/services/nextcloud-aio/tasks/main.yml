@@ -1,87 +1,102 @@
-# - name: "Ensure nextcloud-aio-mastercontainer is running"
-#   docker_container:
-#     container_default_behavior: compatibility
-#     networks_cli_compatible: yes
-#     name: nextcloud-aio-mastercontainer
-#     image: nextcloud/all-in-one:latest
-#     restart_policy: unless-stopped
-#     published_ports:
-#       - "8102:8080"
-#     networks:
-#       - name: proxy
-#         aliases:
-#           - nextcloud
-#       - name: nextcloud-aio
-#         aliases:
-#           - nextcloud-aio-mastercontainer
-#     pull: yes
-#     state: 'started'
-#     env:
-#       PUID: "{{ puid }}"
-#       PGID: "{{ pgid }}"
-#       TZ: "{{ timezone }}"
-#       AIO_ADDITIONAL_NETWORKS: "proxy"
-#       APACHE_ADDITIONAL_NETWORK: "proxy"
-#       COLLABORA_ADDITIONAL_NETWORK: "proxy"
-#       TALK_ADDITIONAL_NETWORK: "proxy"
-#       CLAMAV_ADDITIONAL_NETWORK: "proxy"
-#       NEXTCLOUD_DATADIR: "{{ brick_root }}/nextcloud/ncdata"
-#       NEXTCLOUD_MOUNT: "{{ brick_root }}/nextcloud"
-#       NEXTCLOUD_TRUSTED_DOMAINS: "nextcloud.{{ domain }} nextcloud-aio-apache"
-#       NEXTCLOUD_TRUSTED_PROXIES: "proxy"
-#       NEXTCLOUD_ADDITIONAL_TRUSTED_DOMAINS: "nextcloud-aio-apache"
-#       NEXTCLOUD_ADDITIONAL_APCU_FAST_SHUTDOWN: "1"
-#       NEXTCLOUD_OVERWRITEPROTOCOL: "https"
-#       NEXTCLOUD_OVERWRITE_CLI_URL: "https://nextcloud.{{ domain }}"
-#       APACHE_PORT: "11000"
-#       APACHE_LISTEN: "11000"
-#       APACHE_IP_BINDING: "0.0.0.0"
-#       NC_DOMAIN: "nextcloud.{{ domain }}"
-#       SKIP_DOMAIN_VALIDATION: "true"
-#       AIO_DISABLE_DOMAINCHECK: "true"
-#       DONT_GEN_SSL_CERT: "true"
-#       TRUSTED_PROXIES: "proxy"
-#       COLLABORA_SECCOMP_POLICY: "disabled"
-#       COLLABORA_DICTIONARIES: "en_US"
-#       COLLABORA_DOMAIN: "nextcloud.{{ domain }}"
-#       COLLABORA_ADDITIONAL_PARAMETERS: >-
-#         --o:ssl.enable=false 
-#         --o:ssl.termination=true 
-#         --o:storage.wopi.host[0]=nextcloud.{{ domain }}
-#         --o:storage.wopi.host[1]=nextcloud-aio
-#         --o:storage.wopi.host[2]=nextcloud-aio-apache
-#         --o:storage.wopi.host[3]=192.168.1.36
-#         --o:storage.wopi.host[4]=127.0.0.1/8
-#         --o:storage.wopi.host[5]=192.168.0.0/16
-#         --o:storage.wopi.host[6]=172.16.0.0/12
-#         --o:storage.wopi.host[7]=10.0.0.0/8
-#         --o:storage.wopi.host[8]=fd00::/8
-#         --o:storage.wopi.host[9]=::1
-#         --o:net.service_root=/cool
-#         --o:net.frame_ancestors=https://nextcloud.{{ domain }}
-#         --o:storage.filesystem[@allow]=true
-#     volumes:
-#       - /var/run/docker.sock:/var/run/docker.sock:ro
-#       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
-#       - "{{ brick_root }}/nextcloud/collabora/systemplate:/opt/cool/systemplate"
-#       - "{{ brick_root }}/nextcloud/collabora/child-roots:/opt/cool/child-roots"
-#     memory: "{{ nextcloud_memory_limit }}"
-#     memory_reservation: "{{ nextcloud_memory_reservation }}"
-#     cpu_shares: 1024
-#     security_opts:
-#       - "seccomp=unconfined"
-#       - "apparmor=unconfined"
-#     capabilities:
-#       - SYS_ADMIN
-#       - MKNOD
-#       - CHOWN
-#       - SYS_CHROOT
-#       - SETGID
-#       - SETUID
-#       - DAC_OVERRIDE
-#       - NET_BIND_SERVICE
-#       - CAP_CHOWN
-#     privileged: true
+- name: "Ensure nextcloud-aio-mastercontainer is running"
+  docker_container:
+    container_default_behavior: compatibility
+    networks_cli_compatible: yes
+    name: nextcloud-aio-mastercontainer
+    image: nextcloud/all-in-one:latest
+    restart_policy: unless-stopped
+    published_ports:
+      - "8102:8080"
+    networks:
+      - name: proxy
+        aliases:
+          - nextcloud
+      - name: nextcloud-aio
+        aliases:
+          - nextcloud-aio-mastercontainer
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      AIO_ADDITIONAL_NETWORKS: "proxy"
+      APACHE_ADDITIONAL_NETWORK: "proxy"
+      COLLABORA_ADDITIONAL_NETWORK: "proxy"
+      TALK_ADDITIONAL_NETWORK: "proxy"
+      CLAMAV_ADDITIONAL_NETWORK: "proxy"
+      NEXTCLOUD_DATADIR: "{{ brick_root }}/nextcloud/ncdata"
+      NEXTCLOUD_MOUNT: "{{ brick_root }}/nextcloud"
+      NEXTCLOUD_TRUSTED_DOMAINS: "nextcloud.{{ domain }} nextcloud-aio-apache"
+      NEXTCLOUD_TRUSTED_PROXIES: "proxy"
+      NEXTCLOUD_ADDITIONAL_TRUSTED_DOMAINS: "nextcloud-aio-apache"
+      NEXTCLOUD_ADDITIONAL_APCU_FAST_SHUTDOWN: "1"
+      NEXTCLOUD_OVERWRITEPROTOCOL: "https"
+      NEXTCLOUD_OVERWRITE_CLI_URL: "https://nextcloud.{{ domain }}"
+      APACHE_PORT: "11000"
+      APACHE_LISTEN: "11000"
+      APACHE_IP_BINDING: "0.0.0.0"
+      NC_DOMAIN: "nextcloud.{{ domain }}"
+      SKIP_DOMAIN_VALIDATION: "true"
+      AIO_DISABLE_DOMAINCHECK: "true"
+      DONT_GEN_SSL_CERT: "true"
+      TRUSTED_PROXIES: "proxy"
+      # COLLABORA_SECCOMP_POLICY: "disabled"
+      # COLLABORA_DICTIONARIES: "en_US"
+      # COLLABORA_DOMAIN: "nextcloud.{{ domain }}"
+      # COLLABORA_ADDITIONAL_PARAMETERS: >-
+      #   --o:ssl.enable=false 
+      #   --o:ssl.termination=true 
+      #   --o:storage.wopi.host[0]=nextcloud.{{ domain }}
+      #   --o:storage.wopi.host[1]=nextcloud-aio
+      #   --o:storage.wopi.host[2]=nextcloud-aio-apache
+      #   --o:storage.wopi.host[3]=192.168.1.36
+      #   --o:storage.wopi.host[4]=127.0.0.1/8
+      #   --o:storage.wopi.host[5]=192.168.0.0/16
+      #   --o:storage.wopi.host[6]=172.16.0.0/12
+      #   --o:storage.wopi.host[7]=10.0.0.0/8
+      #   --o:storage.wopi.host[8]=fd00::/8
+      #   --o:storage.wopi.host[9]=::1
+      #   --o:net.service_root=/cool
+      #   --o:net.frame_ancestors=https://nextcloud.{{ domain }}
+      #   --o:storage.filesystem[@allow]=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+      # - "{{ brick_root }}/nextcloud/collabora/systemplate:/opt/cool/systemplate"
+      # - "{{ brick_root }}/nextcloud/collabora/child-roots:/opt/cool/child-roots"
+    memory: "{{ nextcloud_memory_limit }}"
+    memory_reservation: "{{ nextcloud_memory_reservation }}"
+    cpu_shares: 1024
+    security_opts:
+      - "seccomp=unconfined"
+      - "apparmor=unconfined"
+    capabilities:
+      - SYS_ADMIN
+      - MKNOD
+      - CHOWN
+      - SYS_CHROOT
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+      - NET_BIND_SERVICE
+      - CAP_CHOWN
+    privileged: true
+
+
+
+- name: Ensure Traefik dynamic config directory exists
+  file:
+    path: "{{ traefik_dynamic_config_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Deploy Traefik dynamic config for nextcloud
+  template:
+    src: nextcloud-aio-config.yml.j2
+    dest: "{{ traefik_dynamic_config_dir }}/nextcloud-aio-config.yml"
+    mode: "0644"
+  notify: Restart Traefik
 
 # - name: "Wait for nextcloud-aio-collabora to be spawned"
 #   wait_for:
@@ -89,14 +104,14 @@
 #   delegate_to: localhost
 #   when: "'nextcloud-aio-collabora' not in (ansible_facts.docker_containers | default({}))"
 
-- name: "Add extra_hosts to nextcloud-aio-collabora"
-  docker_container:
-    name: nextcloud-aio-collabora
-    state: started
-    restart: yes  # Force restart to apply changes
-    etc_hosts:
-      "nextcloud.{{ domain }}": 172.26.0.12
-    networks:
-      - name: proxy
-      - name: nextcloud-aio
-  # when: "'nextcloud-aio-collabora' in (ansible_facts.docker_containers | default({}))"
+# - name: "Add extra_hosts to nextcloud-aio-collabora"
+#   docker_container:
+#     name: nextcloud-aio-collabora
+#     state: started
+#     restart: yes  # Force restart to apply changes
+#     etc_hosts:
+#       "nextcloud.{{ domain }}": 172.26.0.12
+#     networks:
+#       - name: proxy
+#       - name: nextcloud-aio
+#   # when: "'nextcloud-aio-collabora' in (ansible_facts.docker_containers | default({}))"

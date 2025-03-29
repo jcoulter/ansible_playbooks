@@ -23,30 +23,7 @@ http:
         - "secure-headers"
       priority: 100
 
-    collabora:
-      entryPoints:
-        - "https"
-      rule: "Host(`nextcloud.{{ domain }}`) && PathPrefix(`/cool/`)"
-      service: "collabora"
-      tls:
-        certResolver: "letsencrypt"
-      middlewares:
-        - "collabora-headers"
-        - "secure-headers"
-      priority: 200
-
-    collabora-websocket:
-      entryPoints:
-        - "https"
-      rule: "Host(`nextcloud.{{ domain }}`) && (PathPrefix(`/cool/`) || PathPrefix(`/lool/websocket`)) && !PathPrefix(`/cool/convert-to/`)"
-      service: "collabora"
-      tls:
-        certResolver: "letsencrypt"
-      middlewares:
-        - "collabora-websocket"
-        - "secure-headers"
-      priority: 210
-
+    
     nextcloud-websocket:
       entryPoints:
         - "https"
@@ -74,14 +51,14 @@ http:
         responseForwarding:
           flushInterval: "100ms"
 
-    collabora:
-      loadBalancer:
-        servers:
-          - url: "http://nextcloud-aio-collabora:9980"
-        passHostHeader: true
-        responseForwarding:
-          flushInterval: "100ms"
-        serversTransport: "collabora-transport"
+    # collabora:
+    #   loadBalancer:
+    #     servers:
+    #       - url: "http://nextcloud-aio-collabora:9980"
+    #     passHostHeader: true
+    #     responseForwarding:
+    #       flushInterval: "100ms"
+    #     serversTransport: "collabora-transport"
 
   middlewares:
     https-redirectscheme:
@@ -118,31 +95,31 @@ http:
           X-Forwarded-For: "{{ ansible_default_ipv4.address }}"
           Host: "nextcloud.{{ domain }}"
 
-    collabora-headers:
-      headers:
-        customFrameOptionsValue: "SAMEORIGIN"
-        contentSecurityPolicy: "frame-ancestors 'self' https://nextcloud.{{ domain }}"
-        referrerPolicy: "no-referrer"
-        hostsProxyHeaders:
-          - "X-Forwarded-Host"
-          - "X-Real-IP"
-        customRequestHeaders:
-          X-Forwarded-Proto: "https"
-          X-Forwarded-Host: "nextcloud.{{ domain }}"
-          X-Forwarded-For: "{{ ansible_default_ipv4.address }}"
-          Host: "nextcloud.{{ domain }}"
-        customResponseHeaders:
-          Server: ""
-          X-Powered-By: ""
+    # collabora-headers:
+    #   headers:
+    #     customFrameOptionsValue: "SAMEORIGIN"
+    #     contentSecurityPolicy: "frame-ancestors 'self' https://nextcloud.{{ domain }}"
+    #     referrerPolicy: "no-referrer"
+    #     hostsProxyHeaders:
+    #       - "X-Forwarded-Host"
+    #       - "X-Real-IP"
+    #     customRequestHeaders:
+    #       X-Forwarded-Proto: "https"
+    #       X-Forwarded-Host: "nextcloud.{{ domain }}"
+    #       X-Forwarded-For: "{{ ansible_default_ipv4.address }}"
+    #       Host: "nextcloud.{{ domain }}"
+    #     customResponseHeaders:
+    #       Server: ""
+    #       X-Powered-By: ""
 
-    collabora-websocket:
-      headers:
-        customRequestHeaders:
-          Connection: "Upgrade"
-          Upgrade: "websocket"
-        customResponseHeaders:
-          Connection: "Upgrade"
-          Upgrade: "websocket"
+    # collabora-websocket:
+    #   headers:
+    #     customRequestHeaders:
+    #       Connection: "Upgrade"
+    #       Upgrade: "websocket"
+    #     customResponseHeaders:
+    #       Connection: "Upgrade"
+    #       Upgrade: "websocket"
 
     nextcloud-websocket:
       headers:
@@ -159,9 +136,14 @@ http:
         regex: "https://nextcloud.{{ domain }}/.well-known/(card|cal)dav"
         replacement: "https://nextcloud.{{ domain }}/remote.php/dav/"
 
+    # collabora-strip-prefix:  # Added to strip /cool/
+    #   stripPrefix:
+    #     prefixes:
+    #       - "/cool"
+
   serversTransports:
-    collabora-transport:
-      forwardingTimeouts:
-        dialTimeout: "30s"
-        responseHeaderTimeout: "30s"
-        idleConnTimeout: "1h"
+    # collabora-transport:
+    #   forwardingTimeouts:
+    #     dialTimeout: "30s"
+    #     responseHeaderTimeout: "30s"
+    #     idleConnTimeout: "1h"

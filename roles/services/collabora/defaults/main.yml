@@ -1,0 +1,8 @@
+collabora_image: "collabora/code:latest"
+collabora_container_name: "collabora"
+collabora_port: 9980
+collabora_domain: "collabora.{{ domain }}"
+collabora_username: "admin"
+collabora_password: "{{ collabora_password }}"
+collabora_extra_params: "--o:ssl.enable=false --o:ssl.termination=true"
+collabora_network: "nextcloud-aio"

@@ -3,6 +3,18 @@
   docker_network:
     name: proxy
 
+- name: Ensure Traefik config directory exists
+  file:
+    path: "{{ config_root }}/traefik_config"
+    state: directory
+    mode: "0755"
+
+- name: Ensure Traefik dynamic config directory exists
+  file:
+    path: "{{ traefik_dynamic_config_dir }}"
+    state: directory
+    mode: "0755"
+
 - name: Copy config.yml while substituting vars
   template:
     src:  ../templates/config.yml
@@ -77,6 +89,7 @@
       # Then uncomment the volume so the external file can successfully be used and not be lost every restart
       - "{{ config_root }}/traefik_config/acme.json:/acme.json"
       - "{{ config_root }}/traefik_config/config.yml:/config.yml:ro"
+      - "{{ traefik_dynamic_config_dir }}:/dynamic"
       - "{{ config_root }}/traefik_config/logs:/var/log/traefik"
     restart_policy: unless-stopped
 

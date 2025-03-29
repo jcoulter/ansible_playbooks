@@ -15,6 +15,7 @@ config_root: "/mnt/config"
 brick_root: "/mnt/brick"
 brick_data: "/mnt/brick/data"
 db_path: "{{ config_root }}/mariadb"
+traefik_dynamic_config_dir: "{{ config_root }}/traefik_config/dynamic"
 
 # 172.18.0.1 - 172.18.0.62
 media_subnet: 172.18.0.0/26

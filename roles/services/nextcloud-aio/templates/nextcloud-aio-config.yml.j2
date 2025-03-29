@@ -1,43 +1,128 @@
 http:
   routers:
     nextcloud:
-      rule: "Host(`nextcloud.{{ domain }}`)"
-      entrypoints:
+      entryPoints:
         - "https"
-      service: nextcloud
-      middlewares:
-        - nextcloud-chain
+      rule: "Host(`nextcloud.{{ domain }}`)"
+      service: "nextcloud"
       tls:
-        certresolver: "letsencrypt"
+        certResolver: "letsencrypt"
+      middlewares:
+        - "nextcloud-headers"
+        - "nextcloud-redirects"
+        - "secure-headers"
+      priority: 100
+
+    nextcloud-websocket:
+      entryPoints:
+        - "https"
+      rule: "Host(`nextcloud.{{ domain }}`) && (PathPrefix(`/push/`) || PathPrefix(`/apps/notify_push/`))"
+      service: "nextcloud"
+      tls:
+        certResolver: "letsencrypt"
+      middlewares:
+        - "nextcloud-websocket"
+        - "secure-headers"
+      priority: 150
 
   services:
     nextcloud:
       loadBalancer:
         servers:
-          - url: "http://0.0.0.0:11000"
+          - url: "http://nextcloud-aio-apache:11000"
+        passHostHeader: true
+        responseForwarding:
+          flushInterval: "100ms"
+
+    # collabora:
+    #   loadBalancer:
+    #     servers:
+    #       - url: "http://nextcloud-aio-collabora:9980"
+    #     passHostHeader: true
+    #     responseForwarding:
+    #       flushInterval: "100ms"
+    #     serversTransport: "collabora-transport"
 
   middlewares:
-    nextcloud-secure-headers:
+    secure-headers:
       headers:
-        hostsProxyHeaders:
-          - "X-Forwarded-Host"
-        referrerPolicy: "same-origin"
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        frameDeny: true
+        customFrameOptionsValue: "SAMEORIGIN"
         customRequestHeaders:
           X-Forwarded-Proto: "https"
-        
+
+    nextcloud-headers:
+      headers:
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+        customFrameOptionsValue: "SAMEORIGIN"
+        contentSecurityPolicy: "frame-ancestors 'self'"
+        referrerPolicy: "same-origin"
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+          X-Forwarded-Host: "nextcloud.{{ domain }}"
+          X-Forwarded-For: "{{ ansible_default_ipv4.address }}"
+          Host: "nextcloud.{{ domain }}"
+
+    # collabora-headers:
+    #   headers:
+    #     customFrameOptionsValue: "SAMEORIGIN"
+    #     contentSecurityPolicy: "frame-ancestors 'self' https://nextcloud.{{ domain }}"
+    #     referrerPolicy: "no-referrer"
+    #     hostsProxyHeaders:
+    #       - "X-Forwarded-Host"
+    #       - "X-Real-IP"
+    #     customRequestHeaders:
+    #       X-Forwarded-Proto: "https"
+    #       X-Forwarded-Host: "nextcloud.{{ domain }}"
+    #       X-Forwarded-For: "{{ ansible_default_ipv4.address }}"
+    #       Host: "nextcloud.{{ domain }}"
+    #     customResponseHeaders:
+    #       Server: ""
+    #       X-Powered-By: ""
+
+    # collabora-websocket:
+    #   headers:
+    #     customRequestHeaders:
+    #       Connection: "Upgrade"
+    #       Upgrade: "websocket"
+    #     customResponseHeaders:
+    #       Connection: "Upgrade"
+    #       Upgrade: "websocket"
+
     nextcloud-websocket:
       headers:
         customRequestHeaders:
           Connection: "Upgrade"
           Upgrade: "websocket"
+        customResponseHeaders:
+          Connection: "Upgrade"
+          Upgrade: "websocket"
 
-    https-redirect:
-      redirectscheme:
-        scheme: https 
+    nextcloud-redirects:
+      redirectRegex:
+        permanent: true
+        regex: "https://nextcloud.{{ domain }}/.well-known/(card|cal)dav"
+        replacement: "https://nextcloud.{{ domain }}/remote.php/dav/"
 
-    nextcloud-chain:
-      chain:
-        middlewares:
-          - https-redirect
-          - nextcloud-secure-headers
-          - nextcloud-websocket
+    # collabora-strip-prefix:  # Added to strip /cool/
+    #   stripPrefix:
+    #     prefixes:
+    #       - "/cool"
+
+  #serversTransports:
+    # collabora-transport:
+    #   forwardingTimeouts:
+    #     dialTimeout: "30s"
+    #     responseHeaderTimeout: "30s"
+    #     idleConnTimeout: "1h"
