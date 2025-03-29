@@ -29,20 +29,6 @@
     name: grampsweb_celery
     networks:
       - name: gramps
-    # labels:
-    #   traefik.enable: "true"
-    #   traefik.http.routers.gramps.entrypoints: "http"
-    #   # This syntax allows cloudflare tunnel to host gramps.{{ domain }} which points to local gramps-in.{{ domain }} over https
-    #   # Both gramps.{{ domain }} and gramps-in.{{ domain }} must be configured in local dns (pi-hole)
-    #   # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
-    #   traefik.http.routers.gramps.rule: "Host(`gramps.{{ domain }}`)||Host(`gramps-in.{{ domain }}`)"
-    #   traefik.http.middlewares.gramps-https-redirect.redirectscheme.scheme: "https"
-    #   traefik.http.routers.gramps.middlewares: "gramps-https-redirect"
-    #   traefik.http.routers.gramps-secure.entrypoints: "https"
-    #   traefik.http.routers.gramps-secure.rule: "Host(`gramps.{{ domain }}`)||Host(`gramps-in.{{ domain }}`)"
-    #   traefik.http.routers.gramps-secure.tls: "true"
-    #   traefik.http.routers.gramps-secure.service: "gramps"
-    #   # traefik.http.services.gramps.loadbalancer.server.url: "http://vault.local:9092"
     pull: yes
     state: 'started'
     command: 'celery -A gramps_webapi.celery worker --loglevel=INFO --concurrency=2'
@@ -64,7 +50,8 @@
       - "{{ data_root }}/gramps_data/secret:/app/secret"  # persist flask secret
       - "{{ data_root }}/gramps_data/db:/root/.gramps/grampsdb"  # persist Gramps database
       - "{{ data_root }}/gramps_data/media:/app/media"  # persist media files
-      - "{{ data_root }}/gramps_data/tmp:/tmp"
+    tmpfs:
+      - /tmp:rw,exec
     restart_policy: unless-stopped
 
 
@@ -84,20 +71,19 @@
       - "5001:5000"
     networks:
       - name: gramps
+      - name: proxy
     labels:
       traefik.enable: "true"
       traefik.http.routers.gramps.entrypoints: "http"
-      # This syntax allows cloudflare tunnel to host gramps.{{ domain }} which points to local gramps-in.{{ domain }} over https
-      # Both gramps.{{ domain }} and gramps-in.{{ domain }} must be configured in local dns (pi-hole)
-      # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
-      traefik.http.routers.gramps.rule: "Host(`gramps.{{ domain }}`)||Host(`gramps-in.{{ domain }}`)"
+      traefik.http.routers.gramps.rule: "Host(`gramps.{{ domain }}`)"
       traefik.http.middlewares.gramps-https-redirect.redirectscheme.scheme: "https"
       traefik.http.routers.gramps.middlewares: "gramps-https-redirect"
       traefik.http.routers.gramps-secure.entrypoints: "https"
-      traefik.http.routers.gramps-secure.rule: "Host(`gramps.{{ domain }}`)||Host(`gramps-in.{{ domain }}`)"
+      traefik.http.routers.gramps-secure.rule: "Host(`gramps.{{ domain }}`)"
       traefik.http.routers.gramps-secure.tls: "true"
       traefik.http.routers.gramps-secure.service: "gramps"
-      # traefik.http.services.gramps.loadbalancer.server.url: "http://vault.local:9092"
+      traefik.http.services.gramps.loadbalancer.server.url: "http://vault.local:5000"
+
     pull: yes
     state: 'started'
     env:
@@ -118,54 +104,9 @@
       - "{{ data_root }}/gramps_data/secret:/app/secret"  # persist flask secret
       - "{{ data_root }}/gramps_data/db:/root/.gramps/grampsdb"  # persist Gramps database
       - "{{ data_root }}/gramps_data/media:/app/media"  # persist media files
-      - "{{ data_root }}/gramps_data/tmp:/tmp"
+    tmpfs:
+      - /tmp:rw,exec
     restart_policy: unless-stopped
 
 # Username: changeme@email.com
 # Password: MyPassword
-
-# services:
-#   grampsweb: &grampsweb
-#     image: ghcr.io/gramps-project/grampsweb:latest
-#     restart: always
-#     ports:
-#       - "5001:5000"  # host:docker
-#     environment:
-#       GRAMPSWEB_TREE: "Gramps Web"  # will create a new tree if not exists
-#       GRAMPSWEB_CELERY_CONFIG__broker_url: "redis://grampsweb_redis:6379/0"
-#       GRAMPSWEB_CELERY_CONFIG__result_backend: "redis://grampsweb_redis:6379/0"
-#       GRAMPSWEB_RATELIMIT_STORAGE_URI: redis://grampsweb_redis:6379/1
-#     depends_on:
-#       - grampsweb_redis
-#     volumes:
-#       - gramps_users:/mnt/data/gramps_data/users  # persist user database
-#       - gramps_index:/mnt/data/gramps_data/index  # persist search index
-#       - gramps_thumb_cache:/mnt/data/gramps_data/thumbnail_cache  # persist thumbnails
-#       - gramps_cache:/mnt/data/gramps_data/cache  # persist export and report caches
-#       - gramps_secret:/mnt/data/gramps_data/secret  # persist flask secret
-#       - gramps_db:/mnt/data/gramps_data/.gramps/grampsdb  # persist Gramps database
-#       - gramps_media:/mnt/data/gramps_data/media  # persist media files
-#       - gramps_tmp:/mnt/data/gramps_data/tmp
-
-#   grampsweb_celery:
-#     <<: *grampsweb  # YAML merge key copying the entire grampsweb service config
-#     ports: []
-#     container_name: grampsweb_celery
-#     depends_on:
-#       - grampsweb_redis
-#     command: celery -A gramps_webapi.celery worker --loglevel=INFO --concurrency=2
-
-#   grampsweb_redis:
-#     image: docker.io/library/redis:latest
-#     container_name: grampsweb_redis
-#     restart: always
-
-# volumes:
-#   gramps_users:
-#   gramps_index:
-#   gramps_thumb_cache:
-#   gramps_cache:
-#   gramps_secret:
-#   gramps_db:
-#   gramps_media:
-#   gramps_tmp:
