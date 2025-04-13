@@ -4,6 +4,25 @@ gitea_port: "3001"
 gitea_ssh_port: "23"
 gitea_data_path: "{{ data_root }}/gitea" 
 gitea_config_path: "{{ config_root }}/gitea" 
-gitea_db_type: "sqlite3"
-gitea_db_path: "data/gitea.db"
-gitea_version: "latest" 
+gitea_version: "latest"
+
+# Database configuration
+gitea_db_type: "postgres"  # Changed from sqlite3 to postgres
+gitea_db_host: "postgres-gitea"  # Name of the PostgreSQL container
+gitea_db_port: "5432"
+gitea_db_name: "gitea"
+gitea_db_user: "gitea"
+gitea_db_password: "{{ postgres_password }}"  
+# PostgreSQL configuration
+postgres_data_path: "{{ data_root }}/postgres-gitea"
+postgres_version: "14"
+
+
+
+# Gitea Actions configuration
+gitea_actions_enabled: true
+gitea_actions_network_name: "gitea_network"  # Use the same network
+gitea_runner_version: "latest"
+gitea_runner_name: "gitea-runner"
+gitea_runner_data_path: "{{ data_root }}/gitea_runner"
+gitea_runner_labels: "ubuntu-latest:docker://node:18-bullseye,ubuntu-22.04:docker://node:18-bullseye,ubuntu-20.04:docker://node:16-bullseye"
