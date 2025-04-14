@@ -70,12 +70,11 @@
       - "{{ gitea_ssh_port }}:22"
     volumes:
       - "{{ gitea_data_path }}/data:/data"
-      - "{{ gitea_data_path }}/config:/etc/gitea"
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
     labels:
-
       traefik.enable: "true"
+      traefik.docker.network: proxy
       traefik.http.routers.gitea_webserver-secure.entrypoints: "https"
       traefik.http.routers.gitea_webserver-secure.rule: "Host(`gitea.{{ domain }}`)"
       traefik.http.routers.gitea_webserver-secure.tls: "true"
@@ -99,26 +98,6 @@
   pause:
     seconds: 15
   when: gitea_actions_enabled | bool
-
-- name: Deploy Gitea Runner container
-  docker_container:
-    name: "{{ gitea_runner_name }}"
-    image: "gitea/act_runner:{{ gitea_runner_version }}"
-    restart_policy: unless-stopped
-    force_kill: true
-    recreate: true
-    state: started
-    networks:
-      - name: "{{ gitea_actions_network_name }}"
-    volumes:
-      - "{{ gitea_runner_data_path }}:/data"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    env:
-      GITEA_INSTANCE_URL: "https://{{ gitea_domain }}"
-      GITEA_RUNNER_NAME: "{{ gitea_runner_name }}"
-      GITEA_RUNNER_LABELS: "{{ gitea_runner_labels }}"
-      GITEA_RUNNER_REGISTRATION_TOKEN: "{{ gitea_runner_registration_token | default('') }}"
-  when: gitea_actions_enabled | bool and gitea_runner_registration_token is defined and gitea_runner_registration_token != ''
 
 - name: Display Gitea Actions setup instructions
   debug:

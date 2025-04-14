@@ -43,6 +43,18 @@
         - containers
         - gitea
 
+    - role: services/gitea_runner
+      tags:
+        - services
+        - containers
+        - gitea-runner
+        
+    - role: services/gitlab
+      tags:
+        - services
+        - containers
+        - gitlab
+
     - role: services/nextcloud
       tags:
         - services

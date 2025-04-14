@@ -1,0 +1,65 @@
+---
+- name: Create GitLab Runner directories
+  file:
+    path: "{{ gitlab_runner_data_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Check if GitLab Runner container exists
+  docker_container_info:
+    name: "{{ gitlab_runner_name }}"
+  register: runner_info
+
+- name: Stop existing GitLab Runner container if it exists
+  docker_container:
+    name: "{{ gitlab_runner_name }}"
+    state: stopped
+  when: runner_info.exists
+
+- name: Remove existing GitLab Runner container if it exists
+  docker_container:
+    name: "{{ gitlab_runner_name }}"
+    state: absent
+  when: runner_info.exists
+
+- name: Deploy GitLab Runner container
+  docker_container:
+    name: "{{ gitlab_runner_name }}"
+    image: "gitlab/gitlab-runner:{{ gitlab_runner_version }}"
+    restart_policy: unless-stopped
+    force_kill: true
+    recreate: true
+    state: started
+    networks:
+      - name: "{{ gitlab_network_name }}"
+      - name: proxy
+    volumes:
+      - "{{ gitlab_runner_data_path }}/config:/etc/gitlab-runner"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    env:
+      REGISTER_NON_INTERACTIVE: "true"
+      REGISTER_LOCKED: "false"
+      CI_SERVER_URL: "https://{{ gitlab_domain }}"
+      RUNNER_NAME: "{{ gitlab_runner_name }}"
+      RUNNER_TAG_LIST: "{{ gitlab_runner_tags }}"
+      REGISTRATION_TOKEN: "{{ gitlab_runner_registration_token | default('') }}"
+      RUNNER_EXECUTOR: "docker"
+      DOCKER_IMAGE: "alpine:latest"
+      DOCKER_VOLUMES: "/var/run/docker.sock:/var/run/docker.sock"
+    memory: "{{ gitlab_runner_memory_limit }}"
+    cpus: "{{ gitlab_runner_cpu_limit }}"
+  when: gitlab_runner_registration_token is defined and gitlab_runner_registration_token != ''
+
+- name: Display GitLab Runner setup instructions
+  debug:
+    msg: |
+      GitLab Runner deployment attempted.
+      
+      If the runner is not showing up in your GitLab instance:
+      1. Log in to your GitLab instance at https://{{ gitlab_domain }}
+      2. Go to Admin Area -> CI/CD -> Runners
+      3. Note the registration token
+      4. Update your inventory or vars file with:
+         gitlab_runner_registration_token: "your-token-here"
+      5. Re-run the playbook with -t gitlab-runner to register the runner
+  when: gitlab_runner_registration_token is not defined or gitlab_runner_registration_token == ''

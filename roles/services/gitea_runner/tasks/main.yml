@@ -1,0 +1,58 @@
+---
+- name: Create Gitea runner data directory
+  ansible.builtin.file:
+    path: "{{ gitea_runner_data_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Check if Gitea runner container exists
+  community.docker.docker_container_info:
+    name: "{{ gitea_runner_name }}"
+  register: runner_info
+
+- name: Stop existing Gitea runner container if it exists
+  community.docker.docker_container:
+    name: "{{ gitea_runner_name }}"
+    state: stopped
+  when: runner_info.exists
+
+- name: Remove existing Gitea runner container if it exists
+  community.docker.docker_container:
+    name: "{{ gitea_runner_name }}"
+    state: absent
+  when: runner_info.exists
+
+- name: Deploy Gitea Runner container
+  community.docker.docker_container:
+    name: "{{ gitea_runner_name }}"
+    image: "gitea/act_runner:{{ gitea_runner_version }}"
+    restart_policy: unless-stopped
+    force_kill: true
+    recreate: true
+    state: started
+    networks:
+      - name: "{{ gitea_actions_network_name }}"
+      - name: proxy
+    volumes:
+      - "{{ gitea_runner_data_path }}:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    env:
+      GITEA_INSTANCE_URL: "http://gitea:3000"  # Use internal Docker network hostname
+      GITEA_RUNNER_NAME: "{{ gitea_runner_name }}"
+      GITEA_RUNNER_LABELS: "{{ gitea_runner_labels }}"
+      GITEA_RUNNER_REGISTRATION_TOKEN: "{{ gitea_runner_registration_token | default('') }}"
+  when: gitea_runner_registration_token is defined and gitea_runner_registration_token != ''
+
+- name: Display Gitea Runner setup instructions
+  debug:
+    msg: |
+      Gitea Runner has been deployed.
+      
+      If the runner is not showing up in your Gitea instance:
+      1. Log in to your Gitea instance at https://{{ gitea_domain }}
+      2. Go to Site Administration -> Actions -> Runners
+      3. Click "Create new runner" and copy the registration token
+      4. Update your inventory or vars file with:
+         gitea_runner_registration_token: "your-token-here"
+      5. Re-run the playbook to register the runner
+  when: gitea_runner_registration_token is not defined or gitea_runner_registration_token == ''

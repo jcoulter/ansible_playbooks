@@ -1,0 +1,52 @@
+---
+# GitLab configuration
+gitlab_domain: "gitlab.{{ domain }}"
+gitlab_port: "8929"  # External HTTP port
+gitlab_ssh_port: "2224"  # External SSH port
+gitlab_data_path: "{{ data_root }}/gitlab"
+gitlab_config_path: "{{ config_root }}/gitlab"
+gitlab_logs_path: "{{ data_root }}/gitlab/logs"
+gitlab_version: "latest"
+
+# PostgreSQL configuration
+gitlab_db_enabled: true
+gitlab_db_host: "postgres-gitlab"
+gitlab_db_port: "5432"
+gitlab_db_name: "gitlabhq_production"
+gitlab_db_user: "gitlab"
+gitlab_db_password: "{{ postgres_password | default('changeme') }}"
+gitlab_db_adapter: "postgresql"
+gitlab_db_encoding: "unicode"
+gitlab_db_data_path: "{{ data_root }}/postgres-gitlab"
+postgres_version: "14"
+
+# GitLab Runner configuration
+gitlab_runner_enabled: true
+gitlab_runner_name: "gitlab-runner"
+gitlab_runner_version: "latest"
+gitlab_runner_data_path: "{{ data_root }}/gitlab-runner"
+gitlab_runner_tags: "docker,linux"
+# Registration token will be set in inventory or via command line
+# gitlab_runner_registration_token: ""
+
+# Network configuration
+gitlab_network_name: "gitlab_network"
+
+# Resource limits
+gitlab_memory_limit: "8G"
+gitlab_cpu_limit: "2"
+gitlab_runner_memory_limit: "1G"
+gitlab_runner_cpu_limit: "1"
+
+# SMTP configuration (optional)
+gitlab_smtp_enabled: false
+# gitlab_smtp_address: "smtp.example.com"
+# gitlab_smtp_port: "587"
+# gitlab_smtp_user_name: "user@example.com"
+# gitlab_smtp_password: "password"
+# gitlab_smtp_domain: "example.com"
+# gitlab_smtp_authentication: "login"
+# gitlab_smtp_enable_starttls_auto: "true"
+# gitlab_smtp_tls: "false"
+# gitlab_smtp_from: "gitlab@example.com"
+# gitlab_smtp_display_name: "GitLab"
