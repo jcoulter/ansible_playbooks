@@ -112,3 +112,7 @@
          gitea_runner_registration_token: "your-token-here"
       5. Re-run the playbook to register the runner
   when: gitea_actions_enabled | bool and (gitea_runner_registration_token is not defined or gitea_runner_registration_token == '')
+
+- name: Include Gitea Runner tasks
+  include_tasks: runner.yml
+  when: gitea_actions_enabled | bool and gitea_runner_registration_token is defined and gitea_runner_registration_token != ''
