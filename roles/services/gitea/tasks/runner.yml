@@ -46,13 +46,13 @@
       GITEA_INSTANCE_URL: "https://{{ gitea_domain }}"
       GITEA_RUNNER_REGISTRATION_TOKEN: "{{ gitea_runner_registration_token }}"
       GITEA_RUNNER_NAME: "{{ gitea_runner_name }}"
-      GITEA_RUNNER_LABELS: "{{ gitea_runner_labels }}"
+      GITEA_RUNNER_LABELS: "ruby-3.4.2:docker://cimg/ruby:3.4.2-node,ubuntu-latest:docker://node:18-bullseye,ubuntu-22.04:docker://node:18-bullseye,ubuntu-20.04:docker://node:16-bullseye"
     command: >
       sh -c "act_runner register --no-interactive 
       --instance https://{{ gitea_domain }} 
       --token {{ gitea_runner_registration_token }} 
       --name {{ gitea_runner_name }} 
-      --labels {{ gitea_runner_labels }} &&
+      --labels ruby-3.4.2:docker://cimg/ruby:3.4.2-node,ubuntu-latest:docker://node:18-bullseye,ubuntu-22.04:docker://node:18-bullseye,ubuntu-20.04:docker://node:16-bullseye &&
       act_runner daemon --config /data/config.yaml"
     state: started
   when: gitea_runner_registration_token is defined and gitea_runner_registration_token != ''
