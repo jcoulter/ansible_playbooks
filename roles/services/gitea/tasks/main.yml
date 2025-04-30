@@ -1,5 +1,16 @@
 ---
-- name: Create Gitea directories
+- name: Check if PostgreSQL data directory exists
+  stat:
+    path: "{{ postgres_data_path }}"
+  register: postgres_data_dir
+
+- name: Stop PostgreSQL container if running
+  docker_container:
+    name: postgres-gitea
+    state: stopped
+  ignore_errors: yes  # In case it's not running
+
+- name: Create Gitea and config directories
   file:
     path: "{{ item }}"
     state: directory
@@ -7,29 +18,41 @@
   with_items:
     - "{{ gitea_data_path }}"
     - "{{ gitea_config_path }}"
+    - "{{ gitea_runner_data_path }}"
 
-# - name: Stop existing Gitea container
-#   docker_container:
-#     name: gitea
-#     state: stopped
-#     force_kill: true
-#   ignore_errors: true
+- name: Create PostgreSQL data directory with sudo
+  become: yes
+  file:
+    path: "{{ postgres_data_path }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ puid | default(1000) }}"
+    group: "{{ pgid | default(1000) }}"
+  when: not postgres_data_dir.stat.exists
 
-# - name: Wait for container to stop
-#   pause:
-#     seconds: 5
+- name: Create Docker network for Gitea
+  docker_network:
+    name: gitea_network
+    state: present
 
-# - name: Remove existing Gitea container
-#   docker_container:
-#     name: gitea
-#     state: absent
-#     force_kill: true
-#     force: true
-#   ignore_errors: true
+- name: Deploy PostgreSQL container
+  docker_container:
+    name: postgres-gitea
+    image: "postgres:{{ postgres_version }}"
+    restart_policy: unless-stopped
+    networks:
+      - name: gitea_network
+    volumes:
+      - "{{ postgres_data_path }}:/var/lib/postgresql/data"
+    env:
+      POSTGRES_DB: "{{ gitea_db_name }}"
+      POSTGRES_USER: "{{ gitea_db_user }}"
+      POSTGRES_PASSWORD: "{{ gitea_db_password }}"
+    state: started
 
-# - name: Wait for container to be removed
-#   pause:
-#     seconds: 5
+- name: Wait for PostgreSQL to start
+  pause:
+    seconds: 10
 
 - name: Deploy Gitea container
   docker_container:
@@ -41,31 +64,55 @@
     state: started
     networks:
       - name: proxy
+      - name: gitea_network
     ports:
       - "{{ gitea_port }}:3000"
       - "{{ gitea_ssh_port }}:22"
     volumes:
       - "{{ gitea_data_path }}/data:/data"
-      - "{{ gitea_data_path }}/config:/etc/gitea"
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
     labels:
       traefik.enable: "true"
-      traefik.http.routers.gitea.entrypoints: "http"
-      traefik.http.routers.gitea.rule: "Host(`{{ gitea_domain }}`)"
-      traefik.http.middlewares.gitea-https-redirect.redirectscheme.scheme: "https"
-      traefik.http.routers.gitea.middlewares: "gitea-https-redirect"
-      traefik.http.routers.gitea-secure.entrypoints: "https"
-      traefik.http.routers.gitea-secure.rule: "Host(`{{ gitea_domain }}`)"
-      traefik.http.routers.gitea-secure.tls: "true"
-      traefik.http.routers.gitea-secure.service: "gitea"
-      traefik.http.services.gitea.loadbalancer.server.port: "3000"
+      traefik.docker.network: proxy
+      traefik.http.routers.gitea_webserver-secure.entrypoints: "https"
+      traefik.http.routers.gitea_webserver-secure.rule: "Host(`gitea.{{ domain }}`)"
+      traefik.http.routers.gitea_webserver-secure.tls: "true"
+      traefik.http.routers.gitea_webserver-secure.service: "gitea_webserver"
+      traefik.http.services.gitea_webserver.loadbalancer.server.port: "3000"
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
       GITEA__database__DB_TYPE: "{{ gitea_db_type }}"
-      GITEA__database__PATH: "{{ gitea_db_path }}"
+      GITEA__database__HOST: "{{ gitea_db_host }}:{{ gitea_db_port }}"
+      GITEA__database__NAME: "{{ gitea_db_name }}"
+      GITEA__database__USER: "{{ gitea_db_user }}"
+      GITEA__database__PASSWD: "{{ gitea_db_password }}"
       GITEA__server__DOMAIN: "{{ gitea_domain }}"
       GITEA__server__ROOT_URL: "https://{{ gitea_domain }}"
       GITEA__server__SSH_PORT: "{{ gitea_ssh_port }}"
+      GITEA__actions__ENABLED: "{{ gitea_actions_enabled | string | lower }}"
+
+- name: Wait for Gitea to start
+  pause:
+    seconds: 15
+  when: gitea_actions_enabled | bool
+
+- name: Display Gitea Actions setup instructions
+  debug:
+    msg: |
+      Gitea with PostgreSQL has been deployed.
+      
+      For Gitea Actions:
+      1. Log in to your Gitea instance at https://{{ gitea_domain }}
+      2. Go to Site Administration -> Actions -> Runners
+      3. Click "Create new runner" and copy the registration token
+      4. Update your inventory or vars file with:
+         gitea_runner_registration_token: "your-token-here"
+      5. Re-run the playbook to register the runner
+  when: gitea_actions_enabled | bool and (gitea_runner_registration_token is not defined or gitea_runner_registration_token == '')
+
+- name: Include Gitea Runner tasks
+  include_tasks: runner.yml
+  when: gitea_actions_enabled | bool and gitea_runner_registration_token is defined and gitea_runner_registration_token != ''

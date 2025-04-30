@@ -27,6 +27,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.immich.entrypoints=http"
+      - "traefik.docker.networks=proxy"
       - "traefik.http.routers.immich.rule=Host(`photos.{{ domain }}`)"
       - "traefik.http.routers.immich.middlewares=immich-https-redirect"
       - "traefik.http.middlewares.immich-https-redirect.redirectscheme.scheme=https"

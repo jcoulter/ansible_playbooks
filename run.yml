@@ -42,6 +42,12 @@
         - services
         - containers
         - gitea
+        
+    - role: services/gitlab
+      tags:
+        - services
+        - containers
+        - gitlab
 
     - role: services/nextcloud
       tags:

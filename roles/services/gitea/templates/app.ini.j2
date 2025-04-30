@@ -1,0 +1,31 @@
+[server]
+PROTOCOL = http
+DOMAIN = {{ ansible_default_ipv4.address }}
+HTTP_PORT = 3000
+ROOT_URL = %(PROTOCOL)s://%(DOMAIN)s:{{ gitea_port }}/
+LOCAL_ROOT_URL = http://gitea:3000/
+SSH_DOMAIN = {{ ansible_default_ipv4.address }}
+SSH_PORT = {{ gitea_ssh_port }}
+
+; This section helps with Traefik integration
+REDIRECT_OTHER_PORT = true
+PORT_TO_REDIRECT = 443
+ENABLE_ACME = false
+
+; These settings will help when you get Traefik working
+[server.other_endpoint]
+ENABLED = true
+PROTOCOL = https
+DOMAIN = gitea.{{ domain }}
+HTTP_PORT = 443
+ROOT_URL = %(PROTOCOL)s://%(DOMAIN)s/
+
+[database]
+DB_TYPE = postgres
+HOST = postgres-gitea:5432
+NAME = {{ gitea_db_name }}
+USER = {{ gitea_db_user }}
+PASSWD = {{ gitea_db_password }}
+
+[actions]
+ENABLED = true

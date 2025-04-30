@@ -1,0 +1,135 @@
+---
+- name: Create GitLab directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ puid | default(1000) }}"
+    group: "{{ pgid | default(1000) }}"
+  with_items:
+    - "{{ gitlab_data_path }}"
+    - "{{ gitlab_config_path }}"
+    - "{{ gitlab_logs_path }}"
+    - "{{ gitlab_runner_data_path }}"
+    - "{{ gitlab_db_data_path }}"
+  become: true
+
+- name: Create Docker network for GitLab
+  docker_network:
+    name: "{{ gitlab_network_name }}"
+    state: present
+
+- name: Deploy PostgreSQL container for GitLab
+  docker_container:
+    name: "{{ gitlab_db_host }}"
+    image: "postgres:{{ postgres_version }}"
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ gitlab_network_name }}"
+    volumes:
+      - "{{ gitlab_db_data_path }}:/var/lib/postgresql/data"
+    env:
+      POSTGRES_DB: "{{ gitlab_db_name }}"
+      POSTGRES_USER: "{{ gitlab_db_user }}"
+      POSTGRES_PASSWORD: "{{ gitlab_db_password }}"
+    memory: "1G"
+    cpus: "1"
+  when: gitlab_db_enabled | bool
+
+- name: Wait for PostgreSQL to start
+  pause:
+    seconds: 10
+  when: gitlab_db_enabled | bool
+
+- name: Deploy GitLab container
+  docker_container:
+    name: gitlab
+    image: "gitlab/gitlab-ce:{{ gitlab_version }}"
+    restart_policy: unless-stopped
+    force_kill: true
+    recreate: true
+    state: started
+    networks:
+      - name: "{{ gitlab_network_name }}"
+      - name: proxy
+    ports:
+      - "{{ gitlab_port }}:80"
+      - "{{ gitlab_ssh_port }}:22"
+    volumes:
+      - "{{ gitlab_config_path }}:/etc/gitlab"
+      - "{{ gitlab_data_path }}:/var/opt/gitlab"
+      - "{{ gitlab_logs_path }}:/var/log/gitlab"
+    env:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://{{ gitlab_domain }}'
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+        nginx['proxy_set_headers'] = {
+          "X-Forwarded-Proto" => "https",
+          "X-Forwarded-Ssl" => "on"
+        }
+        gitlab_rails['gitlab_ssh_host'] = '{{ gitlab_domain }}'
+        gitlab_rails['gitlab_shell_ssh_port'] = {{ gitlab_ssh_port }}
+        
+        # Database configuration
+        postgresql['enable'] = false
+        gitlab_rails['db_adapter'] = "{{ gitlab_db_adapter }}"
+        gitlab_rails['db_encoding'] = "{{ gitlab_db_encoding }}"
+        gitlab_rails['db_host'] = "{{ gitlab_db_host }}"
+        gitlab_rails['db_port'] = {{ gitlab_db_port }}
+        gitlab_rails['db_username'] = "{{ gitlab_db_user }}"
+        gitlab_rails['db_password'] = "{{ gitlab_db_password }}"
+        gitlab_rails['db_database'] = "{{ gitlab_db_name }}"
+        # SMTP settings if enabled
+        {% if gitlab_smtp_enabled %}
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = '{{ gitlab_smtp_address }}'
+        gitlab_rails['smtp_port'] = {{ gitlab_smtp_port }}
+        gitlab_rails['smtp_user_name'] = '{{ gitlab_smtp_user_name }}'
+        gitlab_rails['smtp_password'] = '{{ gitlab_smtp_password }}'
+        gitlab_rails['smtp_domain'] = '{{ gitlab_smtp_domain }}'
+        gitlab_rails['smtp_authentication'] = '{{ gitlab_smtp_authentication }}'
+        gitlab_rails['smtp_enable_starttls_auto'] = {{ gitlab_smtp_enable_starttls_auto }}
+        gitlab_rails['smtp_tls'] = {{ gitlab_smtp_tls }}
+        gitlab_rails['gitlab_email_from'] = '{{ gitlab_smtp_from }}'
+        gitlab_rails['gitlab_email_display_name'] = '{{ gitlab_smtp_display_name }}'
+        {% endif %}
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.gitlab.rule: "Host(`gitlab.{{ domain }}`)"
+      traefik.http.routers.gitlab.entrypoints: 'https'
+      traefik.http.routers.gitlab.tls.certresolver: letsencrypt
+      traefik.http.services.gitlab.loadbalancer.server.port: 80
+      traefik.docker.network: proxy
+      traefik.tcp.routers.gitlab-ssh.rule: HostSNI(`gitlab.{{ domain }}`)
+      traefik.tcp.routers.gitlab-ssh.entrypoints: ssh
+      traefik.tcp.routers.gitlab-ssh.service: gitlab-ssh-svc
+      traefik.tcp.services.gitlab-ssh-svc.loadbalancer.server.port: "{{ gitlab_ssh_port }}"
+    memory: "{{ gitlab_memory_limit }}"
+    cpus: "{{ gitlab_cpu_limit }}"
+
+- name: Wait for GitLab to start (this may take several minutes)
+  pause:
+    seconds: 180
+  when: gitlab_runner_enabled | bool
+
+- name: Include GitLab Runner tasks
+  include_tasks: runner.yml
+  when: gitlab_runner_enabled | bool
+
+- name: Display GitLab setup instructions
+  debug:
+    msg: |
+      GitLab has been deployed at https://{{ gitlab_domain }}
+      
+      Initial root password can be retrieved with:
+      docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
+      
+      For GitLab Runner:
+      1. Log in to your GitLab instance at https://{{ gitlab_domain }}
+      2. Go to Admin Area -> CI/CD -> Runners
+      3. Note the registration token
+      4. Update your inventory or vars file with:
+         gitlab_runner_registration_token: "your-token-here"
+      5. Re-run the playbook to register the runner
+# 

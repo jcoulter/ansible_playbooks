@@ -1,0 +1,86 @@
+---
+- name: Check if Gitea Runner container exists
+  docker_container_info:
+    name: "{{ gitea_runner_name }}"
+  register: runner_info
+
+- name: Stop existing Gitea Runner container if it exists
+  docker_container:
+    name: "{{ gitea_runner_name }}"
+    state: stopped
+  when: runner_info.exists
+
+- name: Remove existing Gitea Runner container if it exists
+  docker_container:
+    name: "{{ gitea_runner_name }}"
+    state: absent
+  when: runner_info.exists
+
+- name: Clean up runner data directory to ensure fresh registration
+  file:
+    path: "{{ gitea_runner_data_path }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ puid | default(1000) }}"
+    group: "{{ pgid | default(1000) }}"
+  become: true
+
+- name: Remove existing runner configuration file if it exists
+  file:
+    path: "{{ gitea_runner_data_path }}/.runner"
+    state: absent
+  become: true
+
+- name: Deploy Gitea Runner container
+  docker_container:
+    name: "{{ gitea_runner_name }}"
+    image: "gitea/act_runner:{{ gitea_runner_version }}"
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ gitea_actions_network_name }}"
+      - name: proxy
+    volumes:
+      - "{{ gitea_runner_data_path }}:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    env:
+      GITEA_INSTANCE_URL: "https://{{ gitea_domain }}"
+      GITEA_RUNNER_REGISTRATION_TOKEN: "{{ gitea_runner_registration_token }}"
+      GITEA_RUNNER_NAME: "{{ gitea_runner_name }}"
+      GITEA_RUNNER_LABELS: "ruby-3.4.2:docker://cimg/ruby:3.4.2-node,ubuntu-latest:docker://node:18-bullseye,ubuntu-22.04:docker://node:18-bullseye,ubuntu-20.04:docker://node:16-bullseye"
+    command: >
+      sh -c "act_runner register --no-interactive 
+      --instance https://{{ gitea_domain }} 
+      --token {{ gitea_runner_registration_token }} 
+      --name {{ gitea_runner_name }} 
+      --labels ruby-3.4.2:docker://cimg/ruby:3.4.2-node,ubuntu-latest:docker://node:18-bullseye,ubuntu-22.04:docker://node:18-bullseye,ubuntu-20.04:docker://node:16-bullseye &&
+      act_runner daemon --config /data/config.yaml"
+    state: started
+  when: gitea_runner_registration_token is defined and gitea_runner_registration_token != ''
+
+- name: Wait for Gitea Runner to register
+  pause:
+    seconds: 10
+  when: gitea_runner_registration_token is defined and gitea_runner_registration_token != ''
+
+- name: Check Gitea Runner logs
+  shell: docker logs {{ gitea_runner_name }} 2>&1 | tail -n 20
+  register: runner_logs
+  changed_when: false
+  when: gitea_runner_registration_token is defined and gitea_runner_registration_token != ''
+
+- name: Display Gitea Runner logs
+  debug:
+    var: runner_logs.stdout_lines
+  when: gitea_runner_registration_token is defined and gitea_runner_registration_token != ''
+
+- name: Verify runner configuration
+  shell: cat {{ gitea_runner_data_path }}/.runner
+  register: runner_config
+  changed_when: false
+  become: true
+  when: gitea_runner_registration_token is defined and gitea_runner_registration_token != ''
+
+- name: Display runner configuration
+  debug:
+    var: runner_config.stdout_lines
+  when: gitea_runner_registration_token is defined and gitea_runner_registration_token != ''
