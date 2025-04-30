@@ -1,0 +1,43 @@
+---
+- name: Ensure Logseq data directory exists
+  file:
+    path: "{{ logseq_data_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Ensure Logseq config directory exists
+  file:
+    path: "{{ logseq_config_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Make sure the logseq container is created and running
+  docker_container:
+    image: ghcr.io/logseq/logseq-webapp:latest
+    name: logseq
+    networks:
+      - name: proxy
+    # No direct port exposure when using Traefik
+    # ports:
+    #   - "{{ logseq_port }}:80"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.logseq.entrypoints: "http"
+      traefik.http.routers.logseq.rule: "Host(`{{ logseq_domain }}`)"
+      traefik.http.middlewares.logseq-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.logseq.middlewares: "logseq-https-redirect"
+      traefik.http.routers.logseq-secure.entrypoints: "https"
+      traefik.http.routers.logseq-secure.rule: "Host(`{{ logseq_domain }}`)"
+      traefik.http.routers.logseq-secure.tls: "true"
+      traefik.http.routers.logseq-secure.service: "logseq"
+      traefik.http.services.logseq.loadbalancer.server.port: "80"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ logseq_data_path }}:/app/public/data"
+      - "{{ logseq_config_path }}:/app/public/config"
+    restart_policy: unless-stopped

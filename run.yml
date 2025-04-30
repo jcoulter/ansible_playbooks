@@ -308,6 +308,12 @@
       tags:
         - containers
         - collabora
+
+    - role: services/logseq
+      tags:
+        - containers
+        - logseq
+        - notes
         
 # TODO: wire containers through gluetun 
 

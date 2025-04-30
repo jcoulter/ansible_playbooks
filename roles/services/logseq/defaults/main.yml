@@ -1,0 +1,5 @@
+---
+logseq_domain: "notes.{{ domain }}"
+logseq_port: "3001"
+logseq_data_path: "{{ data_root }}/logseq_data"
+logseq_config_path: "{{ config_root }}/logseq"
