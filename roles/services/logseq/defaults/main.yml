@@ -1,5 +1,8 @@
 ---
-logseq_domain: "notes.{{ domain }}"
+logseq_domain: "logseq.{{ domain }}"
 logseq_port: "3001"
 logseq_data_path: "{{ data_root }}/logseq_data"
 logseq_config_path: "{{ config_root }}/logseq"
+logseq_auth_username: "{{ logseq_user | default('admin') }}"
+# This password will be encrypted during deployment
+logseq_auth_password: "{{ logseq_password | default('changeme') }}"
