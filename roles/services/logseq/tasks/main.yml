@@ -1,0 +1,82 @@
+---
+- name: Install passlib for htpasswd module
+  pip:
+    name: passlib
+    state: present
+  become: yes
+
+- name: Ensure Logseq data directory exists
+  file:
+    path: "{{ logseq_data_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Ensure Logseq config directory exists
+  file:
+    path: "{{ logseq_config_path }}/config"
+    state: directory
+    mode: '0755'
+
+- name: Create htpasswd directory
+  file:
+    path: "{{ logseq_config_path }}/auth"
+    state: directory
+    mode: '0755'
+
+- name: Generate htpasswd file
+  htpasswd:
+    path: "{{ logseq_config_path }}/auth/users.htpasswd"
+    name: "{{ logseq_auth_username }}"
+    password: "{{ logseq_auth_password }}"
+    owner: "{{ puid }}"
+    group: "{{ pgid }}"
+    mode: '0600'
+
+- name: Generate hashed password
+  set_fact:
+    logseq_auth_password_hash: "{{ logseq_auth_password | password_hash('bcrypt') }}"
+
+- name: Ensure Traefik dynamic config directory exists
+  file:
+    path: "{{ traefik_dynamic_config_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create Traefik dynamic config for Logseq auth
+  template:
+    src: ../templates/logseq-auth.yml.j2
+    dest: "{{ traefik_dynamic_config_dir }}/logseq-auth.yml"
+    mode: '0644'
+
+- name: Make sure the logseq container is created and running
+  docker_container:
+    image: ghcr.io/logseq/logseq-webapp:latest
+    name: logseq
+    networks:
+      - name: proxy
+    # No direct port exposure when using Traefik
+    # ports:
+    #   - "{{ logseq_port }}:80"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.logseq.entrypoints: "http"
+      traefik.http.routers.logseq.rule: "Host(`{{ logseq_domain }}`)"
+      traefik.http.middlewares.logseq-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.logseq.middlewares: "logseq-https-redirect"
+      traefik.http.routers.logseq-secure.entrypoints: "https"
+      traefik.http.routers.logseq-secure.rule: "Host(`{{ logseq_domain }}`)"
+      traefik.http.routers.logseq-secure.tls: "true"
+      traefik.http.routers.logseq-secure.service: "logseq"
+      traefik.http.services.logseq.loadbalancer.server.port: "80"
+      # Use the dynamic config middleware
+      traefik.http.routers.logseq-secure.middlewares: "logseq-auth@file"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ logseq_data_path }}:/app/public/data"
+      - "{{ logseq_config_path }}/config:/app/public/config"
+    restart_policy: unless-stopped

@@ -1,0 +1,6 @@
+http:
+  middlewares:
+    logseq-auth:
+      basicAuth:
+        users:
+          - "{{ logseq_auth_username }}:{{ logseq_auth_password_hash }}"
