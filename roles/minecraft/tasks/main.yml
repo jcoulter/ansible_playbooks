@@ -10,6 +10,7 @@
     pull: yes
     tty: true
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

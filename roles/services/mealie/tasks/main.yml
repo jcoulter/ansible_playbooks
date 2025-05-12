@@ -21,9 +21,9 @@
       traefik.http.routers.mealie-secure.rule: "Host(`mealie.{{ domain }}`)||Host(`mealie-in.{{ domain }}`)"
       traefik.http.routers.mealie-secure.tls: "true"
       traefik.http.routers.mealie-secure.service: "mealie"
-      # traefik.http.services.mealie.loadbalancer.server.url: "http://vault.local:9092"
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       # DB_ENGINE: sqlite # Optional: 'sqlite', 'postgres'
       # ALLOW_SIGNUP: "false"

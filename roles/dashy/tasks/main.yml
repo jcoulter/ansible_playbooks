@@ -9,6 +9,7 @@
       - 88:80
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

@@ -22,4 +22,3 @@
     restart_policy: unless-stopped
     recreate: yes
 
-

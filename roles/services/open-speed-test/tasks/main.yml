@@ -20,6 +20,7 @@
       traefik.http.services.speedtest.loadbalancer.server.url: "http://vault.local:3002"
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

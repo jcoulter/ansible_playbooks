@@ -6,6 +6,7 @@
     image: "koenkk/zigbee2mqtt"
     pull: yes
     state: 'started'
+    recreate: yes
     ports:
       - "8081:8080"
     env:

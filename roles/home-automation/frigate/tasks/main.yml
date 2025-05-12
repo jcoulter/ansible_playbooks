@@ -19,6 +19,7 @@
       - /dev/dri/renderD128 # for intel hwaccel, needs to be updated for your hardware
     pull: yes
     state: 'started'
+    recreate: yes
     ports:
       - "5000:5000"
       - "1935:1935" # RTMP feeds

@@ -16,6 +16,7 @@
       - 8268:8268 # Example extra node port
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

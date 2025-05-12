@@ -9,6 +9,7 @@
       - 89:3000
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
@@ -19,6 +20,7 @@
       HOMEPAGE_VAR_CALIBREWEB_PASSWORD: "{{ calibreweb_password }}"
       HOMEPAGE_VAR_ADGUARD_USERNAME: "{{ adguard_username }}"
       HOMEPAGE_VAR_ADGUARD_PASSWORD: "{{ adguard_password }}"
+      HOMEPAGE_ALLOWED_HOSTS: "*"
     volumes:
       - "{{ config_root }}/homepage_config:/app/config"
       - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations

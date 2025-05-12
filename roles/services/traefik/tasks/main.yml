@@ -76,6 +76,7 @@
       - "82:82"
     pull: yes
     state: 'started'
+    recreate: yes
     env:
     # This token must be built 
     # https://community.cloudflare.com/t/i-need-cf-zone-api-token-for-traefik-setting-but-dont-know-how-create-it/418006/3

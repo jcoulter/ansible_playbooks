@@ -9,6 +9,7 @@
       - 8787:8787
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
@@ -31,6 +32,7 @@
       - 8788:8787
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

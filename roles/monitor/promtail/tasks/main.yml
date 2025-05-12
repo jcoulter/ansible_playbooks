@@ -10,6 +10,7 @@
       - "3100:3100"
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

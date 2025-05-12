@@ -23,23 +23,26 @@
       - 8200:8200
     pull: yes
     state: 'started'
+    # I probably don't want this because it could bork a running backup
+    # recreate: yes
     labels:
       traefik.enable: "true"
       traefik.http.routers.duplicati.entrypoints: "http"
       # This syntax allows cloudflare tunnel to host duplicati.{{ domain }} which points to local duplicati-in.{{ domain }} over https
       # Both duplicati.{{ domain }} and duplicati-in.{{ domain }} must be configured in local dns (pi-hole)
       # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
-      traefik.http.routers.duplicati.rule: "Host(`duplicati.{{ domain }}`)||Host(`duplicati-in.{{ domain }}`)"
+      traefik.http.routers.duplicati.rule: "Host(`duplicati.{{ domain }}`)"
       traefik.http.middlewares.duplicati-https-redirect.redirectscheme.scheme: "https"
       traefik.http.routers.duplicati.middlewares: "duplicati-https-redirect"
       traefik.http.routers.duplicati-secure.entrypoints: "https"
-      traefik.http.routers.duplicati-secure.rule: "Host(`duplicati.{{ domain }}`)||Host(`duplicati-in.{{ domain }}`)"
+      traefik.http.routers.duplicati-secure.rule: "Host(`duplicati.{{ domain }}`)"
       traefik.http.routers.duplicati-secure.tls: "true"
       traefik.http.routers.duplicati-secure.service: "duplicati"
-      traefik.http.services.duplicati.loadbalancer.server.url: "http://vault.local:8200"
-    env:
-      PUID: "{{ puid }}"
-      PGID: "{{ pgid }}"
+      traefik.http.services.duplicati.loadbalancer.server.port: "8200"
+      PUID: "0"
+      PGID: "0"
+      #PUID: "{{ puid }}"
+      #PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     volumes:
       - "{{ config_root }}/duplicati_data:/config"

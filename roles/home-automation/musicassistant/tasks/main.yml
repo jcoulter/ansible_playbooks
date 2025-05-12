@@ -17,6 +17,7 @@
     #   # - "/dev/ttyUSB0:/dev/zwave"
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

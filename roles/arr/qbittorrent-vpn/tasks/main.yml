@@ -42,6 +42,7 @@
     networks:
       - name: media_network
     state: started
+    recreate: yes
     env:
       VPN_ENABLED: "yes"
       # VPN_TYPE: "wireguard"

@@ -46,6 +46,7 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     state: 'started'
+    recreate: yes
     restart_policy: unless-stopped
 
 - name: Make sure - Seafile container is created and running
@@ -56,6 +57,7 @@
     image: seafileltd/seafile-mc:latest
     pull: yes
     state: 'started'
+    recreate: yes
     published_ports:
       - "80:80"
   #     - "443:443"  # If https is enabled, cancel the comment.

@@ -16,6 +16,7 @@
     networks:
       - name: media_network
     state: started
+    recreate: yes
     devices:
       - /dev/net/tun
     env:

@@ -9,6 +9,7 @@
       - "8070:8080"
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

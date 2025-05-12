@@ -28,6 +28,7 @@
       traefik.http.middlewares.crafty-security.headers.contentTypeNosniff: "true"
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

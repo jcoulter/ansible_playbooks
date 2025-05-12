@@ -31,6 +31,7 @@
       - name: gramps
     pull: yes
     state: 'started'
+    recreate: yes
     command: 'celery -A gramps_webapi.celery worker --loglevel=INFO --concurrency=2'
     env:
       GRAMPSWEB_TREE: "Gramps Web"  # will create a new tree if not exists
@@ -82,10 +83,11 @@
       traefik.http.routers.gramps-secure.rule: "Host(`gramps.{{ domain }}`)"
       traefik.http.routers.gramps-secure.tls: "true"
       traefik.http.routers.gramps-secure.service: "gramps"
-      traefik.http.services.gramps.loadbalancer.server.url: "http://vault.local:5000"
+      traefik.http.services.gramps.loadbalancer.server.port: "5000"
 
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       GRAMPSWEB_TREE: "Gramps Web"  # will create a new tree if not exists
       GRAMPSWEB_CELERY_CONFIG__broker_url: "redis://grampsweb_redis:6379/0"

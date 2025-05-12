@@ -19,6 +19,7 @@
       traefik.http.routers.airsonic-secure.service: "airsonic"
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       JAVA_OPTS: "-Dserver.use-forward-headers=true"
       PUID: "{{ puid }}"

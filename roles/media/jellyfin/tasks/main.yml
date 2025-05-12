@@ -38,6 +38,7 @@
     # devices:
     #   - "/dev/dri/renderD128:/dev/dri/renderD128"
     state: 'started'
+    recreate: yes
     devices:
     # VAAPI Devices
       - /dev/dri/renderD128:/dev/dri/renderD128

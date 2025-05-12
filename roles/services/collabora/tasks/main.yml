@@ -4,6 +4,7 @@
     name: "{{ collabora_container_name }}"
     image: "{{ collabora_image }}"
     state: started
+    recreate: yes
     restart_policy: unless-stopped
     ports:
       - "{{ collabora_port }}:9980"

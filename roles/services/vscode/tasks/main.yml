@@ -7,6 +7,7 @@
     ports:
       - 8443:8443
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

@@ -17,4 +17,5 @@
       - /etc/localtime:/etc/localtime:ro
       - "{{ config_root }}/esphome_config:/config"
     state: 'started'
+    recreate: yes
     restart_policy: unless-stopped

@@ -12,6 +12,7 @@
       - "21027:21027/udp"
     pull: yes
     state: 'started'
+    recreate: yes
     env:
     # Must run as www-data user/group to work with nextcloud
       PUID: "{{ nc_uid }}"

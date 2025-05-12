@@ -17,6 +17,7 @@
     restart_policy: unless-stopped
     networks_cli_compatible: yes
     state: 'started'
+    recreate: yes
     pull: yes
     networks:
       - name: immich_network
@@ -31,6 +32,7 @@
     networks:
       - name: immich_network
     state: 'started'
+    recreate: yes
     pull: yes
     env:
       POSTGRES_INITDB_ARGS: '--data-checksums'
@@ -96,6 +98,7 @@
     # image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
     image: "ghcr.io/immich-app/immich-machine-learning:{{ immich_version }}"
     state: 'started'
+    recreate: yes
     pull: yes
     networks:
       - name: immich_network
@@ -130,6 +133,7 @@
     image: "ghcr.io/immich-app/immich-server:{{ immich_version }}"
     name: immich_server
     state: 'started'
+    recreate: yes
     pull: yes
     networks:
       - name: immich_network

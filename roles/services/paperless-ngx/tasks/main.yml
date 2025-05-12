@@ -32,6 +32,7 @@
     name: paperless_redis
     image: redis:latest
     state: started
+    recreate: yes
     restart_policy: unless-stopped
     networks:
       - name: "{{ paperless_network_name }}"
@@ -45,6 +46,7 @@
     name: paperless_db
     image: postgres:13
     state: started
+    recreate: yes
     restart_policy: unless-stopped
     networks:
       - name: "{{ paperless_network_name }}"
@@ -60,6 +62,7 @@
     name: paperless_webserver
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
     state: started
+    recreate: yes
     restart_policy: unless-stopped
     networks:
       - name: "{{ paperless_network_name }}"

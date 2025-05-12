@@ -8,6 +8,7 @@
     # network_mode: host
     pull: yes
     state: 'started'
+    recreate: yes
     ports:
       - "1883:1883"
       - "9001:9001 "
