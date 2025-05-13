@@ -1,0 +1,5 @@
+---
+trilium_domain: "notes.{{ domain }}"
+trilium_port: "8080"
+trilium_data_path: "{{ data_root }}/trilium_next_data"
+trilium_config_path: "{{ config_root }}/trilium_next"
