@@ -12,10 +12,17 @@
 
 # https://www.maketecheasier.com/connect-vpn-automatically-linux/
 
+- name: Ensure backup directories exist with proper permissions
+  file:
+    path: "{{ backups }}/duplicati"
+    state: directory
+    mode: '0755'
+    recurse: yes
+  become: yes
 
 - name: Make sure the duplicati container is created and running
   docker_container:
-    image: lscr.io/linuxserver/duplicati:latest
+    image: duplicati/duplicati:latest
     name: duplicati
     networks:
       - name: proxy
@@ -39,13 +46,12 @@
       traefik.http.routers.duplicati-secure.tls: "true"
       traefik.http.routers.duplicati-secure.service: "duplicati"
       traefik.http.services.duplicati.loadbalancer.server.port: "8200"
-      PUID: "0"
-      PGID: "0"
-      #PUID: "{{ puid }}"
-      #PGID: "{{ pgid }}"
+    env:
       TZ: "{{ timezone }}"
+      DUPLICATI_WEBSERVICE_ALLOWED_HOSTNAMES: "*"
+      # The official image runs as root by default, no need for PUID/PGID
     volumes:
-      - "{{ config_root }}/duplicati_data:/config"
+      - "{{ config_root }}/duplicati:/config"
       - "{{ data_root }}:/data"
       - "{{ shares }}:/shares"
       - "{{ backups }}:/backups"
