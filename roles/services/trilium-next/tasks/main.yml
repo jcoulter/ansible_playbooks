@@ -1,0 +1,39 @@
+---
+- name: Ensure Trilium data directory exists
+  file:
+    path: "{{ trilium_data_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Ensure Trilium config directory exists
+  file:
+    path: "{{ trilium_config_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Make sure the trilium container is created and running
+  docker_container:
+    image: triliumnext/notes:latest
+    name: trilium-next
+    networks:
+      - name: proxy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.trilium.entrypoints: "http"
+      traefik.http.routers.trilium.rule: "Host(`{{ trilium_domain }}`)"
+      traefik.http.middlewares.trilium-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.trilium.middlewares: "trilium-https-redirect"
+      traefik.http.routers.trilium-secure.entrypoints: "https"
+      traefik.http.routers.trilium-secure.rule: "Host(`{{ trilium_domain }}`)"
+      traefik.http.routers.trilium-secure.tls: "true"
+      traefik.http.routers.trilium-secure.service: "trilium"
+      traefik.http.services.trilium.loadbalancer.server.port: "8080"
+    pull: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ trilium_data_path }}:/home/node/trilium-data"
+    restart_policy: unless-stopped

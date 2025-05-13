@@ -319,6 +319,11 @@
       tags:
         - containers
         - logseq
+
+    - role: services/trilium-next
+      tags:
+        - containers
+        - trilium
         - notes
         
 # TODO: wire containers through gluetun 
