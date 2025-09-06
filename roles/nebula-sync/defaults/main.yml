@@ -1,0 +1,4 @@
+---
+# Nebula-sync configuration
+nebula_sync_role: "primary"  # primary or secondary
+nebula_sync_interval: 300  # Sync interval in seconds

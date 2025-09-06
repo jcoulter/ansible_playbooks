@@ -1,0 +1,18 @@
+---
+- name: Create nebula-sync directory
+  file:
+    path: /opt/nebula-sync
+    state: directory
+    mode: '0755'
+
+- name: Create nebula-sync docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: /opt/nebula-sync/docker-compose.yml
+    mode: '0644'
+  notify: restart nebula-sync
+
+- name: Start nebula-sync container
+  community.docker.docker_compose_v2:
+    project_src: /opt/nebula-sync
+    state: present

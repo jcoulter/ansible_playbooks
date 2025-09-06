@@ -1,0 +1,25 @@
+---
+# Pi-hole configuration
+pihole_config_dir: "/opt/pihole"
+pihole_container_name: "pihole"
+pihole_timezone: "{{ timezone | default('America/New_York') }}"
+pihole_admin_password: "{{ pihole_admin_password | default('changeme123') }}"
+pihole_dns_port: 53
+pihole_web_port: 8089
+pihole_dhcp_port: 67
+
+# Upstream DNS servers (fallback when Pi-hole forwards)
+pihole_dns1: "{{ router_ip }}"
+pihole_dns2: "{{ router_ip }}"
+
+# Pi-hole Docker image
+pihole_image: "pihole/pihole:latest"
+
+# Network settings
+pihole_network_name: "pihole_network"
+
+# Custom DNS entries (for your local services) - should be defined in inventory
+pihole_custom_dns: "{{ local_dns_entries | default([]) }}"
+
+# Custom dnsmasq configurations (for wildcards and advanced routing)
+pihole_custom_dnsmasq_configs: []

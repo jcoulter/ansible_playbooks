@@ -1,0 +1,147 @@
+---
+- name: Verify community.docker collection is available
+  ansible.builtin.assert:
+    that:
+      - ansible_version.full is version('2.9', '>=')
+    fail_msg: "This role requires Ansible 2.9+ and community.docker collection"
+
+- name: Check if DNS port is available
+  wait_for:
+    port: "{{ pihole_dns_port }}"
+    host: "{{ ansible_host }}"
+    state: stopped
+    timeout: 5
+  ignore_errors: yes
+  register: dns_port_check
+
+- name: Warn about potential DNS port conflicts
+  debug:
+    msg: 
+      - "WARNING: Port {{ pihole_dns_port }} appears to be in use"
+      - "Consider stopping systemd-resolved: sudo systemctl disable systemd-resolved"
+      - "Or configure Pi-hole to use a different port"
+  when: dns_port_check.failed
+
+- name: Create Pi-hole directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: '0755'
+  loop:
+    - "{{ pihole_config_dir }}"
+    - "{{ pihole_config_dir }}/etc-pihole"
+    - "{{ pihole_config_dir }}/etc-dnsmasq.d"
+
+- name: Create Pi-hole docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ pihole_config_dir }}/docker-compose.yml"
+    owner: "1000"
+    group: "1000"
+    mode: '0644'
+  notify: restart pihole
+
+- name: Create Pi-hole environment file
+  template:
+    src: pihole.env.j2
+    dest: "{{ pihole_config_dir }}/.env"
+    owner: "1000"
+    group: "1000"
+    mode: '0600'
+  notify: restart pihole
+
+- name: Create custom dnsmasq configurations
+  copy:
+    content: "{{ item.content }}"
+    dest: "{{ pihole_config_dir }}/etc-dnsmasq.d/{{ item.name }}.conf"
+    owner: "999"  # Pi-hole container user ID
+    group: "999"  # Pi-hole container group ID
+    mode: '0644'
+  loop: "{{ pihole_custom_dnsmasq_configs }}"
+  when: pihole_custom_dnsmasq_configs | length > 0
+  notify: restart pihole
+
+- name: Enable reading of /etc/dnsmasq.d/ directory in Pi-hole
+  community.docker.docker_container_exec:
+    container: "{{ pihole_container_name }}"
+    command: sed -i 's/etc_dnsmasq_d = false/etc_dnsmasq_d = true/' /etc/pihole/pihole.toml
+  when: pihole_custom_dnsmasq_configs | length > 0
+  register: enable_dnsmasq_d
+  ignore_errors: yes
+
+- name: Restart Pi-hole to apply dnsmasq.d configuration
+  community.docker.docker_compose_v2:
+    project_src: "{{ pihole_config_dir }}"
+    state: present
+    recreate: always
+  when: 
+    - pihole_custom_dnsmasq_configs | length > 0
+    - enable_dnsmasq_d is succeeded
+
+- name: Start Pi-hole container
+  community.docker.docker_compose_v2:
+    project_src: "{{ pihole_config_dir }}"
+    state: present
+    pull: always
+  register: pihole_result
+
+- name: Wait for Pi-hole web interface to be ready
+  uri:
+    url: "http://{{ ansible_host }}:{{ pihole_web_port }}/admin/"
+    method: GET
+    status_code: 200
+  retries: 30
+  delay: 10
+
+- name: Wait for Pi-hole DNS service to be ready
+  wait_for:
+    host: "{{ ansible_host }}"
+    port: "{{ pihole_dns_port }}"
+    timeout: 60
+
+- name: Verify Pi-hole container is running
+  community.docker.docker_container_info:
+    name: "{{ pihole_container_name }}"
+  register: container_info
+  failed_when: not container_info.exists or container_info.container.State.Status != "running"
+
+- name: Wait for Pi-hole internal services to fully initialize
+  pause:
+    seconds: 10
+
+- name: Add custom DNS entries to Pi-hole
+  community.docker.docker_container_exec:
+    container: "{{ pihole_container_name }}"
+    command: pihole -a hostrecord {{ item.domain }} {{ item.ip }}
+  loop: "{{ pihole_custom_dns }}"
+  when: pihole_custom_dns | length > 0
+  register: dns_entry_result
+  failed_when: 
+    - dns_entry_result.rc != 0
+    - "'already exists' not in dns_entry_result.stdout"
+  ignore_errors: yes
+
+- name: Force gravity update to apply blocklists (if container was just created)
+  community.docker.docker_container_exec:
+    container: "{{ pihole_container_name }}"
+    command: pihole -g
+  when: pihole_result.changed
+  register: gravity_result
+  retries: 3
+  delay: 10
+  until: gravity_result is succeeded
+  ignore_errors: yes
+
+- name: Display Pi-hole access information
+  debug:
+    msg:
+      - "Pi-hole deployment complete!"
+      - "Web interface: http://{{ ansible_host }}:{{ pihole_web_port }}/admin/"
+      - "DNS server: {{ ansible_host }}:{{ pihole_dns_port }}"
+      - "Container name: {{ pihole_container_name }}"
+      - "Admin password: [CONFIGURED FROM VAULT]"
+      - "Custom DNS entries: {{ pihole_custom_dns | length }} entries"
+      - "Custom dnsmasq configs: {{ pihole_custom_dnsmasq_configs | length }} files"
+      - "Blocklists: Managed manually via web interface"

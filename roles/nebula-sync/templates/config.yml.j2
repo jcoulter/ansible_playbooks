@@ -1,0 +1,35 @@
+sync:
+  interval: {{ nebula_sync_interval | default(300) }}  # Sync every 5 minutes
+  
+pihole:
+{% if nebula_sync_role == 'primary' %}
+  # Primary Pi-hole configuration
+  instances:
+    - name: "primary"
+      url: "http://pihole:80"
+      password: "{{ pihole_admin_password }}"
+      primary: true
+{% else %}
+  # Secondary Pi-hole configuration  
+  instances:
+    - name: "secondary"
+      url: "http://pihole:80"
+      password: "{{ pihole_admin_password }}"
+      primary: false
+    - name: "primary-remote"
+      url: "http://{{ hostvars[groups['omv_server'][0]]['ansible_default_ipv4']['address'] }}:{{ pihole_web_port | default(8089) }}"
+      password: "{{ pihole_admin_password }}"
+      primary: true
+{% endif %}
+
+sync_options:
+  adlists: true          # Sync blocklists
+  blacklist: true        # Sync blacklist
+  whitelist: true        # Sync whitelist
+  regex_blacklist: true  # Sync regex blacklist
+  regex_whitelist: true  # Sync regex whitelist
+  dns_records: true      # Sync custom DNS records
+  cname_records: true    # Sync CNAME records
+  
+logging:
+  level: "info"
