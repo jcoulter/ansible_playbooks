@@ -8,6 +8,8 @@
     ports:
       - "8090:8080"
       - "8091:8081"
+      - "8191:8181"
+
     pull: yes
     state: 'started'
     recreate: yes
