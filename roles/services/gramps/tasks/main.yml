@@ -84,6 +84,7 @@
       traefik.http.routers.gramps-secure.tls: "true"
       traefik.http.routers.gramps-secure.service: "gramps"
       traefik.http.services.gramps.loadbalancer.server.port: "5000"
+      traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
 
     pull: yes
     state: 'started'

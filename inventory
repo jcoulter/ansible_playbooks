@@ -1,5 +1,33 @@
-#192.168.1.56 ansible_user=jcoulter 
+[omv_server]
+omv ansible_host=192.168.1.36 ansible_user=jcoulter
 
-192.168.1.36 ansible_user=jcoulter
-#forger.local ansible_user=jcoulter
-#192.168.1.72 ansible_user=casapaja
+[pihole_backup]
+pi2b ansible_host=192.168.1.10 ansible_user=admin
+
+[pihole_servers:children]
+omv_server
+pihole_backup
+
+[omv_server:vars]
+# Set the base domain for Traefik services
+domain=coulter.rocks
+
+# Critical/specific DNS entries (router exception)
+local_dns_entries=[{"domain": "router.{{ domain }}", "ip": "{{ router_ip }}"}]
+
+# Wildcard configuration with router exception
+pihole_custom_dnsmasq_configs=[{"name": "03-coulter-rocks-routing", "content": "# Router exception - must come first\naddress=/router.{{ domain }}/{{ router_ip }}\n\n# Wildcard for all services on your server\naddress=/.{{ domain }}/{{ server_ip }}\n\n# Optional: Add any other network devices as needed\n# address=/nas.{{ domain }}/192.168.1.50\n# address=/printer.{{ domain }}/192.168.1.100"}]
+
+[pihole_backup:vars]
+# Backup Pi-hole configuration (no nebula-sync - too resource intensive for Pi 2B)
+domain=coulter.rocks
+
+local_dns_entries=[{"domain": "router.{{ domain }}", "ip": "{{ router_ip }}"}]
+pihole_custom_dnsmasq_configs=[{"name": "03-coulter-rocks-routing", "content": "# Router exception - must come first\naddress=/router.{{ domain }}/{{ router_ip }}\n\n# Wildcard for all services on your server\naddress=/.{{ domain }}/{{ server_ip }}\n\n# Optional: Add any other network devices as needed\n# address=/nas.{{ domain }}/192.168.1.50\n# address=/printer.{{ domain }}/192.168.1.100"}]
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+timezone=America/New_York
+router_ip=192.168.1.2
+server_ip=192.168.1.36
+backup_pihole_ip=192.168.1.10

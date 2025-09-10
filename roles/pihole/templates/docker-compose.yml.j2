@@ -1,0 +1,41 @@
+services:
+  pihole:
+    container_name: {{ pihole_container_name }}
+    image: {{ pihole_image }}
+    ports:
+      - "{{ pihole_dns_port }}:53/tcp"
+      - "{{ pihole_dns_port }}:53/udp"
+      - "{{ pihole_web_port }}:80/tcp"
+{% if pihole_dhcp_enabled | default(false) %}
+      - "{{ pihole_dhcp_port }}:67/udp"
+{% endif %}
+    environment:
+      TZ: {{ pihole_timezone }}
+      WEBPASSWORD: {{ pihole_admin_password }}
+      PIHOLE_DNS_: {{ pihole_dns1 }};{{ pihole_dns2 }}
+      DNSMASQ_LISTENING: single
+      WEB_PORT: 80
+      VIRTUAL_HOST: pihole.local
+{% if pihole_dhcp_enabled | default(false) %}
+      DHCP_ACTIVE: true
+      DHCP_START: {{ pihole_dhcp_start | default('192.168.1.201') }}
+      DHCP_END: {{ pihole_dhcp_end | default('192.168.1.251') }}
+      DHCP_ROUTER: {{ pihole_dhcp_router | default('192.168.1.1') }}
+      PIHOLE_DOMAIN: {{ pihole_domain | default('local') }}
+{% endif %}
+    volumes:
+      - ./etc-pihole:/etc/pihole
+      - ./etc-dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    dns:
+      - 127.0.0.1
+      - {{ pihole_dns1 }}
+    networks:
+      - pihole_network
+
+networks:
+  pihole_network:
+    name: {{ pihole_network_name }}
+    driver: bridge

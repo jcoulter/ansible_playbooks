@@ -1,5 +1,6 @@
 ---
-- hosts: all
+# OMV Server - Full services
+- hosts: omv_server
 
   vars_files:
     - ./vars/vault.yml
@@ -58,6 +59,21 @@
       tags:
         - services
         - nextcloud-aio
+
+    - role: pihole
+      become: yes
+      tags:
+        - services
+        - pihole
+        - dns
+
+    - role: nebula-sync
+      become: yes
+      tags:
+        - services
+        - pihole
+        - nebula-sync
+        - sync
 
     # - role: services/seafile
     #   tags:
@@ -325,6 +341,34 @@
         - containers
         - trilium
         - notes
+
+# Pi-hole Backup Server - Minimal services only
+- hosts: pihole_backup
+
+  vars_files:
+    - ./vars/vault.yml
+    - ./vars/vars.yml
+
+  roles:
+    - role: setup/user_setup
+      become: yes
+      tags:
+        - setup
+        - user_setup
+        - user-setup
+  
+    - role: setup/docker
+      become: yes
+      tags:
+        - setup
+        - docker
+
+    - role: pihole
+      become: yes
+      tags:
+        - services
+        - pihole
+        - dns
         
 # TODO: wire containers through gluetun 
 

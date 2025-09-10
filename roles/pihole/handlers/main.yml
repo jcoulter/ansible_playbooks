@@ -1,0 +1,17 @@
+---
+- name: restart pihole
+  community.docker.docker_compose_v2:
+    project_src: "{{ pihole_config_dir }}"
+    state: present
+    pull: always
+    recreate: always
+
+- name: update gravity
+  community.docker.docker_container_exec:
+    container: "{{ pihole_container_name }}"
+    command: pihole -g
+  register: gravity_update
+  retries: 3
+  delay: 10
+  until: gravity_update.rc == 0
+  ignore_errors: yes

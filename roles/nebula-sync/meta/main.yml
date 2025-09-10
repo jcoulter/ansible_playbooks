@@ -1,0 +1,27 @@
+---
+galaxy_info:
+  author: jcoulter
+  description: Deploy Nebula-sync for Pi-hole configuration synchronization
+  company: Personal
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+  galaxy_tags:
+    - dns
+    - pihole
+    - docker
+    - sync
+    - backup
+
+dependencies: []
+
+collections:
+  - community.docker
