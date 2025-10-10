@@ -5,6 +5,8 @@
     name: prowlarr
     networks:
       - name: media_network
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
     ports:
       - 9696:9696
     pull: yes

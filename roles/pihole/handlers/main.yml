@@ -1,4 +1,11 @@
 ---
+- name: restart docker
+  become: yes
+  systemd:
+    name: docker
+    state: restarted
+    daemon_reload: yes
+
 - name: restart pihole
   community.docker.docker_compose_v2:
     project_src: "{{ pihole_config_dir }}"
