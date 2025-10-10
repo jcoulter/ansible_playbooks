@@ -28,3 +28,5 @@
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vault.local:8087"
     networks:
       - name: proxy
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server

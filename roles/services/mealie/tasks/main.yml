@@ -8,6 +8,8 @@
     #   - "9092:80"
     networks:
       - name: proxy
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
     labels:
       traefik.enable: "true"
       traefik.http.routers.mealie.entrypoints: "http"
