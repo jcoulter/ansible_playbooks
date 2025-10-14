@@ -226,6 +226,13 @@
       - containers
       - calibre
 
+    - role: services/calibre-web-automated
+      tags:
+      - containers
+      - calibre-web-automated
+      - ebooks
+      - cwa
+
     - role: services/booklore  
       tags:
       - containers

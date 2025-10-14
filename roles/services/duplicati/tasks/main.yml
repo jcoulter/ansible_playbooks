@@ -48,7 +48,8 @@
       traefik.http.services.duplicati.loadbalancer.server.port: "8200"
     env:
       TZ: "{{ timezone }}"
-      DUPLICATI_WEBSERVICE_ALLOWED_HOSTNAMES: "*"
+      DUPLICATI_WEBSERVICE_ALLOWED_HOSTNAMES: "*,duplicati.coulter.rocks"
+      DUPLICATI_HOME: "/config"
       # The official image runs as root by default, no need for PUID/PGID
     volumes:
       - "{{ config_root }}/duplicati:/config"
