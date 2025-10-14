@@ -226,6 +226,14 @@
       - containers
       - calibre
 
+    - role: services/calibre-web-automated
+      when: ansible_hostname != 'pi2b'
+      tags:
+      - containers
+      - calibre-web-automated
+      - ebooks
+      - cwa
+
     - role: services/audiobookshelf  
       tags:
       - containers

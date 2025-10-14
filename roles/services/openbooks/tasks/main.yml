@@ -10,7 +10,10 @@
     pull: yes
     state: 'started'
     recreate: yes
-    command: "./openbooks server --dir /books --port 80 --name {{ irc_name }} -s irc.irchighway.net:9999"
+    command: "./openbooks server --dir /books --port 80 --name {{ irc_name }} -s irc.irchighway.net:6667"
+    dns_servers:
+      - "8.8.8.8"
+      - "1.1.1.1"
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

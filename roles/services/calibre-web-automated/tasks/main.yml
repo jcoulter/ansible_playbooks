@@ -1,0 +1,35 @@
+---
+- name: Make sure the calibre-web-automated container is created and running
+  docker_container:
+    image: crocodilestick/calibre-web-automated:latest
+    name: calibre-web-automated
+    networks:
+      - name: media_network
+      - name: proxy
+    ports:
+      - "8094:8083"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.calibre-web-automated.entrypoints: "http"
+      traefik.http.routers.calibre-web-automated.rule: "Host(`ebooks.{{ domain }}`)"
+      traefik.http.middlewares.calibre-web-automated-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.calibre-web-automated.middlewares: "calibre-web-automated-https-redirect"
+      traefik.http.routers.calibre-web-automated-secure.entrypoints: "https"
+      traefik.http.routers.calibre-web-automated-secure.rule: "Host(`ebooks.{{ domain }}`)"
+      traefik.http.routers.calibre-web-automated-secure.tls: "true"
+      traefik.http.routers.calibre-web-automated-secure.tls.certresolver: "cloudflare"
+      traefik.http.services.calibre-web-automated.loadbalancer.server.port: "8083"
+      traefik.docker.network: "proxy"
+    pull: yes
+    state: 'started'
+    recreate: yes
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      NETWORK_SHARE_MODE: "false"
+    volumes:
+      - "{{ config_root }}/calibre_web_automated_config:/config"
+      - "{{ data_root }}/media/cwa_books/ingest:/cwa-book-ingest"
+      - "{{ data_root }}/media/cwa_books:/calibre-library"
+    restart_policy: unless-stopped
