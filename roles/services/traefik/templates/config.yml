@@ -16,7 +16,7 @@ http:
       rule: "Host(`nextcloud.{{ domain }}`)"
       service: "nextcloud"
       tls:
-        certResolver: "letsencrypt"
+        certResolver: "cloudflare"
       middlewares:
         - "nextcloud-headers"
         - "nextcloud-redirects"
@@ -30,7 +30,7 @@ http:
       rule: "Host(`nextcloud.{{ domain }}`) && (PathPrefix(`/push/`) || PathPrefix(`/apps/notify_push/`))"
       service: "nextcloud"
       tls:
-        certResolver: "letsencrypt"
+        certResolver: "cloudflare"
       middlewares:
         - "nextcloud-websocket"
         - "secure-headers"

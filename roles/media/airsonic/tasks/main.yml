@@ -7,6 +7,8 @@
     #   - 4040:4040
     networks:
       - name: proxy
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
     labels:
       traefik.enable: "true"
       # traefik.http.routers.airsonic.entrypoints: "http"

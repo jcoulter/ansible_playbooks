@@ -5,6 +5,8 @@
     name: audiobookshelf
     networks:
       - name: proxy
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
     ports:
       - "13378:80"
     pull: yes

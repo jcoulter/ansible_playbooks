@@ -9,7 +9,7 @@ services:
       - REPLICAS=http://{{ backup_pihole_ip }}:{{ pihole_web_port | default(8089) }}|{{ pihole_admin_password }}
       - FULL_SYNC=true
       - RUN_GRAVITY=true
-      - CRON=0 */5 * * *
+      - CRON=*/5 * * * *
     networks:
       - pihole_network
 

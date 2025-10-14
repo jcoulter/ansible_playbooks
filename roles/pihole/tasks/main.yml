@@ -5,6 +5,17 @@
       - ansible_version.full is version('2.9', '>=')
     fail_msg: "This role requires Ansible 2.9+ and community.docker collection"
 
+- name: Configure Docker daemon DNS for Pi-hole compatibility
+  become: yes
+  copy:
+    content: |
+      {
+        "dns": ["{{ server_ip }}", "{{ router_ip }}"]
+      }
+    dest: /etc/docker/daemon.json
+    mode: '0644'
+  notify: restart docker
+
 - name: Check if DNS port is available
   wait_for:
     port: "{{ pihole_dns_port }}"

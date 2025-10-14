@@ -5,6 +5,8 @@
     name: radarr
     networks:
       - name: media_network
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
     ports:
       - 7878:7878
     pull: yes

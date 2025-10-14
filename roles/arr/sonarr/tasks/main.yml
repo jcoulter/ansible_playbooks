@@ -5,6 +5,8 @@
     name: sonarr
     networks:
       - name: media_network
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
     ports:
       - 8989:8989
     pull: yes
