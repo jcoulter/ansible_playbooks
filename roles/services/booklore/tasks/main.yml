@@ -1,0 +1,57 @@
+---
+- name: Make sure the booklore MariaDB container is created and running
+  docker_container:
+    name: booklore-mariadb
+    image: lscr.io/linuxserver/mariadb:11.4.5
+    pull: yes
+    networks:
+      - name: proxy
+    state: 'started'
+    volumes:
+      - "{{ config_root }}/booklore_mariadb:/config"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      MYSQL_ROOT_PASSWORD: "{{ mariadb_password }}"
+      MYSQL_DATABASE: booklore
+      MYSQL_USER: booklore
+      MYSQL_PASSWORD: "{{ mariadb_password }}"
+    restart_policy: unless-stopped
+
+- name: Make sure the booklore container is created and running
+  docker_container:
+    image: ghcr.io/booklore-app/booklore:latest
+    name: booklore
+    networks:
+      - name: proxy
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
+    ports:
+      - "3003:6060"
+    pull: yes
+    recreate: yes
+    state: 'started'
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      DATABASE_URL: "jdbc:mariadb://booklore-mariadb:3306/booklore"
+      DATABASE_USERNAME: booklore
+      DATABASE_PASSWORD: "{{ mariadb_password }}"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.booklore.entrypoints: "http"
+      traefik.http.routers.booklore.rule: "Host(`booklore.{{ domain }}`)"
+      traefik.http.middlewares.booklore-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.booklore.middlewares: "booklore-https-redirect"
+      traefik.http.routers.booklore-secure.entrypoints: "https"
+      traefik.http.routers.booklore-secure.rule: "Host(`booklore.{{ domain }}`)"
+      traefik.http.routers.booklore-secure.tls: "true"
+      traefik.http.routers.booklore-secure.service: "booklore"
+      traefik.http.services.booklore.loadbalancer.server.port: "6060"
+      traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
+    volumes:
+      - "{{ config_root }}/booklore_config:/app/data"
+      - "{{ data_root }}/media/books:/books:ro"
+    restart_policy: unless-stopped

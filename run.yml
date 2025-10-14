@@ -226,6 +226,12 @@
       - containers
       - calibre
 
+    - role: services/booklore  
+      tags:
+      - containers
+      - booklore
+      - books
+
     - role: services/audiobookshelf  
       tags:
       - containers
@@ -344,6 +350,8 @@
 
 # Pi-hole Backup Server - Minimal services only
 - hosts: pihole_backup
+  tags:
+    - pihole
 
   vars_files:
     - ./vars/vault.yml
