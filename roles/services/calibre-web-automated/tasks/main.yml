@@ -6,8 +6,10 @@
     networks:
       - name: media_network
       - name: proxy
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
     ports:
-      - "8094:8083"
+      - "8093:8083"
     labels:
       traefik.enable: "true"
       traefik.http.routers.calibre-web-automated.entrypoints: "http"
@@ -27,9 +29,46 @@
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
-      NETWORK_SHARE_MODE: "false"
+      NETWORK_SHARE_MODE: "true"
     volumes:
       - "{{ config_root }}/calibre_web_automated_config:/config"
       - "{{ data_root }}/media/cwa_books/ingest:/cwa-book-ingest"
-      - "{{ data_root }}/media/cwa_books:/calibre-library"
+      - "{{ data_root }}/media/cwa_books/library:/calibre-library"
+    restart_policy: unless-stopped
+
+- name: Make sure the calibre-web-automated-alt container is created and running
+  docker_container:
+    image: crocodilestick/calibre-web-automated:latest
+    name: calibre-web-automated-alt
+    networks:
+      - name: media_network
+      - name: proxy
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
+    ports:
+      - "8094:8083"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.calibre-web-automated-alt.entrypoints: "http"
+      traefik.http.routers.calibre-web-automated-alt.rule: "Host(`ebooks-alt.{{ domain }}`)"
+      traefik.http.middlewares.calibre-web-automated-alt-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.calibre-web-automated-alt.middlewares: "calibre-web-automated-alt-https-redirect"
+      traefik.http.routers.calibre-web-automated-alt-secure.entrypoints: "https"
+      traefik.http.routers.calibre-web-automated-alt-secure.rule: "Host(`ebooks-alt.{{ domain }}`)"
+      traefik.http.routers.calibre-web-automated-alt-secure.tls: "true"
+      traefik.http.routers.calibre-web-automated-alt-secure.tls.certresolver: "cloudflare"
+      traefik.http.services.calibre-web-automated-alt.loadbalancer.server.port: "8083"
+      traefik.docker.network: "proxy"
+    pull: yes
+    state: 'started'
+    recreate: yes
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+      NETWORK_SHARE_MODE: "true"
+    volumes:
+      - "{{ config_root }}/calibre_web_automated_alt_config:/config"
+      - "{{ data_root }}/media/cwa_books/alt-ingest:/cwa-book-ingest"
+      - "{{ data_root }}/media/cwa_books/alt-library:/calibre-library"
     restart_policy: unless-stopped

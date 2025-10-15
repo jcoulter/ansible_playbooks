@@ -1,0 +1,24 @@
+---
+- name: Make sure the mylar3 container is created and running
+  docker_container:
+    image: "ghcr.io/linuxserver/mylar3:latest"
+    name: mylar3
+    networks:
+      - name: media_network
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
+    ports:
+      - 8092:8090
+    pull: yes
+    state: 'started'
+    recreate: yes
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ config_root }}/mylar3_config:/config"
+      - "{{ data_root }}/media/comics:/comics"
+      - "{{ data_root }}/transmission/data/completed:/data/completed"
+      - "{{ data_root }}/qbittorrent/downloads:/data/qbit_completed"
+    restart_policy: unless-stopped

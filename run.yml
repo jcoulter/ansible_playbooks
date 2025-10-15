@@ -139,6 +139,20 @@
         - containers
         - prowlarr
 
+    - role: arr/kapowarr  
+      tags:
+        - arr
+        - containers
+        - kapowarr
+        - comics
+
+    - role: arr/mylar3  
+      tags:
+        - arr
+        - containers
+        - mylar3
+        - comics
+
     # - role: arr/tdarr  
     #   tags:
     #     - arr
@@ -238,6 +252,12 @@
       - containers
       - booklore
       - books
+
+    - role: services/komga  
+      tags:
+      - containers
+      - komga
+      - comics
 
     - role: services/audiobookshelf  
       tags:

@@ -1,0 +1,24 @@
+---
+- name: Make sure the kapowarr container is created and running
+  docker_container:
+    image: "mrcas/kapowarr:latest"
+    name: kapowarr
+    networks:
+      - name: media_network
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
+    ports:
+      - 5656:5656
+    pull: yes
+    state: 'started'
+    recreate: yes
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ config_root }}/kapowarr_config:/app/db"
+      - "{{ data_root }}/media/comics:/comics"
+      - "{{ data_root }}/transmission/data/completed:/data/completed"
+      - "{{ data_root }}/qbittorrent/downloads:/data/qbit_completed"
+    restart_policy: unless-stopped

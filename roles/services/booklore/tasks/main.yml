@@ -26,7 +26,8 @@
     networks:
       - name: proxy
     dns_servers:
-      - "{{ server_ip }}"  # Pi-hole server
+      - "1.1.1.1"
+      - "8.8.8.8"
     ports:
       - "3003:6060"
     pull: yes
@@ -53,5 +54,6 @@
       traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
     volumes:
       - "{{ config_root }}/booklore_config:/app/data"
-      - "{{ data_root }}/media/books:/books:ro"
+      - "{{ data_root }}/media/books:/books"
+      - "{{ data_root }}/media/bookdrop:/bookdrop"
     restart_policy: unless-stopped
