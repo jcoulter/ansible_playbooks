@@ -4,9 +4,21 @@
     image: jvmilazz0/kavita:latest
     name: kavita
     networks:
-      - name: media_network
+      - name: proxy
     dns_servers:
       - "{{ server_ip }}"  # Pi-hole server
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.kavita.entrypoints: "http"
+      traefik.http.routers.kavita.rule: "Host(`manga.coulter.rocks`)"
+      traefik.http.middlewares.kavita-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.kavita.middlewares: "kavita-https-redirect"
+      traefik.http.routers.kavita-secure.entrypoints: "https"
+      traefik.http.routers.kavita-secure.rule: "Host(`manga.coulter.rocks`)"
+      traefik.http.routers.kavita-secure.tls: "true"
+      traefik.http.routers.kavita-secure.service: "kavita"
+      traefik.http.services.kavita.loadbalancer.server.port: "5000"
+      traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
     ports:
       - 5002:5000
     pull: yes
