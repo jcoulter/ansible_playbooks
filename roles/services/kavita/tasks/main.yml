@@ -1,12 +1,14 @@
 ---
 - name: Make sure the kavita container is created and running
   docker_container:
-    image: kizaing/kavita:latest
+    image: jvmilazz0/kavita:latest
     name: kavita
     networks:
       - name: media_network
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
     ports:
-      - "5000:5000"
+      - 5002:5000
     pull: yes
     state: 'started'
     recreate: yes
@@ -16,5 +18,5 @@
       TZ: "{{ timezone }}"
     volumes:
       - "{{ config_root }}/kavita_config:/kavita/config"
-      - "{{ data_root }}/media:/media"
+      - "{{ data_root }}/media/kavita:/media"
     restart_policy: unless-stopped

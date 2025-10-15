@@ -116,12 +116,6 @@
         - containers
         - lidarr
 
-    # - role: arr/readarr  
-    #   tags:
-    #     - arr
-    #     - containers
-    #     - readarr
-
     - role: services/portainer  
       tags:
         - containers

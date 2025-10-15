@@ -20,8 +20,6 @@ irc_name: "BookReader_{{ ansible_date_time.epoch }}"
 
 # 172.18.0.1 - 172.18.0.62
 media_subnet: 172.18.0.0/26
-readarr_ip: 172.18.0.13
-readarr_audio_ip: 172.18.0.19
 
 # 172.18.0.65 - 172.18.0.70
 seafile_subnet: 172.18.0.70/29
