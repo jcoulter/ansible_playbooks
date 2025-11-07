@@ -6,7 +6,8 @@
     networks:
       - name: media_network
     dns_servers:
-      - "{{ server_ip }}"  # Pi-hole server
+      - "1.1.1.1"  # Cloudflare DNS
+      - "8.8.8.8"  # Google DNS
     ports:
       - 9696:9696
     pull: yes

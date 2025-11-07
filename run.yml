@@ -369,6 +369,13 @@
         - trilium
         - notes
 
+    - role: services/n8n
+      tags:
+        - containers
+        - services
+        - n8n
+        - automation
+
 # Pi-hole Backup Server - Minimal services only
 - hosts: pihole_backup
   tags:

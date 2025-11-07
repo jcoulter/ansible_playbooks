@@ -1,7 +1,7 @@
 ---
 - name: Make sure the mealie container is created and running
   docker_container:
-    image: hkotel/mealie:latest
+    image: ghcr.io/mealie-recipes/mealie:v3.4.0
     name: mealie
     # With no ports, it can only be accessed through traefik
     # ports:
@@ -27,11 +27,11 @@
     state: 'started'
     recreate: yes
     env:
-      # DB_ENGINE: sqlite # Optional: 'sqlite', 'postgres'
       # ALLOW_SIGNUP: "false"
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
+      BASE_URL: "https://mealie.{{ domain }}"
     volumes:
       - "{{ data_root }}/mealie_data:/app/data/"
     restart_policy: unless-stopped
