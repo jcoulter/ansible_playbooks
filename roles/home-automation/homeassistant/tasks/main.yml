@@ -48,6 +48,25 @@
       "MYSQL_PASSWORD": "{{ mariadb_password }}"
       "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
     restart_policy: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+- name: Wait for MySQL to be ready
+  wait_for:
+    port: 3306
+    host: "{{ ansible_default_ipv4.address }}"
+    delay: 10
+    timeout: 60
+
+- name: Wait for InfluxDB to be ready
+  wait_for:
+    port: 8086
+    host: "{{ ansible_default_ipv4.address }}"
+    delay: 5
+    timeout: 60
 
 - name: Make sure the {{ container_name }} container is created and running
   become: yes

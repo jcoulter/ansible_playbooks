@@ -1,0 +1,45 @@
+---
+- name: Fix permissions on n8n data directory
+  docker_container:
+    image: busybox
+    name: n8n-init
+    command: ['sh', '-c', 'chown -R 1000:1000 /home/node/.n8n']
+    volumes:
+      - "{{ data_root }}/n8n_data:/home/node/.n8n"
+    state: started
+    detach: false
+    cleanup: true
+
+- name: Make sure the n8n container is created and running
+  docker_container:
+    image: docker.n8n.io/n8nio/n8n:latest
+    name: n8n
+    networks:
+      - name: proxy
+    dns_servers:
+      - "{{ server_ip }}"  # Pi-hole server
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.n8n.entrypoints: "http"
+      traefik.http.routers.n8n.rule: "Host(`n8n.{{ domain }}`)"
+      traefik.http.middlewares.n8n-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.routers.n8n.middlewares: "n8n-https-redirect"
+      traefik.http.routers.n8n-secure.entrypoints: "https"
+      traefik.http.routers.n8n-secure.rule: "Host(`n8n.{{ domain }}`)"
+      traefik.http.routers.n8n-secure.tls: "true"
+      traefik.http.routers.n8n-secure.service: "n8n"
+      traefik.http.services.n8n.loadbalancer.server.port: "5678"
+    pull: yes
+    state: 'started'
+    recreate: yes
+    env:
+      N8N_HOST: "n8n.{{ domain }}"
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: "https"
+      NODE_ENV: "production"
+      WEBHOOK_URL: "https://n8n.{{ domain }}"
+      GENERIC_TIMEZONE: "{{ timezone }}"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ data_root }}/n8n_data:/home/node/.n8n"
+    restart_policy: unless-stopped

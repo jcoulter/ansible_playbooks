@@ -6,7 +6,8 @@
     networks:
       - name: media_network
     dns_servers:
-      - "{{ server_ip }}"  # Pi-hole server
+      - "1.1.1.1"  # Cloudflare DNS
+      - "8.8.8.8"  # Google DNS
     ports:
       - 8686:8686
     pull: yes
@@ -16,6 +17,7 @@
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
+      HTTP_USER_AGENT: "Lidarr/3.0.1 (homelab)"
     volumes:
       - "{{ config_root }}/lidarr_config:/config"
       - "{{ data_root }}/media/music:/music"
