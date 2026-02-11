@@ -277,6 +277,13 @@
       tags:
         - containers
         - kavita
+        - comics
+
+    - role: services/komf  
+      tags:
+        - containers
+        - komf
+        - comics
 
     - role: services/immich  
       tags:

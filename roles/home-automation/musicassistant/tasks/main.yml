@@ -1,5 +1,7 @@
 ---
 # https://music-assistant.io/installation/
+# SETUP: Create a long-lived access token in Home Assistant (Profile -> Security -> Long-Lived Access Tokens)
+# In Music Assistant, add Home Assistant provider with URL: http://localhost:8123 and paste the token
 
 - name: Make sure the {{ container_name }} container is created and running
   become: yes
