@@ -72,6 +72,7 @@
       traefik.http.routers.logseq-secure.middlewares: "logseq-auth@file"
     pull: yes
     state: 'started'
+    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

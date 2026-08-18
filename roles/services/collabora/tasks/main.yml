@@ -3,6 +3,7 @@
   docker_container:
     name: "{{ collabora_container_name }}"
     image: "{{ collabora_image }}"
+    pull: yes
     state: started
     recreate: yes
     restart_policy: unless-stopped

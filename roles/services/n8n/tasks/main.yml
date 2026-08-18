@@ -12,7 +12,7 @@
 
 - name: Make sure the n8n container is created and running
   docker_container:
-    image: docker.n8n.io/n8nio/n8n:latest
+    image: docker.n8n.io/n8nio/n8n:1.120.4
     name: n8n
     networks:
       - name: proxy

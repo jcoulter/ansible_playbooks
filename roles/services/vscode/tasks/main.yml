@@ -6,6 +6,7 @@
     name: "code-server"
     ports:
       - 8443:8443
+    pull: yes
     state: 'started'
     recreate: yes
     env:

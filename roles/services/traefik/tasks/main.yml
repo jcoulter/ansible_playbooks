@@ -41,7 +41,7 @@
 
 - name: "Make sure the traefik container is created and running"
   docker_container:
-    image: "traefik:latest"
+    image: "traefik:3.7.1"
     name: "traefik"
     security_opts:
       - "no-new-privileges:true"

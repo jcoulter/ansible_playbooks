@@ -7,4 +7,50 @@ homer_category: services
 
 ip_address: "{{ swag_base }}.5"
 
+watchtower_watched_containers:
+  - mylar3
+  - kapowarr
+  - prowlarr
+  - bazarr
+  - lidarr
+  - radarr
+  - sonarr
+  - altfin
+  - code-server
+  - duplicati
+  - music-assistant-server
+  - node-red
+  - zigbee2mqtt
+  - mosquitto
+  - esphome
+  - kavita
+  - filebrowser
+  - jellyfin
+  - audiobookshelf
+  - komf
+  - komga
+  - airsonic
+  - traefik
+  - calibre-web-automated-alt
+  - calibre-web-automated
+  - n8n
+  - mealie
+  - flaresolverr
+  - openbooks
+  - booklore
+  - booklore-mariadb
+  - transmission-openvpn
+  - nebula-sync
+  - vaultwarden
+  - speedtest
+  - homepage
+  - postgres-gitea
+  - collabora
+  - logseq
+  - gitea
+  - postgres-gitlab
+  - onlyoffice
+  - neolink
+  - dashy
+
 

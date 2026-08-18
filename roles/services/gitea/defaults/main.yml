@@ -4,7 +4,7 @@ gitea_port: "3001"
 gitea_ssh_port: "23"
 gitea_data_path: "{{ data_root }}/gitea" 
 gitea_config_path: "{{ config_root }}/gitea" 
-gitea_version: "latest"
+gitea_version: "1.23.5"
 
 # Database configuration
 gitea_db_type: "postgres"  # Changed from sqlite3 to postgres

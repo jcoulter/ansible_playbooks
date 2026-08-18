@@ -1,7 +1,7 @@
 ---
 - name: Make sure the vaultwarden container is created and running
   docker_container:
-    image: "vaultwarden/server:latest"
+    image: "vaultwarden/server:1.36.0"
     name: "vaultwarden"
     ports:
       - 8087:80
