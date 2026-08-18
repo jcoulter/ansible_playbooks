@@ -1,0 +1,37 @@
+---
+container_name: birdnet-go
+
+birdnet_go_version: "nightly"
+birdnet_go_port: 8090
+birdnet_go_config_dir: "{{ config_root }}/birdnet-go"
+
+# Location (Copley, Ohio)
+birdnet_latitude: 41.10
+birdnet_longitude: -81.64
+
+# Detection settings
+birdnet_sensitivity: 1.0
+birdnet_threshold: 0.75
+birdnet_overlap: 2.4
+
+# RTSP sources - use sub-stream for lower bandwidth (audio-only analysis)
+birdnet_rtsp_urls:
+  - name: "Deck"
+    url: "rtsp://admin:{{ reolink_password }}@192.168.1.233:554/h264Preview_01_sub"
+  - name: "Driveway"
+    url: "rtsp://admin:{{ reolink_password }}@192.168.1.232:554/h264Preview_01_sub"
+  - name: "Front Yard"
+    url: "rtsp://admin:{{ reolink_password }}@192.168.1.234:554/h264Preview_01_sub"
+
+# MQTT
+birdnet_mqtt_enabled: true
+birdnet_mqtt_broker: "{{ server_ip }}:1883"
+birdnet_mqtt_topic: "birdnet"
+birdnet_mqtt_username: "{{ birdnet_mqtt_user }}"
+birdnet_mqtt_password: "{{ birdnet_mqtt_pass }}"
+
+# Audio export
+birdnet_export_enabled: true
+birdnet_export_path: "/data/clips"
+birdnet_export_retention_policy: "age"
+birdnet_export_retention_maxage: "30d"

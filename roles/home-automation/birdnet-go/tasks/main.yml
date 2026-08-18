@@ -1,0 +1,46 @@
+---
+- name: Create BirdNET-Go config directory
+  become: yes
+  ansible.builtin.file:
+    path: "{{ birdnet_go_config_dir }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
+- name: Create BirdNET-Go data directory
+  become: yes
+  ansible.builtin.file:
+    path: "{{ birdnet_go_config_dir }}/data"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
+- name: Deploy BirdNET-Go configuration
+  become: yes
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ birdnet_go_config_dir }}/config.yaml"
+    owner: "1000"
+    group: "1000"
+    mode: "0644"
+  register: birdnet_config
+
+- name: Make sure the {{ container_name }} container is created and running
+  become: yes
+  docker_container:
+    name: "{{ container_name }}"
+    image: "ghcr.io/tphakala/birdnet-go:{{ birdnet_go_version }}"
+    pull: yes
+    state: 'started'
+    restart: "{{ birdnet_config.changed | default(false) }}"
+    ports:
+      - "{{ birdnet_go_port }}:8080"
+    env:
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ birdnet_go_config_dir }}:/home/birdnet/.config/birdnet-go"
+      - "{{ birdnet_go_config_dir }}/data:/data"
+      - /etc/localtime:/etc/localtime:ro
+    restart_policy: unless-stopped

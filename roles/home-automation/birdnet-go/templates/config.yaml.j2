@@ -1,0 +1,82 @@
+# BirdNET-Go Configuration - Managed by Ansible
+debug: false
+
+main:
+  name: BirdNET-Go
+  timeas24h: true
+
+birdnet:
+  sensitivity: {{ birdnet_sensitivity }}
+  threshold: {{ birdnet_threshold }}
+  overlap: {{ birdnet_overlap }}
+  latitude: {{ birdnet_latitude }}
+  longitude: {{ birdnet_longitude }}
+  rangefilter:
+    model: ""
+    threshold: 0.01
+
+realtime:
+  interval: 15
+  processingtime: false
+
+  audio:
+    source: ""
+    export:
+      enabled: {{ birdnet_export_enabled | lower }}
+      path: "{{ birdnet_export_path }}"
+      type: wav
+      retention:
+        policy: "{{ birdnet_export_retention_policy }}"
+        maxage: "{{ birdnet_export_retention_maxage }}"
+        minclips: 5
+
+  rtsp:
+    transport: tcp
+    urls:
+{% for stream in birdnet_rtsp_urls %}
+      - "{{ stream.url }}"
+{% endfor %}
+
+  mqtt:
+    enabled: {{ birdnet_mqtt_enabled | lower }}
+    broker: "{{ birdnet_mqtt_broker }}"
+    topic: "{{ birdnet_mqtt_topic }}"
+    username: "{{ birdnet_mqtt_username }}"
+    password: "{{ birdnet_mqtt_password }}"
+    retain: true
+
+  dynamicthreshold:
+    enabled: true
+    trigger: 0.9
+    min: 0.3
+    validhours: 24
+
+  privacyfilter:
+    enabled: true
+    confidence: 0.05
+
+  dogbarkfilter:
+    enabled: true
+    confidence: 0.8
+    remember: 60
+    species:
+      - "Eurasian Eagle-Owl"
+      - "Barred Owl"
+      - "Great Horned Owl"
+
+  species:
+    exclude:
+      - "Dog"
+      - "Siren"
+      - "Gun"
+      - "Fireworks"
+      - "Engine"
+
+webserver:
+  enabled: true
+  port: "8080"
+
+output:
+  sqlite:
+    enabled: true
+    path: /data/birdnet.db
