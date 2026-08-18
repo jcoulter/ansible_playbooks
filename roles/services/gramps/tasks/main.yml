@@ -1,78 +1,57 @@
 ---
-
 - name: Create a gramps network
   docker_network:
     name: gramps
 
-#   grampsweb_celery:
-#     <<: *grampsweb  # YAML merge key copying the entire grampsweb service config
-#     ports: []
-#     container_name: grampsweb_celery
-#     depends_on:
-#       - grampsweb_redis
-#     command: celery -A gramps_webapi.celery worker --loglevel=INFO --concurrency=2
-
-
-# NOTE: grampsweb REDIS SERVER IS RUNNING SO THIS IS NOT NEEDED
-#
 - name: Make sure the gramps redis container is created and running
   docker_container:
-    image: docker.io/library/redis:7.2.4-alpine
+    image: "redis:{{ gramps_redis_version }}"
     name: grampsweb_redis
+    state: 'started'
     restart_policy: unless-stopped
     networks:
       - name: gramps
 
 - name: Make sure the gramps celery container is created and running
   docker_container:
-    image: ghcr.io/gramps-project/grampsweb:latest
+    image: "ghcr.io/gramps-project/grampsweb:{{ gramps_version }}"
     name: grampsweb_celery
     networks:
       - name: gramps
     pull: yes
     state: 'started'
-    recreate: yes
     command: 'celery -A gramps_webapi.celery worker --loglevel=INFO --concurrency=2'
     env:
-      GRAMPSWEB_TREE: "Gramps Web"  # use the tree name, not UUID
+      GRAMPSWEB_TREE: "{{ gramps_tree_name }}"
       GRAMPSWEB_CELERY_CONFIG__broker_url: "redis://grampsweb_redis:6379/0"
       GRAMPSWEB_CELERY_CONFIG__result_backend: "redis://grampsweb_redis:6379/0"
-      GRAMPSWEB_RATELIMIT_STORAGE_URI: redis://grampsweb_redis:6379/1
-      # DB_ENGINE: sqlite # Optional: 'sqlite', 'postgres'
-      # ALLOW_SIGNUP: "false"
+      GRAMPSWEB_RATELIMIT_STORAGE_URI: "redis://grampsweb_redis:6379/1"
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
-    volumes:
-      - "{{ data_root }}/gramps_data/users:/app/users"  # persist user database
-      - "{{ data_root }}/gramps_data/index:/app/indexdir"  # persist search index
-      - "{{ data_root }}/gramps_data/thumb_cache:/app/thumbnail_cache"  # persist thumbnails
-      - "{{ data_root }}/gramps_data/cache:/app/cache"  # persist export and report caches
-      - "{{ data_root }}/gramps_data/secret:/app/secret"  # persist flask secret
-      - "{{ data_root }}/gramps_data/db:/root/.gramps/grampsdb"  # persist Gramps database
-      - "{{ data_root }}/gramps_data/media:/app/media"  # persist media files
+    volumes: &gramps_volumes
+      - "{{ data_root }}/gramps_data/users:/app/users"
+      - "{{ data_root }}/gramps_data/index:/app/indexdir"
+      - "{{ data_root }}/gramps_data/thumb_cache:/app/thumbnail_cache"
+      - "{{ data_root }}/gramps_data/cache:/app/cache"
+      - "{{ data_root }}/gramps_data/secret:/app/secret"
+      - "{{ data_root }}/gramps_data/db:/root/.gramps/grampsdb"
+      - "{{ data_root }}/gramps_data/media:/app/media"
     tmpfs:
       - /tmp:rw,exec
     restart_policy: unless-stopped
 
-
-# NOTE: grampsweb REDIS SERVER IS RUNNING SO THIS IS NOT NEEDED
-#
-# - name: Make sure the gramps redis container is created and running
-#   docker_container:
-#     image: docker.io/library/redis:7.2.4-alpine
-#     name: grampsweb_redis
-#     restart_policy: unless-stopped
-
 - name: Make sure the gramps container is created and running
   docker_container:
-    image: ghcr.io/gramps-project/grampsweb:latest
+    image: "ghcr.io/gramps-project/grampsweb:{{ gramps_version }}"
     name: grampsweb
     ports:
       - "5001:5000"
     networks:
       - name: gramps
       - name: proxy
+    dns_servers:
+      - "{{ server_ip }}"
     labels:
       traefik.enable: "true"
       traefik.http.routers.gramps.entrypoints: "http"
@@ -84,32 +63,17 @@
       traefik.http.routers.gramps-secure.tls: "true"
       traefik.http.routers.gramps-secure.service: "gramps"
       traefik.http.services.gramps.loadbalancer.server.port: "5000"
-      traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
-
     pull: yes
     state: 'started'
-    recreate: yes
     env:
-      GRAMPSWEB_TREE: "Gramps Web"  # use the tree name, not UUID
+      GRAMPSWEB_TREE: "{{ gramps_tree_name }}"
       GRAMPSWEB_CELERY_CONFIG__broker_url: "redis://grampsweb_redis:6379/0"
       GRAMPSWEB_CELERY_CONFIG__result_backend: "redis://grampsweb_redis:6379/0"
-      GRAMPSWEB_RATELIMIT_STORAGE_URI: redis://grampsweb_redis:6379/1
-      # DB_ENGINE: sqlite # Optional: 'sqlite', 'postgres'
-      # ALLOW_SIGNUP: "false"
+      GRAMPSWEB_RATELIMIT_STORAGE_URI: "redis://grampsweb_redis:6379/1"
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
-    volumes:
-      - "{{ data_root }}/gramps_data/users:/app/users"  # persist user database
-      - "{{ data_root }}/gramps_data/index:/app/indexdir"  # persist search index
-      - "{{ data_root }}/gramps_data/thumb_cache:/app/thumbnail_cache"  # persist thumbnails
-      - "{{ data_root }}/gramps_data/cache:/app/cache"  # persist export and report caches
-      - "{{ data_root }}/gramps_data/secret:/app/secret"  # persist flask secret
-      - "{{ data_root }}/gramps_data/db:/root/.gramps/grampsdb"  # persist Gramps database
-      - "{{ data_root }}/gramps_data/media:/app/media"  # persist media files
+    volumes: *gramps_volumes
     tmpfs:
       - /tmp:rw,exec
     restart_policy: unless-stopped
-
-# Username: changeme@email.com
-# Password: MyPassword

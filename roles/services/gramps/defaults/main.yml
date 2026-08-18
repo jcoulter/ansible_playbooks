@@ -1,0 +1,4 @@
+---
+gramps_version: "latest"
+gramps_redis_version: "7.2.4-alpine"
+gramps_tree_name: "Gramps Web"

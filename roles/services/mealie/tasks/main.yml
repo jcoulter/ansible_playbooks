@@ -1,21 +1,32 @@
 ---
+- name: Ensure mealie data directory exists with correct permissions
+  become: yes
+  ansible.builtin.file:
+    path: "{{ data_root }}/mealie_data"
+    state: directory
+    owner: "{{ puid }}"
+    group: "{{ pgid }}"
+    mode: "0755"
+
+- name: Backup mealie database before any container changes
+  become: yes
+  ansible.builtin.copy:
+    src: "{{ data_root }}/mealie_data/mealie.db"
+    dest: "{{ data_root }}/mealie_data/backups/mealie_pre_deploy_{{ ansible_date_time.iso8601_basic_short }}.db"
+    remote_src: yes
+  ignore_errors: yes
+
 - name: Make sure the mealie container is created and running
   docker_container:
-    image: ghcr.io/mealie-recipes/mealie:v3.4.0
+    image: "ghcr.io/mealie-recipes/mealie:{{ mealie_version }}"
     name: mealie
-    # With no ports, it can only be accessed through traefik
-    # ports:
-    #   - "9092:80"
     networks:
       - name: proxy
     dns_servers:
-      - "{{ server_ip }}"  # Pi-hole server
+      - "{{ server_ip }}"
     labels:
       traefik.enable: "true"
       traefik.http.routers.mealie.entrypoints: "http"
-      # This syntax allows cloudflare tunnel to host mealie.{{ domain }} which points to local mealie-in.{{ domain }} over https
-      # Both mealie.{{ domain }} and mealie-in.{{ domain }} must be configured in local dns (pi-hole)
-      # https://www.youtube.com/watch?v=yMmxw-DZ5Ec
       traefik.http.routers.mealie.rule: "Host(`mealie.{{ domain }}`)||Host(`mealie-in.{{ domain }}`)"
       traefik.http.middlewares.mealie-https-redirect.redirectscheme.scheme: "https"
       traefik.http.routers.mealie.middlewares: "mealie-https-redirect"
@@ -25,9 +36,8 @@
       traefik.http.routers.mealie-secure.service: "mealie"
     pull: yes
     state: 'started'
-    recreate: yes
     env:
-      # ALLOW_SIGNUP: "false"
+      ALLOW_SIGNUP: "false"
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
@@ -35,6 +45,3 @@
     volumes:
       - "{{ data_root }}/mealie_data:/app/data/"
     restart_policy: unless-stopped
-
-# Username: changeme@email.com
-# Password: MyPassword

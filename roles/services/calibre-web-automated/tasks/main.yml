@@ -30,11 +30,62 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
       NETWORK_SHARE_MODE: "true"
+      UMASK: "002"
     volumes:
       - "{{ config_root }}/calibre_web_automated_config:/config"
       - "{{ data_root }}/media/cwa_books/ingest:/cwa-book-ingest"
       - "{{ data_root }}/media/cwa_books/library:/calibre-library"
     restart_policy: unless-stopped
+
+- name: Fix CWA library permissions
+  become: yes
+  ansible.builtin.shell: |
+    chmod 2775 "{{ data_root }}/media/cwa_books/library"
+    find "{{ data_root }}/media/cwa_books/library" -type d -exec chmod 2775 {} \;
+    chmod -R g+w "{{ data_root }}/media/cwa_books/library/"
+  changed_when: false
+
+# CWA runs internal processes as root with umask 022, ignoring the UMASK env var.
+# This systemd path/service combo watches the library for changes and fixes group
+# write permissions automatically. See: https://github.com/crocodilestick/Calibre-Web-Automated/issues/30
+- name: Deploy CWA library permission fix service
+  become: yes
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/cwa-fix-perms.service
+    content: |
+      [Unit]
+      Description=Fix CWA library file permissions
+      
+      [Service]
+      Type=oneshot
+      ExecStart=/bin/bash -c 'sleep 5 && chmod -R g+w "{{ data_root }}/media/cwa_books/library/" && find "{{ data_root }}/media/cwa_books/library" -type d -exec chmod g+s {} \;'
+    mode: "0644"
+  notify: reload systemd
+
+- name: Deploy CWA library permission fix path watcher
+  become: yes
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/cwa-fix-perms.path
+    content: |
+      [Unit]
+      Description=Watch CWA library for new files and fix permissions
+      
+      [Path]
+      PathModified={{ data_root }}/media/cwa_books/library
+      Unit=cwa-fix-perms.service
+      
+      [Install]
+      WantedBy=multi-user.target
+    mode: "0644"
+  notify: reload systemd
+
+- name: Enable CWA permission fix path watcher
+  become: yes
+  ansible.builtin.systemd:
+    name: cwa-fix-perms.path
+    enabled: yes
+    state: started
+    daemon_reload: yes
 
 - name: Make sure the calibre-web-automated-alt container is created and running
   docker_container:
@@ -67,6 +118,7 @@
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
       NETWORK_SHARE_MODE: "true"
+      UMASK: "002"
     volumes:
       - "{{ config_root }}/calibre_web_automated_alt_config:/config"
       - "{{ data_root }}/media/cwa_books/alt-ingest:/cwa-book-ingest"
