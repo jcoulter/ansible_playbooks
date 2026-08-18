@@ -38,18 +38,6 @@
         - paperless-ngx
         - services
 
-    - role: services/gitea
-      tags:
-        - services
-        - containers
-        - gitea
-        
-    - role: services/gitlab
-      tags:
-        - services
-        - containers
-        - gitlab
-
     - role: services/nextcloud
       tags:
         - services
@@ -214,6 +202,13 @@
       tags:
         - frigate       
         
+    - role: home-automation/birdnet-go
+      tags:
+        - birdnet-go
+        - birdnet
+        - containers
+        - home-automation
+
     - role: home-automation/nodered  
       tags:
         - nodered
@@ -229,10 +224,10 @@
       tags:
         - crafty
 
-    - role: services/calibre  
-      tags:
-      - containers
-      - calibre
+    # - role: services/calibre  
+    #   tags:
+    #   - containers
+    #   - calibre
 
     - role: services/calibre-web-automated
       tags:
@@ -360,10 +355,10 @@
         - qbittorrent
         - qbittorrent-vpn
 
-    - role: services/collabora
-      tags:
-        - containers
-        - collabora
+    # - role: services/collabora
+    #   tags:
+    #     - containers
+    #     - collabora
 
     - role: services/logseq
       tags:
