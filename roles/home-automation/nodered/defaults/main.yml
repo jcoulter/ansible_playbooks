@@ -8,3 +8,5 @@ ip_address: "{{ iot_base }}.168"
 homer_category: smarthome
 
 dashboard_name: "Node RED"
+
+nodered_version: "4.1.10"

@@ -1,2 +1,4 @@
 ---
 container_name: music-assistant-server
+
+musicassistant_version: "latest"

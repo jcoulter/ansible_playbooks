@@ -1,12 +1,10 @@
 ---
-
 - name: Make sure the {{ container_name }} container is created and running
   docker_container:
     name: "{{ container_name }}"
-    image: "koenkk/zigbee2mqtt"
+    image: "koenkk/zigbee2mqtt:{{ zigbee2mqtt_version }}"
     pull: yes
     state: 'started'
-    recreate: yes
     ports:
       - "8081:8080"
     env:
@@ -18,7 +16,6 @@
       - "/run/udev:/run/udev:ro"
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0:rwm"
-      # - "/dev/ttyUSB2:/dev/ttyUSB2:rwm"
     groups:
       - dialout
     restart_policy: unless-stopped

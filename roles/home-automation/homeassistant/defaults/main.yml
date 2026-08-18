@@ -8,4 +8,10 @@ ip_address: "{{ iot_base }}.168"
 homer_category: smarthome
 
 dashboard_name: "Home Assistant"
-hass_db_path: "{{ data_root }}/nextcloud/db"
+hass_db_path: "{{ data_root }}/homeassistant/config/db"
+
+ha_external_url: "http://{{ ansible_default_ipv4.address }}:8123"
+ha_internal_url: "http://{{ ansible_default_ipv4.address }}:8123"
+
+hass_mysql_version: "9"
+hass_influxdb_version: "latest"

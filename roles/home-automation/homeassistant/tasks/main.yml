@@ -1,45 +1,36 @@
 ---
-#  Recorder connection string is defined in configuration.yml
-# recorder:
-#   db_url: "mysql://hass:<password>@{{ ansible_default_ipv4.address }}:3306/hass?charset=utf8"
-
 # https://community.home-assistant.io/t/complete-guide-on-setting-up-grafana-influxdb-with-home-assistant-using-official-docker-images/42860
 # Deploy and then manually create db (step 2)
-
-# Find updated influxdb write-up. 4 years is too old.
 
 - name: "Make sure - Hass influxdb container is created and running"
   docker_container:
     name: "hass-influxdb"
-    image: influxdb:latest
+    image: "influxdb:{{ hass_influxdb_version }}"
     pull: yes
     published_ports:
       - "8086:8086"
-      # - "8083:8083"
     state: 'started'
     env:
-      "DOCKER_INFLUXDB_INIT_MODE": setup 
-      "DOCKER_INFLUXDB_INIT_USERNAME": "{{ hass_influxdb_name }}" 
-      "DOCKER_INFLUXDB_INIT_PASSWORD": "{{ hass_influxdb_password }}"  
-      "DOCKER_INFLUXDB_INIT_ORG": "Home"  
-      "DOCKER_INFLUXDB_INIT_BUCKET": hass-bucket 
+      "DOCKER_INFLUXDB_INIT_MODE": setup
+      "DOCKER_INFLUXDB_INIT_USERNAME": "{{ hass_influxdb_name }}"
+      "DOCKER_INFLUXDB_INIT_PASSWORD": "{{ hass_influxdb_password }}"
+      "DOCKER_INFLUXDB_INIT_ORG": "Home"
+      "DOCKER_INFLUXDB_INIT_BUCKET": hass-bucket
     volumes:
       - "{{ data_root }}/homeassistant/config/influxdb_data:/var/lib/influxdb2"
-      - "{{ data_root }}/homeassistant/config/influxdb_config:/etc/influxdb2 "
+      - "{{ data_root }}/homeassistant/config/influxdb_config:/etc/influxdb2"
       - /etc/localtime:/etc/localtime:ro
     restart_policy: unless-stopped
 
-
-- name: "Make sure - Hass msql container is created and running"
+- name: "Make sure - Hass mysql container is created and running"
   docker_container:
     name: "hass-msql-db"
-    image: mysql:latest
+    image: "mysql:{{ hass_mysql_version }}"
     pull: yes
     published_ports:
       - "3306:3306"
     state: 'started'
     volumes:
-      # - /docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
       - "{{ data_root }}/homeassistant/config/db:/var/lib/mysql"
       - /etc/localtime:/etc/localtime:ro
     env:
@@ -68,59 +59,57 @@
     delay: 5
     timeout: 60
 
+- name: Ensure Home Assistant URLs are configured correctly
+  become: yes
+  ansible.builtin.blockinfile:
+    path: "{{ data_root }}/homeassistant/config/configuration.yaml"
+    marker: "# {mark} ANSIBLE MANAGED - Home Assistant URLs"
+    block: |
+      homeassistant:
+        external_url: "{{ ha_external_url }}"
+        internal_url: "{{ ha_internal_url }}"
+    create: no
+
+- name: Ensure Home Assistant secrets are configured
+  become: yes
+  ansible.builtin.template:
+    src: secrets.yaml.j2
+    dest: "{{ data_root }}/homeassistant/config/secrets.yaml"
+    mode: "0600"
+
 - name: Make sure the {{ container_name }} container is created and running
   become: yes
   docker_container:
     name: "{{ container_name }}"
     image: "homeassistant/home-assistant:stable"
     network_mode: host
-    # devices:
-    #   - "/dev/ttyUSB0:/dev/zigbee"
-    #   # - "/dev/ttyUSB0:/dev/zwave"
     pull: yes
     state: 'started'
-    recreate: yes
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
       TZ: "{{ timezone }}"
     volumes:
       - "{{ data_root }}/homeassistant/config:/config"
-      # - "{{ config_root }}/hass_config:/config"
       - "/etc/localtime:/etc/localtime:ro"
       - "/run/dbus:/run/dbus:ro"
     restart_policy: unless-stopped
-    # HOW CAN ANSIBLE LACK DOCKER depends_on ?!?!
-    # depends_on:
-    #   - hass-msql-db
-    #   - hass-influxdb
 
-# - name: "Make sure - Hass MariaDB container is created and running"
-#   docker_container:
-#     name: "hass-maria-db"
-#     image: mariadb:latest
-#     pull: yes
-#     published_ports:
-#       - "3306:3306"
-#     state: 'started'
-#     volumes:
-#       # - /docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
-#       - "{{ data_root }}/homeassistant/config/db:/var/lib/mysql"
-#       - /etc/localtime:/etc/localtime:ro
-#     env:
-#       "MYSQL_DATABASE": hass
-#       "MYSQL_USER": hass
-#       "MYSQL_PASSWORD": "{{ mariadb_password }}"
-#       "MYSQL_ROOT_PASSWORD": "{{ mariadb_password }}"
-#     restart_policy: unless-stopped
+- name: Patch kasa library to accept weak SSL certs (Tapo cameras use 1024-bit keys)
+  become: yes
+  shell: >
+    docker exec {{ container_name }} sh -c '
+    find /usr/local/lib -path "*/kasa/transports/sslaestransport.py" -o -path "*/kasa/transports/linkietransport.py" |
+    xargs grep -l "context.set_ciphers(self.CIPHERS)" 2>/dev/null |
+    xargs -r sed -i "s/context.set_ciphers(self.CIPHERS)/context.set_ciphers(self.CIPHERS + \":ECDHE-RSA-AES128-GCM-SHA256:@SECLEVEL=1\")/"
+    '
+  register: kasa_patch
+  changed_when: kasa_patch.rc == 0
+  failed_when: kasa_patch.rc != 0
 
-
-
-
-
-      # -v $PWD/config:/etc/influxdb2 \
-      # -e DOCKER_INFLUXDB_INIT_ORG=my-org \
-      # -e DOCKER_INFLUXDB_INIT_BUCKET=my-bucket \
-      # -e DOCKER_INFLUXDB_INIT_RETENTION=1w \
-      # -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token \
-      # influxdb:2.0
+- name: Restart {{ container_name }} to apply kasa SSL patch
+  become: yes
+  docker_container:
+    name: "{{ container_name }}"
+    state: started
+    restart: yes

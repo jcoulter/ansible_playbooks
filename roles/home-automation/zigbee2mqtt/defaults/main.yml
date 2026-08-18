@@ -8,3 +8,5 @@ ip_address: "{{ iot_base }}.168"
 homer_category: smarthome
 
 dashboard_name: "Zigbee 2 Mqtt"
+
+zigbee2mqtt_version: "2.12.0"
